@@ -1,6 +1,4 @@
 const {
-  blue,
-  blueDark,
   green,
   greenDark,
   yellow,
@@ -14,19 +12,25 @@ const {
 } = require('@radix-ui/colors');
 
 export const colors = {
+  // StayDesk brand scale (indigo) — substitui o azul padrão do Chatwoot.
+  // Fonte: staycloud-ui-guardian › brand-tokens.md
+  //   --brand      #545dff  → 500 (CTA primário, link, foco)
+  //   --brand-2    #7e85ff  → 300 (hover)
+  //   --brand-deep #2c3bd6  → 700 (active/pressed)
+  // Regra herdada do Guardian: máx. 2 indigos visíveis por tela, 1 botão primary.
   woot: {
-    25: blue.blue2,
-    50: blue.blue3,
-    75: blue.blue4,
-    100: blue.blue5,
-    200: blue.blue7,
-    300: blue.blue8,
-    400: blueDark.blue11,
-    500: blueDark.blue10,
-    600: blueDark.blue9,
-    700: blueDark.blue8,
-    800: blueDark.blue6,
-    900: blueDark.blue2,
+    25: '#f5f6ff',
+    50: '#eef0ff',
+    75: '#e3e6ff',
+    100: '#d6daff',
+    200: '#b3b9ff',
+    300: '#7e85ff',
+    400: '#6a72ff',
+    500: '#545dff',
+    600: '#4149e6',
+    700: '#2c3bd6',
+    800: '#232fa8',
+    900: '#1a2378',
   },
   green: {
     50: greenDark.green12,
