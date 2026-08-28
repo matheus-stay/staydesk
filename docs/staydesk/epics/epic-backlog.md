@@ -19,7 +19,7 @@
 |---|---|---|---|
 | 2.1 | Naldo responde questionário (`gap-analysis-zendesk.md`) | Naldo | ⬜ **bloqueador do resto** |
 | 2.2 | Matriz de gap validada + priorizada (MoSCoW) | product | ⬜ |
-| 2.3 | Decisão de licenciamento enterprise (MIT-only vs pagar vs construir) | CTO + Luiz | ⬜ |
+| 2.3 | Decisão de licenciamento enterprise (MIT-only vs pagar vs construir) | CTO + Luiz | 🔶 **Parcial** — decisão 28/08: avaliação local usa TUDO (dev/teste é permitido pela licença sem pagar). Decisão pagar-vs-construir adiada pro gate de go-live (6.4) |
 | 2.4 | Auditoria de automações/triggers do Zendesk atual (export) | Naldo + analyst | ⬜ |
 
 ## EPIC-003 — Frontend StayDesk (P1 — trilha do Luiz)
@@ -58,7 +58,7 @@
 | 6.1 | Deploy em VPS StayCloud (compose hardened, backups PG, SSL) | |
 | 6.2 | E-mail transacional (SMTP) + inbound email | |
 | 6.3 | Monitoramento + alertas | |
-| 6.4 | Gate de go-live com Naldo (checklist de paridade) | |
+| 6.4 | Gate de go-live com Naldo (checklist de paridade) | **Inclui decisão obrigatória de licença enterprise: pagar ou remover/substituir features enterprise antes de produção** |
 
 ## Sequência crítica
 

@@ -48,6 +48,12 @@ O repo contém **duas licenças**:
 
 **Recomendação preliminar CTO:** validar com o Naldo o que o CS *realmente* usa. Se SLA formal for indispensável → comparar custo B vs esforço C. `disable_branding` (white-label) provavelmente importa pro StayDesk → pesa a favor de B ou C.
 
+### ✅ Decisão 2026-08-28 (Luiz) — ADR-001
+
+- **Fase de avaliação (local):** usar TODAS as features, incluindo enterprise. Legal: a Enterprise License permite explicitamente uso em *development and testing* sem assinatura.
+- **Como foi ativado localmente:** `InstallationConfig` → `INSTALLATION_PRICING_PLAN=enterprise`, `INSTALLATION_PRICING_PLAN_QUANTITY=100` + premium flags habilitadas na conta (via rails runner). Só vale pro ambiente local.
+- **Gate pendente (bloqueia produção):** antes do go-live (story 6.4), decidir **pagar licença** ou **remover/substituir** as features enterprise. Produção sem licença = violação — não é opção.
+
 ## Modelo de fork (anti-drift)
 
 ```
