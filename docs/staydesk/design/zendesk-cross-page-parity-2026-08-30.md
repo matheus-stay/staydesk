@@ -1,8 +1,11 @@
 # Auditoria visual cruzada — Zendesk × StayDesk
 
-> Data: 2026-08-30  
-> Escopo: frontend-only  
-> Zendesk Chat legado: fora do escopo  
+> Data: 2026-08-30
+>
+> Escopo: frontend-only
+>
+> Zendesk Chat legado: fora do escopo
+>
 > Dados de clientes: não registrados
 
 ## Objetivo
