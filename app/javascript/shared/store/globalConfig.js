@@ -29,6 +29,17 @@ const {
   ACTIVE_PLATFORM_BANNERS: activePlatformBanners,
 } = window.globalConfig || {};
 
+export const appendBrandAssetVersion = (assetURL, version) => {
+  if (!assetURL?.startsWith('/brand-assets/') || !version) {
+    return assetURL;
+  }
+
+  const separator = assetURL.includes('?') ? '&' : '?';
+  return `${assetURL}${separator}v=${encodeURIComponent(version)}`;
+};
+
+const brandAssetVersion = gitSha || appVersion || 'staydesk';
+
 const state = {
   apiChannelName,
   apiChannelThumbnail,
@@ -47,9 +58,9 @@ const state = {
   maximumFileUploadSize: resolveMaximumFileUploadSize(maximumFileUploadSize),
   hCaptchaSiteKey,
   installationName,
-  logo,
-  logoDark,
-  logoThumbnail,
+  logo: appendBrandAssetVersion(logo, brandAssetVersion),
+  logoDark: appendBrandAssetVersion(logoDark, brandAssetVersion),
+  logoThumbnail: appendBrandAssetVersion(logoThumbnail, brandAssetVersion),
   privacyURL,
   termsURL,
   widgetBrandURL,

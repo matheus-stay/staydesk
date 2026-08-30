@@ -79,3 +79,14 @@ não bloqueiam o build.
 
 Esses riscos não afetam a fronteira frontend-only nem bloqueiam a revisão atual em
 ambiente local, mas permanecem como gates de homologação antes da migração.
+
+## Correção pós-auditoria: cache da marca
+
+O Chrome podia continuar exibindo a marca antiga porque `/brand-assets/*.svg` é
+servido com cache público de aproximadamente um ano. Como os arquivos mantiveram
+as mesmas URLs, uma sessão com cache anterior não buscava os novos SVGs.
+
+O store global agora adiciona a versão da aplicação às URLs dos assets locais de
+marca. URLs externas de instalações white-label não são modificadas. A correção é
+exclusivamente frontend, possui teste unitário e não altera a configuração do
+backend.
