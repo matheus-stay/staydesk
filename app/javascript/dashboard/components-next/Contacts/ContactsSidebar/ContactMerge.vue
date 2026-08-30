@@ -130,7 +130,7 @@ const onMergeContacts = async () => {
         variant="faded"
         color="slate"
         :label="t('CONTACTS_LAYOUT.SIDEBAR.MERGE.BUTTONS.CANCEL')"
-        class="w-full bg-n-alpha-2 text-n-blue-11 hover:bg-n-alpha-3"
+        class="w-full bg-n-alpha-2 text-n-brand dark:text-woot-300 hover:bg-n-alpha-3"
         @click="resetState"
       />
       <Button

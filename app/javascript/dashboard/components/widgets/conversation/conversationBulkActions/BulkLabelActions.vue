@@ -128,7 +128,7 @@ const handleDismiss = () => {
       ghost
       :class="{
         'bg-n-alpha-2': showDropdown,
-        '[&>span:nth-child(2)]:hidden md:[&>span:nth-child(2)]:inline w-fit !text-n-blue-11 [&>span]:!text-n-blue-11 !px-2':
+        '[&>span:nth-child(2)]:hidden md:[&>span:nth-child(2)]:inline w-fit !text-n-brand [&>span]:!text-n-brand !px-2':
           isTypeContact,
       }"
       :disabled="disabled || isLoading"
@@ -176,7 +176,7 @@ const handleDismiss = () => {
           <Icon
             v-if="isLabelSelected(item.value)"
             icon="i-lucide-check"
-            class="size-4 text-n-blue-11 flex-shrink-0"
+            class="size-4 text-n-brand flex-shrink-0"
           />
         </template>
 

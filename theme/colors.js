@@ -230,7 +230,10 @@ export const colors = {
     },
 
     black: '#000000',
-    brand: '#2781F6',
+    // StayCloud interactive accent. Keep semantic `n-blue` available for
+    // informational states, while every primary action and focus state uses
+    // the product brand instead of Chatwoot's native blue.
+    brand: '#545DFF',
     portal: 'var(--dynamic-portal-color)',
     'portal-soft': 'var(--dynamic-portal-color-soft)',
     'portal-faint': 'var(--dynamic-portal-color-faint)',

@@ -189,7 +189,7 @@ onMounted(() => {
         t('COMPANIES.EMPTY_STATE.TITLE')
       }}</span>
     </div>
-    <div v-else class="flex flex-col gap-4">
+    <div v-else class="flex flex-col border-y border-n-weak">
       <CompaniesCard
         v-for="company in companies"
         :id="company.id"
@@ -199,6 +199,7 @@ onMounted(() => {
         :contacts-count="company.contactsCount || 0"
         :avatar-url="company.avatarUrl"
         :last-activity-at="company.lastActivityAt"
+        class="!rounded-none !bg-n-surface-1 !outline-transparent [&>div:first-child]:!px-4 [&>div:first-child]:!py-2.5 hover:!bg-n-alpha-1 border-b border-n-weak last:border-b-0"
         @show-company="showCompany"
       />
     </div>

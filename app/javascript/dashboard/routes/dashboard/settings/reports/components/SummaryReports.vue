@@ -208,7 +208,7 @@ defineExpose({ downloadReports });
     @filter-change="onFilterChange"
   />
   <div
-    class="relative flex-1 overflow-auto px-2 py-2 mt-5 shadow outline-1 outline outline-n-container rounded-xl bg-n-solid-2"
+    class="relative flex-1 overflow-auto px-2 py-2 mt-5 outline-1 outline outline-n-container rounded bg-n-solid-2"
   >
     <Table :table="table" />
     <Transition
@@ -221,7 +221,7 @@ defineExpose({ downloadReports });
     >
       <div
         v-if="isLoading"
-        class="absolute inset-0 flex justify-center pt-[12.5rem] bg-n-solid-1/70 rounded-xl pointer-events-none"
+        class="absolute inset-0 flex justify-center pt-[12.5rem] bg-n-solid-1/70 rounded pointer-events-none"
       >
         <Spinner :size="32" class="text-n-brand" />
       </div>

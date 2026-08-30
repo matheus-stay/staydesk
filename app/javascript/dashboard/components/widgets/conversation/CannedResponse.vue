@@ -33,7 +33,7 @@ const emit = defineEmits(['replace', 'close', 'removeTrigger']);
 
 // Characters kept before the match when a snippet has to skip ahead
 const SNIPPET_LEAD = 24;
-const HIGHLIGHT_CLASS = 'text-n-blue-text';
+const HIGHLIGHT_CLASS = 'text-n-brand dark:text-woot-300';
 
 const store = useStore();
 const { t } = useI18n();

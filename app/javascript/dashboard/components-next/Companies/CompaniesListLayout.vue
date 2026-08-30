@@ -39,7 +39,7 @@ const updateCurrentPage = page => {
         @create="emit('create')"
       />
       <main class="flex-1 px-6 overflow-y-auto">
-        <div class="w-full mx-auto max-w-5xl py-4">
+        <div class="w-full mx-auto max-w-[75rem] py-4">
           <slot name="default" />
         </div>
       </main>

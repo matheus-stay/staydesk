@@ -162,12 +162,12 @@ const metadataAttributes = item => {
 
 const metadataItemClass = item => [
   'flex min-w-0 items-center gap-1 text-n-slate-10',
-  item.path ? 'group hover:text-n-blue-11 hover:underline' : '',
+  item.path ? 'group hover:text-n-brand hover:underline' : '',
 ];
 
 const metadataIconClass = item => [
   'size-3 shrink-0 text-n-slate-9',
-  item.path ? 'group-hover:text-n-blue-11' : '',
+  item.path ? 'group-hover:text-n-brand' : '',
 ];
 
 const stopMetadataLinkClick = (event, item) => {

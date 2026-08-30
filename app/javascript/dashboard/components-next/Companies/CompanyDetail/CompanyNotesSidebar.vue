@@ -70,7 +70,7 @@ const openContact = contactId => {
           >
             <button
               type="button"
-              class="min-w-0 font-medium truncate text-start text-n-slate-12 hover:text-n-blue-11 p-0"
+              class="min-w-0 font-medium truncate text-start text-n-slate-12 hover:text-n-brand p-0"
               @click="openContact(note.contact.id)"
             >
               {{ contactName(note.contact) }}

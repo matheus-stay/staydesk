@@ -113,6 +113,7 @@ const handleAvatarHover = isHovered => {
     <CardLayout
       :key="id"
       layout="row"
+      class="!rounded-none !bg-n-surface-1 !outline-transparent [&>div:first-child]:!px-4 [&>div:first-child]:!py-2.5 hover:!bg-n-alpha-1"
       :class="{
         'outline-n-weak !bg-n-slate-3 dark:!bg-n-solid-3': isSelected,
       }"

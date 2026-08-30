@@ -64,11 +64,9 @@ onMounted(() => {
       </div>
     </header>
 
-    <div class="flex-1 overflow-y-auto px-3 pb-8 pt-3">
-      <div class="flex flex-col gap-2">
-        <section
-          class="rounded-lg border border-n-weak bg-n-surface-1 px-3 pb-3"
-        >
+    <div class="flex-1 overflow-y-auto pb-8 pt-3">
+      <div class="flex flex-col gap-2 px-3">
+        <section class="rounded border border-n-weak bg-n-surface-1 px-3 pb-3">
           <h2
             class="border-b border-n-weak py-3 text-sm font-medium text-n-slate-12"
           >

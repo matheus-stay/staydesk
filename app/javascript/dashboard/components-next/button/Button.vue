@@ -103,11 +103,11 @@ const STYLE_CONFIG = {
       solid:
         'bg-n-brand text-white hover:enabled:brightness-110 focus-visible:brightness-110 outline-transparent',
       faded:
-        'bg-n-brand/10 text-n-blue-11 hover:enabled:bg-n-brand/20 focus-visible:bg-n-brand/20 outline-transparent',
-      outline: 'text-n-blue-11 outline-n-brand',
+        'bg-n-brand/10 text-n-brand dark:text-woot-300 hover:enabled:bg-n-brand/20 focus-visible:bg-n-brand/20 outline-transparent',
+      outline: 'text-n-brand dark:text-woot-300 outline-n-brand',
       ghost:
-        'text-n-blue-11 hover:enabled:bg-n-alpha-2 focus-visible:bg-n-alpha-2 outline-transparent',
-      link: 'text-n-blue-11 hover:enabled:underline focus-visible:underline outline-transparent',
+        'text-n-brand dark:text-woot-300 hover:enabled:bg-n-alpha-2 focus-visible:bg-n-alpha-2 outline-transparent',
+      link: 'text-n-brand dark:text-woot-300 hover:enabled:underline focus-visible:underline outline-transparent',
     },
     ruby: {
       solid:
@@ -191,7 +191,7 @@ const STYLE_CONFIG = {
     center: 'justify-center',
     end: 'justify-end',
   },
-  base: 'inline-flex items-center min-w-0 gap-2 transition-all duration-100 ease-out border-0 rounded-lg outline-1 outline disabled:opacity-50',
+  base: 'inline-flex items-center min-w-0 gap-2 transition-all duration-100 ease-out border-0 rounded outline-1 outline disabled:opacity-50',
 };
 
 const variantClasses = computed(() => {

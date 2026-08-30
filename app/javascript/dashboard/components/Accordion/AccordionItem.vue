@@ -34,7 +34,7 @@ const onToggle = () => {
 <template>
   <div class="text-sm">
     <button
-      class="flex items-center select-none w-full rounded-lg bg-n-slate-2 outline outline-1 outline-n-weak m-0 cursor-grab justify-between py-2 px-4 drag-handle"
+      class="flex items-center select-none w-full rounded bg-n-slate-2 outline outline-1 outline-n-weak m-0 cursor-grab justify-between py-2 px-3 drag-handle"
       :class="{ 'rounded-bl-none rounded-br-none': isOpen }"
       @click.stop="onToggle"
     >
@@ -46,7 +46,9 @@ const onToggle = () => {
       </div>
       <div class="flex flex-row">
         <slot name="button" />
-        <div class="flex justify-end w-3 text-n-blue-11 cursor-pointer">
+        <div
+          class="flex justify-end w-3 text-n-brand dark:text-woot-300 cursor-pointer"
+        >
           <fluent-icon v-if="isOpen" size="24" icon="subtract" type="solid" />
           <fluent-icon v-else size="24" icon="add" type="solid" />
         </div>
@@ -54,7 +56,7 @@ const onToggle = () => {
     </button>
     <div
       v-if="isOpen"
-      class="outline outline-1 outline-n-weak -mt-[-1px] border-t-0 rounded-br-lg rounded-bl-lg"
+      class="outline outline-1 outline-n-weak -mt-[-1px] border-t-0 rounded-br rounded-bl"
       :class="compact ? 'p-0' : 'px-2 py-4'"
     >
       <slot />

@@ -173,7 +173,7 @@ onUnmounted(() => {
           <NextButton
             :label="$t('BULK_ACTION.CLEAR_SELECTION')"
             ghost
-            class="!text-n-blue-11 !px-1 !h-6 flex-shrink-0"
+            class="!text-n-brand !px-1 !h-6 flex-shrink-0"
             sm
             @click="allSelected = false"
           />

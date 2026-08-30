@@ -90,3 +90,15 @@ O store global agora adiciona a versão da aplicação às URLs dos assets locai
 marca. URLs externas de instalações white-label não são modificadas. A correção é
 exclusivamente frontend, possui teste unitário e não altera a configuração do
 backend.
+
+## Rodada de paridade cruzada com o Zendesk
+
+Após nova auditoria autenticada e somente leitura no Zendesk Support, o corte
+visual foi ampliado para as páginas equivalentes de Contatos, Empresas e
+Relatórios. O detalhamento, as medidas e a matriz de tradução estão em
+`docs/staydesk/design/zendesk-cross-page-parity-2026-08-30.md`.
+
+Também foi corrigido o token `n-brand`, que ainda apontava para o azul nativo
+`#2781F6`. Ações, foco, seleção e links operacionais agora usam `#545DFF`. Botões,
+inputs, listas e painéis passaram a seguir o raio curto e a densidade medida no
+Zendesk, mantendo intactos todos os contratos e comportamentos do Chatwoot.

@@ -16,21 +16,21 @@ const emit = defineEmits(['search', 'update:sort', 'create']);
 </script>
 
 <template>
-  <header class="sticky top-0 z-10 px-6">
+  <header class="sticky top-0 z-10 border-b border-n-weak bg-n-surface-1 px-6">
     <div
-      class="flex items-start sm:items-center justify-between w-full py-6 gap-2 mx-auto max-w-5xl"
+      class="flex items-start sm:items-center justify-between w-full py-5 gap-2 mx-auto max-w-[75rem]"
     >
-      <span class="text-xl font-medium truncate text-n-slate-12">
+      <span class="text-2xl leading-8 font-medium truncate text-n-slate-12">
         {{ headerTitle }}
       </span>
-      <div class="flex items-center flex-col sm:flex-row flex-shrink-0 gap-4">
+      <div class="flex items-center flex-col sm:flex-row flex-shrink-0 gap-2">
         <div v-if="showSearch" class="flex items-center gap-2 w-full">
           <Input
             :model-value="searchValue"
             type="search"
             :placeholder="$t('COMPANIES.SEARCH_PLACEHOLDER')"
             :custom-input-class="[
-              'h-8 [&:not(.focus)]:!border-transparent bg-n-alpha-2 dark:bg-n-solid-1 ltr:!pl-8 !py-1 rtl:!pr-8',
+              'h-8 bg-n-surface-1 dark:bg-n-solid-1 ltr:!pl-8 !py-1 rtl:!pr-8',
             ]"
             class="w-full"
             @input="emit('search', $event.target.value)"
