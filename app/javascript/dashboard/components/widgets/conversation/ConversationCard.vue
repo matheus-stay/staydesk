@@ -109,11 +109,12 @@ watch(
 
 <template>
   <div
-    class="relative flex items-start flex-grow-0 flex-shrink-0 w-auto max-w-full py-0 cursor-pointer conversation border-b border-n-slate-3 hover:border-n-surface-1 hover:bg-n-alpha-1 dark:hover:bg-n-alpha-3 group hover:z-[1] before:content-[none] before:absolute before:-top-px before:inset-x-0 before:h-px before:bg-n-surface-1 before:pointer-events-none hover:before:content-['']"
+    class="conversation group relative flex min-h-14 w-auto max-w-full flex-grow-0 flex-shrink-0 cursor-pointer items-start border-b border-n-weak py-0 transition-colors duration-[120ms] before:pointer-events-none before:absolute before:inset-x-0 before:-top-px before:h-px before:bg-n-surface-1 before:content-[none] hover:z-[1] hover:border-n-surface-1 hover:bg-n-slate-2/80 hover:before:content-[''] dark:hover:bg-n-slate-3/60 motion-reduce:transition-none"
     :class="{
-      'active animate-card-select bg-n-background !border-n-surface-1':
+      'active bg-n-brand/5 !border-n-surface-1 !border-s-2 !border-s-n-brand dark:bg-n-brand/10':
         isActiveChat,
-      'selected bg-n-slate-2 !border-n-surface-1': selected,
+      'selected bg-n-brand/10 !border-n-surface-1 !border-s-2 !border-s-n-brand dark:bg-n-brand/15':
+        selected,
       'px-0': compact,
       'px-3': !compact,
     }"
@@ -129,9 +130,9 @@ watch(
         v-if="!hideThumbnail"
         :name="currentContact.name"
         :src="currentContact.thumbnail"
-        :size="32"
+        :size="28"
         :status="currentContact.availability_status"
-        :class="!showInboxName ? 'mt-4' : 'mt-8'"
+        :class="!showInboxName ? 'mt-3' : 'mt-6'"
         hide-offline-status
       >
         <template #overlay="{ size }">
@@ -146,7 +147,7 @@ watch(
         </template>
       </Avatar>
     </div>
-    <div class="px-0 py-3 flex-1 min-w-0 border-line">
+    <div class="min-w-0 flex-1 border-line px-0 py-2.5">
       <div
         v-if="showMetaSection"
         class="flex items-center min-w-0 gap-1"
@@ -181,7 +182,7 @@ watch(
         </div>
       </div>
       <h4
-        class="conversation--user text-sm my-0 mx-2 capitalize pt-0.5 text-ellipsis overflow-hidden whitespace-nowrap flex-1 min-w-0 ltr:pr-16 rtl:pl-16 text-n-slate-12"
+        class="conversation--user mx-2 my-0 min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap pt-0.5 text-sm leading-5 capitalize text-n-slate-12 ltr:pr-16 rtl:pl-16"
         :class="hasUnread ? 'font-semibold' : 'font-medium'"
       >
         {{ currentContact.name }}
@@ -197,13 +198,13 @@ watch(
         v-else-if="lastMessageInChat"
         key="message-preview"
         :message="lastMessageInChat"
-        class="my-0 mx-2 leading-6 h-6 flex-1 min-w-0 text-sm"
+        class="mx-2 my-0 h-5 min-w-0 flex-1 text-sm leading-5"
         :class="messagePreviewClass"
       />
       <p
         v-else
         key="no-messages"
-        class="text-n-slate-11 text-sm my-0 mx-2 leading-6 h-6 flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
+        class="mx-2 my-0 h-5 min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-5 text-n-slate-11"
         :class="messagePreviewClass"
       >
         <fluent-icon
@@ -217,7 +218,7 @@ watch(
       </p>
       <div
         class="absolute flex flex-col ltr:right-3 rtl:left-3"
-        :class="showMetaSection ? 'top-8' : 'top-4'"
+        :class="showMetaSection ? 'top-6' : 'top-3'"
       >
         <span class="ml-auto font-normal leading-4 text-xxs">
           <TimeAgo

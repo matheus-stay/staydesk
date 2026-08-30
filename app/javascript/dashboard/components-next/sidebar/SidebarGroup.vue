@@ -18,6 +18,7 @@ const props = defineProps({
   activeOn: { type: Array, default: () => [] },
   children: { type: Array, default: undefined },
   getterKeys: { type: Object, default: () => ({}) },
+  disclosureOnly: { type: Boolean, default: false },
 });
 
 const {
@@ -55,11 +56,25 @@ const hasChildren = computed(
 const isPopoverOpen = computed(() => activePopover.value === props.name);
 const triggerRef = ref(null);
 const triggerRect = ref({ top: 0, left: 0, bottom: 0, right: 0 });
+const focusPopoverOnOpen = ref(false);
+const groupId = computed(() =>
+  props.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+);
+const collapsedTriggerId = computed(
+  () => `sidebar-group-${groupId.value}-trigger`
+);
+const collapsedPopoverId = computed(
+  () => `sidebar-group-${groupId.value}-popover`
+);
 // The sort dropdown teleports outside the popover; keep the popover open while
 // it is showing so moving the cursor onto it does not close everything.
 const isSortMenuOpen = ref(false);
 
-const openPopover = () => {
+const openPopover = ({ focusOnOpen = false } = {}) => {
+  cancelClose();
   if (triggerRef.value) {
     const rect = triggerRef.value.getBoundingClientRect();
     triggerRect.value = {
@@ -69,12 +84,18 @@ const openPopover = () => {
       right: rect.right,
     };
   }
+  focusPopoverOnOpen.value = focusOnOpen;
   setActivePopover(props.name);
 };
 
-const closePopover = () => {
+const closePopover = ({ restoreFocus = false } = {}) => {
   if (activePopover.value === props.name) {
     closeActivePopover();
+  }
+  focusPopoverOnOpen.value = false;
+
+  if (restoreFocus) {
+    nextTick(() => triggerRef.value?.focus());
   }
 };
 
@@ -197,14 +218,38 @@ const hasActiveChild = computed(() => {
   return activeChild.value !== undefined;
 });
 
-const handleCollapsedClick = () => {
-  if (hasChildren.value && hasAccessibleChildren.value) {
-    const firstItem = accessibleItems.value[0];
-    router.push(firstItem.to);
+const handleCollapsedClick = event => {
+  if (!hasChildren.value || !hasAccessibleChildren.value) return;
+
+  if (props.disclosureOnly) {
+    openPopover({ focusOnOpen: event.detail === 0 });
+    return;
   }
+
+  const firstItem = accessibleItems.value[0];
+  router.push(firstItem.to);
+};
+
+const handleCollapsedKeydown = event => {
+  if (
+    !props.disclosureOnly ||
+    !hasChildren.value ||
+    !hasAccessibleChildren.value ||
+    !['Enter', ' '].includes(event.key)
+  ) {
+    return;
+  }
+
+  event.preventDefault();
+  openPopover({ focusOnOpen: true });
 };
 
 const toggleTrigger = () => {
+  if (props.disclosureOnly) {
+    setExpandedItem(props.name);
+    return;
+  }
+
   if (
     hasAccessibleChildren.value &&
     !isExpanded.value &&
@@ -260,21 +305,30 @@ watch(
       >
         <component
           :is="to && !hasChildren ? 'router-link' : 'button'"
+          :id="hasChildren ? collapsedTriggerId : undefined"
           ref="triggerRef"
           :to="to && !hasChildren ? to : undefined"
           type="button"
+          :aria-controls="hasChildren ? collapsedPopoverId : undefined"
+          :aria-expanded="hasChildren ? isPopoverOpen : undefined"
+          :aria-haspopup="hasChildren ? 'dialog' : undefined"
+          :aria-label="hasChildren ? label : undefined"
           class="flex items-center justify-center size-10 rounded-lg"
           :class="{
             'text-n-slate-12 bg-n-alpha-2': isActive || hasActiveChild,
             'text-n-slate-11 hover:bg-n-alpha-2': !isActive && !hasActiveChild,
           }"
           :title="label"
-          @click="hasChildren ? handleCollapsedClick() : undefined"
+          @click="hasChildren ? handleCollapsedClick($event) : undefined"
+          @keydown="handleCollapsedKeydown"
         >
           <Icon v-if="icon" :icon="icon" class="size-4" />
         </component>
         <SidebarCollapsedPopover
           v-if="hasChildren && isPopoverOpen"
+          :popover-id="collapsedPopoverId"
+          :trigger-id="collapsedTriggerId"
+          :focus-on-open="focusPopoverOnOpen"
           :label="label"
           :children="children"
           :active-child="activeChild"

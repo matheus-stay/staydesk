@@ -34,6 +34,10 @@ const props = defineProps({
     type: Number,
     default: undefined,
   },
+  showTicketControls: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const {
@@ -132,26 +136,26 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full bg-n-surface-1">
     <SidebarActionsHeader
       :title="$t('CONVERSATION.SIDEBAR.CONTACT')"
       @close="closeContactPanel"
     />
     <ContactInfo :contact="contact" :channel-type="channelType" />
-    <div class="px-2 pb-8 list-group">
+    <div class="list-group border-t border-n-weak px-3 pb-8 pt-3">
       <Draggable
         :list="conversationSidebarItems"
         animation="200"
         ghost-class="ghost"
         handle=".drag-handle"
         item-key="name"
-        class="flex flex-col gap-3"
+        class="flex flex-col gap-2"
         @start="dragging = true"
         @end="onDragEnd"
       >
         <template #item="{ element }">
           <div
-            v-if="element.name === 'conversation_actions'"
+            v-if="element.name === 'conversation_actions' && showTicketControls"
             class="conversation--actions"
           >
             <AccordionItem
@@ -168,7 +172,9 @@ onMounted(() => {
             </AccordionItem>
           </div>
           <div
-            v-else-if="element.name === 'conversation_participants'"
+            v-else-if="
+              element.name === 'conversation_participants' && showTicketControls
+            "
             class="conversation--actions"
           >
             <AccordionItem
@@ -185,7 +191,11 @@ onMounted(() => {
               />
             </AccordionItem>
           </div>
-          <div v-else-if="element.name === 'conversation_info'">
+          <div
+            v-else-if="
+              element.name === 'conversation_info' && showTicketControls
+            "
+          >
             <AccordionItem
               :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_INFO')"
               :is-open="isContactSidebarItemOpen('is_conv_details_open')"

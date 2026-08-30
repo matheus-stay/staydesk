@@ -118,17 +118,20 @@ const replyToPreview = computed(() => {
 
 <template>
   <div
-    class="text-sm min-w-0"
+    class="min-w-0 !rounded-lg !border !border-n-weak/80 text-sm shadow-none"
     :class="[
       messageClass,
       {
-        'max-w-lg': variant !== MESSAGE_VARIANTS.EMAIL,
+        'max-w-[min(42rem,88%)]': variant !== MESSAGE_VARIANTS.EMAIL,
+        '!bg-n-surface-1 !text-n-slate-12': variant === MESSAGE_VARIANTS.USER,
+        '!border-n-brand/20 !bg-n-brand/10 !text-n-slate-12':
+          variant === MESSAGE_VARIANTS.AGENT,
       },
     ]"
   >
     <div
       v-if="inReplyTo"
-      class="p-2 -mx-1 mb-2 rounded-lg cursor-pointer bg-n-alpha-black1"
+      class="-mx-1 mb-2 cursor-pointer rounded-md bg-n-alpha-black1 p-2"
       @click="scrollToMessage"
     >
       <div

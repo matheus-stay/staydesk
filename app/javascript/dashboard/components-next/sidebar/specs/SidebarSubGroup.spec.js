@@ -129,6 +129,15 @@ describe('SidebarSubGroup', () => {
     ).toBe('true');
   });
 
+  it('renders nested leaves as list items in a valid list structure', () => {
+    const wrapper = mountSubGroup();
+    const nestedList = wrapper.get('ul');
+
+    expect(nestedList.element.parentElement.tagName).toBe('DIV');
+    expect(nestedList.element.children[0].tagName).toBe('LI');
+    expect(wrapper.find('ul > div').exists()).toBe(false);
+  });
+
   it('minimizes the section and stores it by account and section name', async () => {
     const wrapper = mountSubGroup();
 

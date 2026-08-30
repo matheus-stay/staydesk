@@ -9,7 +9,11 @@ import { BUS_EVENTS } from 'shared/constants/busEvents';
 import CmdBarConversationSnooze from 'dashboard/routes/dashboard/commands/CmdBarConversationSnooze.vue';
 import { emitter } from 'shared/helpers/mitt';
 import SidepanelSwitch from 'dashboard/components-next/Conversation/SidepanelSwitch.vue';
+import ConversationWorkspaceTabs from 'dashboard/components-next/Conversation/ConversationWorkspaceTabs.vue';
 import ConversationSidebar from 'dashboard/components/widgets/conversation/ConversationSidebar.vue';
+import { conversationListPageURL } from 'dashboard/helper/URLHelper';
+import { useConversationWorkspaceTabs } from 'dashboard/composables/useConversationWorkspaceTabs';
+import TicketFieldsPanel from './TicketFieldsPanel.vue';
 
 export default {
   components: {
@@ -17,7 +21,9 @@ export default {
     ConversationBox,
     CmdBarConversationSnooze,
     SidepanelSwitch,
+    ConversationWorkspaceTabs,
     ConversationSidebar,
+    TicketFieldsPanel,
   },
   beforeRouteLeave(to, from, next) {
     // Clear selected state if navigating away from a conversation to a route without a conversationId to prevent stale data issues
@@ -56,11 +62,23 @@ export default {
   setup() {
     const { uiSettings, updateUISettings } = useUISettings();
     const { accountId } = useAccount();
+    const {
+      openTabs,
+      activeConversationId,
+      openTab,
+      closeTab,
+      setActiveConversation,
+    } = useConversationWorkspaceTabs(accountId);
 
     return {
       uiSettings,
       updateUISettings,
       accountId,
+      openTabs,
+      activeConversationId,
+      openTab,
+      closeTab,
+      setActiveConversation,
     };
   },
   data() {
@@ -74,10 +92,39 @@ export default {
       currentChat: 'getSelectedChat',
     }),
     showConversationList() {
-      return this.isOnExpandedLayout ? !this.conversationId : true;
+      return !this.conversationId;
     },
     showMessageView() {
-      return this.conversationId ? true : !this.isOnExpandedLayout;
+      return Boolean(this.conversationId);
+    },
+    workspaceTabs() {
+      const drafts = this.$store.state.draftMessages?.records || {};
+      return this.openTabs.map(tab => ({
+        ...tab,
+        hasDraft: ['REPLY', 'NOTE'].some(mode =>
+          this.hasMeaningfulDraft(drafts[`draft-${tab.id}-${mode}`])
+        ),
+      }));
+    },
+    conversationListUrl() {
+      const {
+        params: { inbox_id: inboxId, label, teamId, id: customViewId },
+        name,
+      } = this.$route;
+      const conversationTypeMap = {
+        conversation_through_mentions: 'mention',
+        conversation_through_participating: 'participating',
+        conversation_through_unattended: 'unattended',
+      };
+
+      return conversationListPageURL({
+        accountId: this.accountId,
+        inboxId,
+        label,
+        teamId,
+        conversationType: conversationTypeMap[name],
+        customViewId,
+      });
     },
     isOnExpandedLayout() {
       const {
@@ -100,6 +147,13 @@ export default {
   watch: {
     conversationId() {
       this.fetchConversationIfUnavailable();
+      if (this.conversationId) {
+        this.setActiveConversation(this.conversationId);
+        this.registerCurrentConversationTab();
+      }
+    },
+    'currentChat.id'() {
+      this.registerCurrentConversationTab();
     },
   },
 
@@ -190,30 +244,93 @@ export default {
     closeSearch() {
       this.showSearchModal = false;
     },
+    hasMeaningfulDraft(draft) {
+      if (!draft) return false;
+
+      return (
+        String(draft)
+          .replace(/<[^>]*>/g, '')
+          .replace(/&nbsp;/g, ' ')
+          .trim().length > 0
+      );
+    },
+    registerCurrentConversationTab() {
+      if (
+        !this.conversationId ||
+        Number(this.currentChat.id) !== Number(this.conversationId)
+      ) {
+        return;
+      }
+
+      const title =
+        this.currentChat.additional_attributes?.mail_subject ||
+        this.currentChat.meta?.sender?.name ||
+        `#${this.currentChat.id}`;
+
+      this.openTab({
+        id: this.currentChat.id,
+        title,
+        path: this.$route.fullPath,
+      });
+    },
+    selectWorkspaceTab(tab) {
+      this.setActiveConversation(tab.id);
+      if (tab.path !== this.$route.fullPath) {
+        this.$router.push(tab.path);
+      }
+    },
+    closeWorkspaceTab(tab) {
+      const isActiveTab = Number(tab.id) === Number(this.conversationId);
+      if (!this.closeTab(tab.id) || !isActiveTab) {
+        return;
+      }
+
+      const nextTab = this.openTabs.find(
+        openTabItem =>
+          Number(openTabItem.id) === Number(this.activeConversationId)
+      );
+      this.$router.push(nextTab?.path || this.conversationListUrl);
+    },
   },
 };
 </script>
 
 <template>
-  <section class="flex w-full h-full min-w-0">
-    <ChatList
-      :show-conversation-list="showConversationList"
-      :conversation-inbox="inboxId"
-      :label="label"
-      :team-id="teamId"
-      :conversation-type="conversationType"
-      :folders-id="foldersId"
-      :is-on-expanded-layout="isOnExpandedLayout"
-      @conversation-load="onConversationLoad"
+  <section class="flex h-full min-h-0 min-w-0 w-full flex-col bg-n-surface-1">
+    <ConversationWorkspaceTabs
+      :tabs="workspaceTabs"
+      :active-conversation-id="conversationId"
+      @select="selectWorkspaceTab"
+      @close="closeWorkspaceTab"
     />
-    <ConversationBox
-      v-if="showMessageView"
-      :inbox-id="inboxId"
-      :is-on-expanded-layout="isOnExpandedLayout"
-    >
-      <SidepanelSwitch v-if="currentChat.id" />
-    </ConversationBox>
-    <ConversationSidebar v-if="shouldShowSidebar" :current-chat="currentChat" />
-    <CmdBarConversationSnooze />
+    <div class="flex min-h-0 min-w-0 flex-1 gap-0 p-0">
+      <ChatList
+        :show-conversation-list="showConversationList"
+        :conversation-inbox="inboxId"
+        :label="label"
+        :team-id="teamId"
+        :conversation-type="conversationType"
+        :folders-id="foldersId"
+        :is-on-expanded-layout="isOnExpandedLayout || !conversationId"
+        @conversation-load="onConversationLoad"
+      />
+      <TicketFieldsPanel
+        v-if="currentChat.id"
+        :conversation-id="currentChat.id"
+        :inbox-id="currentChat.inbox_id"
+      />
+      <ConversationBox
+        v-if="showMessageView"
+        :inbox-id="inboxId"
+        :is-on-expanded-layout="isOnExpandedLayout"
+      >
+        <SidepanelSwitch v-if="currentChat.id" />
+      </ConversationBox>
+      <ConversationSidebar
+        v-if="shouldShowSidebar"
+        :current-chat="currentChat"
+      />
+      <CmdBarConversationSnooze />
+    </div>
   </section>
 </template>

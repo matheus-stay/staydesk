@@ -133,6 +133,8 @@ describe('ChannelLeaf', () => {
     };
     const wrapper = mount(SidebarCollapsedPopover, {
       props: {
+        popoverId: 'sidebar-group-conversations-popover',
+        triggerId: 'sidebar-group-conversations-trigger',
         label: 'Conversations',
         children: [
           {

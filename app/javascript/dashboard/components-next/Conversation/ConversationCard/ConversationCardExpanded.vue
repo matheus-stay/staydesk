@@ -70,12 +70,14 @@ const selectedModel = computed({
 
 <template>
   <div
-    class="conversation relative cursor-pointer group grid gap-4 items-center px-3 h-12 border-b border-n-slate-3 hover:border-n-surface-1 hover:z-[1] before:content-[none] before:absolute before:-top-px before:inset-x-0 before:h-px before:bg-n-surface-1 before:pointer-events-none hover:before:content-['']"
+    class="conversation group relative grid h-12 cursor-pointer items-center gap-2 border-b border-n-slate-3 px-3 transition-colors duration-[120ms] ease-out before:pointer-events-none before:absolute before:inset-x-0 before:-top-px before:h-px before:bg-n-surface-1 before:content-[none] hover:z-[1] hover:border-n-surface-1 hover:before:content-[''] motion-reduce:transition-none"
     :class="{
-      'active animate-card-select bg-n-alpha-1 dark:bg-n-alpha-3 !border-n-surface-1':
+      'active bg-n-brand/5 dark:bg-n-brand/10 !border-n-surface-1 !border-s-2 !border-s-n-brand':
         isActiveChat,
-      'selected bg-n-slate-2 dark:bg-n-slate-3 !border-n-surface-1': selected,
-      'hover:bg-n-alpha-1': !isActiveChat && !selected,
+      'selected bg-n-brand/10 dark:bg-n-brand/20 !border-n-surface-1 !border-s-2 !border-s-n-brand':
+        selected,
+      'hover:bg-n-slate-2/70 dark:hover:bg-n-slate-3/60':
+        !isActiveChat && !selected,
       'grid-cols-[minmax(0,2fr)_minmax(0,1fr)]': showLabelsSection,
       'grid-cols-[minmax(0,2fr)_max-content]': !showLabelsSection,
     }"
@@ -83,18 +85,18 @@ const selectedModel = computed({
     @contextmenu="$emit('contextmenu', $event)"
   >
     <!-- LEFT SECTION -->
-    <div class="flex items-center gap-2 min-w-0 flex-1">
-      <div class="flex items-center justify-center flex-shrink-0" @click.stop>
+    <div class="flex min-w-0 flex-1 items-center gap-2">
+      <div class="flex flex-shrink-0 items-center justify-center" @click.stop>
         <Checkbox v-model="selectedModel" />
       </div>
 
-      <div class="w-px h-3 bg-n-slate-6 flex-shrink-0" />
+      <div class="h-3 w-px flex-shrink-0 bg-n-slate-6" />
 
-      <div class="w-4 flex items-center justify-center flex-shrink-0">
+      <div class="flex w-4 flex-shrink-0 items-center justify-center">
         <CardPriorityIcon :priority="chat.priority" show-empty />
       </div>
 
-      <div class="w-4 flex items-center justify-center flex-shrink-0">
+      <div class="flex w-4 flex-shrink-0 items-center justify-center">
         <Avatar
           v-if="showAssignee && assignee.name"
           v-tooltip.top="{
@@ -114,11 +116,11 @@ const selectedModel = computed({
         />
       </div>
 
-      <div class="w-4 flex items-center justify-center flex-shrink-0">
+      <div class="flex w-4 flex-shrink-0 items-center justify-center">
         <CardStatusIcon :status="chat.status" show-empty />
       </div>
 
-      <div class="w-px h-3 bg-n-slate-6 flex-shrink-0" />
+      <div class="h-3 w-px flex-shrink-0 bg-n-slate-6" />
 
       <div v-if="!isInboxView && showInboxName" class="w-20 flex-shrink-0">
         <InboxName v-if="showInboxName" :inbox="inbox" class="min-w-0" />
@@ -126,7 +128,7 @@ const selectedModel = computed({
 
       <div
         v-if="!isInboxView && showInboxName"
-        class="w-px h-3 bg-n-slate-6 flex-shrink-0"
+        class="h-3 w-px flex-shrink-0 bg-n-slate-6"
       />
 
       <div
@@ -134,13 +136,13 @@ const selectedModel = computed({
           content: chat.id,
           delay: { show: 500, hide: 0 },
         }"
-        class="h-6 flex items-center gap-1 max-w-20 w-full min-w-0 flex-shrink-0"
+        class="flex h-6 max-w-20 w-full min-w-0 flex-shrink-0 items-center gap-1"
       >
         <Icon
           icon="i-woot-hash"
-          class="size-3.5 text-n-slate-10 flex-shrink-0"
+          class="size-3.5 flex-shrink-0 text-n-slate-10"
         />
-        <span class="text-body-main text-n-slate-11 truncate">
+        <span class="text-body-main truncate text-n-slate-11">
           {{ chat.id }}
         </span>
       </div>
@@ -153,7 +155,7 @@ const selectedModel = computed({
       />
 
       <h4
-        class="text-heading-3 my-0 capitalize truncate text-n-slate-12 font-medium w-32 flex-shrink-0"
+        class="my-0 w-32 flex-shrink-0 truncate capitalize text-heading-3 font-semibold text-n-slate-12"
       >
         {{ currentContact.name }}
       </h4>
@@ -168,12 +170,12 @@ const selectedModel = computed({
     </div>
 
     <!-- RIGHT SECTION -->
-    <div class="flex items-center justify-end gap-1.5 flex-shrink-0">
+    <div class="flex flex-shrink-0 items-center justify-end gap-1.5">
       <div v-if="showLabelsSection" class="min-w-0 w-full">
         <CardLabels
           :labels="chat.labels"
           disable-toggle
-          class="my-0 [&>div]:justify-end justify-end"
+          class="my-0 justify-end [&>div]:justify-end"
         />
       </div>
 
@@ -181,12 +183,12 @@ const selectedModel = computed({
         <SLACardLabel ref="slaCardLabel" :chat="chat" />
       </div>
 
-      <div class="flex-shrink-0 w-[4.375rem] text-end">
+      <div class="w-[4.375rem] flex-shrink-0 text-end tabular-nums">
         <TimeAgo
           :conversation-id="chat.id"
           :last-activity-timestamp="chat.timestamp"
           :created-at-timestamp="chat.created_at"
-          class="font-440 !text-xs text-n-slate-11"
+          class="!text-xs font-medium text-n-slate-11"
         />
       </div>
     </div>

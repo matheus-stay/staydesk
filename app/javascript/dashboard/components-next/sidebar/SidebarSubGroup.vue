@@ -141,17 +141,17 @@ watch([hasActiveChild, storageKey], expandSubGroupOnActiveChild, {
         @toggle="toggleSubGroup"
         @update-sort="sortBy => emit('update-sort', sortBy)"
       />
-      <ul
+      <div
         v-if="children.length"
-        class="m-0 list-none reset-base relative group min-w-0"
+        class="relative group min-w-0"
         :class="[
           { 'ms-5': collapsible },
           showTreeLine && !endTreeLine && CHILDREN_TRUNK,
         ]"
       >
-        <div
+        <ul
           ref="scrollableContainer"
-          class="min-w-0"
+          class="m-0 min-w-0 list-none p-0 reset-base"
           :class="{
             'max-h-60 overflow-y-scroll no-scrollbar': isScrollable,
           }"
@@ -165,7 +165,7 @@ watch([hasActiveChild, storageKey], expandSubGroupOnActiveChild, {
             :hide-tree-line="hideLeafTreeLine"
             thin-tree-line
           />
-        </div>
+        </ul>
         <div
           v-if="isScrollable && isExpanded"
           v-show="!scrollEnd"
@@ -176,7 +176,7 @@ watch([hasActiveChild, storageKey], expandSubGroupOnActiveChild, {
             class="w-4 h-6 text-n-slate-9 opacity-50 group-hover:opacity-100"
           />
         </div>
-      </ul>
+      </div>
     </template>
   </li>
 </template>

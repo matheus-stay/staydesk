@@ -28,10 +28,11 @@
 |---|---|---|
 | 3.1 | Design tokens StayCloud no `tailwind.config.js` + `design-system/` (cores, tipografia, radius) | Base de tudo; merge barato com upstream |
 | 3.2 | Explorar `components-next/` no Histoire e mapear superfícies do redesign | Upstream já está migrando — surfar essa onda |
-| 3.3 | Redesign do shell do dashboard (sidebar, header, conversa) | Maior impacto visual diário |
+| 3.3 | Redesign do shell do dashboard (sidebar, header, conversa) | ✅ Ready for review: frontend-only, com QA real do Zendesk, brand oficial e gate de acessibilidade aprovado |
 | 3.4 | Rebrand do widget de chat (cara StayCloud nos sites) | Visível pro cliente final |
 | 3.5 | Rebrand do Help Center/portal | |
 | 3.6 | Login/onboarding com identidade StayDesk | Ver flag `disable_branding` (premium) — decisão 2.3 |
+| 3.7 | Reorganizar o menu lateral com divulgação progressiva | 🔄 Em andamento: mesmos destinos, rotas e gates; módulos ocasionais em “Mais” e Configurações separada |
 
 ## EPIC-004 — Integração StayCloud (P1/P2 — diferencial vs Zendesk)
 

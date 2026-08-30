@@ -110,11 +110,9 @@ const copyConversationId = async () => {
 <template>
   <div
     ref="conversationHeader"
-    class="flex flex-col gap-3 items-center justify-between flex-1 w-full min-w-0 xl:flex-row px-3 pt-3 pb-2 h-24 xl:h-12"
+    class="flex h-14 min-h-14 min-w-0 w-full flex-1 flex-row items-center justify-between gap-2 bg-n-surface-1 px-3"
   >
-    <div
-      class="flex items-center justify-start w-full xl:w-auto max-w-full min-w-0 xl:flex-1"
-    >
+    <div class="flex min-w-0 max-w-full flex-1 items-center justify-start">
       <BackButton
         v-if="showBackButton"
         :back-url="backButtonUrl"
@@ -130,7 +128,7 @@ const copyConversationId = async () => {
       <div class="flex flex-col items-start min-w-0 ms-2 overflow-hidden">
         <div class="flex flex-row items-center max-w-full gap-1 p-0 m-0">
           <span
-            class="text-sm font-medium truncate leading-tight text-n-slate-12"
+            class="truncate text-base font-semibold leading-tight tracking-[-0.015em] text-n-slate-12"
           >
             {{ currentContact.name }}
           </span>
@@ -163,7 +161,7 @@ const copyConversationId = async () => {
       </div>
     </div>
     <div
-      class="flex flex-row items-center justify-start xl:justify-end flex-shrink-0 gap-2 w-full xl:w-auto header-actions-wrap"
+      class="header-actions-wrap flex w-auto flex-shrink-0 flex-row items-center justify-end gap-1"
     >
       <SLACardLabel
         v-if="hasSlaPolicyId"

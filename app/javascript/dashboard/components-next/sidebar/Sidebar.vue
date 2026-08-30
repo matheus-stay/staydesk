@@ -941,6 +941,37 @@ const menuItems = computed(() => {
     },
   ];
 });
+
+const PRIMARY_MENU_ITEM_NAMES = [
+  'Inbox',
+  'Conversation',
+  'Calls',
+  'Contacts',
+  'Reports',
+];
+const MORE_MENU_ITEM_NAMES = ['Captain', 'Companies', 'Campaigns', 'Portals'];
+
+const menuItemsByName = computed(
+  () => new Map(menuItems.value.map(item => [item.name, item]))
+);
+
+const primaryMenuItems = computed(() =>
+  PRIMARY_MENU_ITEM_NAMES.map(name => menuItemsByName.value.get(name)).filter(
+    Boolean
+  )
+);
+
+const moreMenuItem = computed(() => ({
+  name: 'More',
+  label: t('CONVERSATION.HEADER.OPEN'),
+  icon: 'i-lucide-layout-grid',
+  children: MORE_MENU_ITEM_NAMES.map(name =>
+    menuItemsByName.value.get(name)
+  ).filter(Boolean),
+  disclosureOnly: true,
+}));
+
+const settingsMenuItem = computed(() => menuItemsByName.value.get('Settings'));
 </script>
 
 <template>
@@ -955,7 +986,7 @@ const menuItems = computed(() => {
         ],
       },
     ]"
-    class="bg-n-background flex flex-col text-sm pb-px fixed top-0 ltr:left-0 rtl:right-0 h-full z-40 w-[200px] md:w-auto md:relative md:flex-shrink-0 md:ltr:translate-x-0 md:rtl:translate-x-0 ltr:border-r rtl:border-l border-n-weak"
+    class="fixed top-0 z-40 flex h-full w-[200px] flex-col border-n-weak bg-n-surface-1 pb-px text-sm ltr:left-0 ltr:border-r rtl:right-0 rtl:border-l md:relative md:w-auto md:flex-shrink-0 md:ltr:translate-x-0 md:rtl:translate-x-0"
     :class="[
       {
         'shadow-lg md:shadow-none': isMobileSidebarOpen,
@@ -967,8 +998,10 @@ const menuItems = computed(() => {
     :style="isMobile ? undefined : { width: `${sidebarWidth}px` }"
   >
     <section
-      class="grid"
-      :class="isEffectivelyCollapsed ? 'mt-3 mb-6 gap-4' : 'mt-1 mb-4 gap-2'"
+      class="grid border-b border-n-weak/70"
+      :class="
+        isEffectivelyCollapsed ? 'mb-3 mt-2 gap-2 pb-3' : 'mb-3 mt-1 gap-2 pb-3'
+      "
     >
       <div
         class="flex gap-2 items-center min-w-0"
@@ -1001,7 +1034,7 @@ const menuItems = computed(() => {
         <RouterLink
           v-if="!isEffectivelyCollapsed"
           :to="{ name: 'search' }"
-          class="flex gap-2 items-center px-2 py-1 w-full h-7 rounded-lg outline outline-1 outline-n-weak bg-n-button-color transition-all duration-100 ease-out"
+          class="flex h-8 w-full items-center gap-2 rounded-lg border border-n-weak bg-n-surface-1 px-2 py-1 shadow-sm transition-colors duration-100 ease-out hover:border-n-strong hover:bg-n-alpha-1"
         >
           <span class="flex-shrink-0 i-lucide-search size-4 text-n-slate-10" />
           <span class="flex-grow text-start text-n-slate-10">
@@ -1040,7 +1073,7 @@ const menuItems = computed(() => {
       </div>
     </section>
     <nav
-      class="grid overflow-y-scroll flex-grow gap-2 pb-5 no-scrollbar min-w-0"
+      class="no-scrollbar flex min-w-0 flex-grow flex-col gap-1 overflow-y-scroll pb-2"
       :class="isEffectivelyCollapsed ? 'px-1' : 'px-2'"
     >
       <ul
@@ -1048,10 +1081,17 @@ const menuItems = computed(() => {
         :class="{ 'items-center': isEffectivelyCollapsed }"
       >
         <SidebarGroup
-          v-for="item in menuItems"
+          v-for="item in primaryMenuItems"
           :key="item.name"
           v-bind="item"
         />
+        <SidebarGroup v-bind="moreMenuItem" />
+      </ul>
+      <ul
+        class="mt-auto flex min-w-0 flex-col gap-1 border-t border-n-weak pt-2"
+        :class="{ 'items-center': isEffectivelyCollapsed }"
+      >
+        <SidebarGroup v-if="settingsMenuItem" v-bind="settingsMenuItem" />
       </ul>
     </nav>
     <section

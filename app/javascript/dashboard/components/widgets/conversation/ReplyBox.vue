@@ -1338,7 +1338,11 @@ export default {
 
 <template>
   <ReplyBoxBanner :message="message" :is-on-private-note="isOnPrivateNote" />
-  <div ref="replyEditor" class="reply-box" :class="replyBoxClass">
+  <div
+    ref="replyEditor"
+    class="reply-box !mx-0 !mb-0 flex min-h-[12rem] flex-col overflow-hidden !rounded-none !border-x-0 !border-b-0 !border-t-n-strong shadow-none transition-[border-color,box-shadow] duration-[120ms] focus-within:!border-t-n-brand focus-within:ring-0 motion-reduce:transition-none"
+    :class="replyBoxClass"
+  >
     <ReplyTopPanel
       :mode="replyType"
       :conversation-id="conversationId"
@@ -1372,7 +1376,10 @@ export default {
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 translate-y-2 scale-[0.98]"
     >
-      <div :key="copilot.editorTransitionKey.value" class="reply-box__top">
+      <div
+        :key="copilot.editorTransitionKey.value"
+        class="reply-box__top flex min-h-0 flex-1 flex-col py-3"
+      >
         <ReplyToMessage
           v-if="shouldShowReplyToMessage"
           :message="inReplyTo"
@@ -1423,7 +1430,7 @@ export default {
           v-model="message"
           :conversation-id="conversationId"
           :editor-id="editorStateId"
-          class="input popover-prosemirror-menu"
+          class="input popover-prosemirror-menu [&_.ProseMirror-woot-style]:!min-h-[7rem] [&_.ProseMirror-woot-style]:!max-h-[12rem]"
           :is-private="isOnPrivateNote"
           :placeholder="messagePlaceHolder"
           :update-selection-with="updateEditorSelectionWith"

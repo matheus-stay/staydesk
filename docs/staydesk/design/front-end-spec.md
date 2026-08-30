@@ -10,16 +10,17 @@
 
 ---
 
-## 1. Diagnóstico estrutural — Zendesk (3 colunas) vs Chatwoot (4 colunas)
+## 1. Diagnóstico estrutural: workspace do Zendesk vs Chatwoot
 
-**Zendesk Agent Workspace:**
+**Zendesk Agent Workspace com ticket aberto:**
 
 ```
-┌────────┬──────────────────────────┬─────────────────┐
-│ Views  │   Ticket (conversa +     │ Context panel   │
-│ (fila) │   composer)              │ user/knowledge/ │
-│        │                          │ apps (toggle)   │
-└────────┴──────────────────────────┴─────────────────┘
+┌──────┬─────────────────────────────────────────────────────┐
+│ Rail │ Abas persistentes de tickets                        │
+├──────┼──────────────┬──────────────────────┬───────────────┤
+│ Nav  │ Campos       │ Conversa + composer  │ Context panel │
+│      │ redimens.    │ redimensionável      │ + apps        │
+└──────┴──────────────┴──────────────────────┴───────────────┘
 ```
 
 **Chatwoot hoje:**
@@ -31,16 +32,18 @@
 └──────┴───────────────┴────────────────────┴──────────────┘
 ```
 
-**Achado central:** o Chatwoot gasta **uma coluna inteira** com navegação enquanto o Zendesk resolve nav+fila em uma só. Em tela de notebook (1440px) sobra pouco pro que importa: a conversa.
+**Achado central do QA real:** o diferencial não é a quantidade estática de colunas. Ao abrir um ticket, o Zendesk remove a fila e usa abas persistentes para manter os tickets em trabalho. O Chatwoot mantém a lista ao lado da conversa por padrão e, em 1440px, reduz demais a área útil do atendimento.
 
 ### Decisão de arquitetura visual (ADR-002)
 
 | # | Decisão | Racional |
 |---|---|---|
-| 1 | **Nav colapsável por padrão em <1600px** | O `Sidebar.vue` do `components-next` já é resizable/colapsável (`useSidebarResize`) — usar, não reinventar |
-| 2 | **Unificar o painel direito num Context Panel com abas** (Cliente · StayCloud · Notas) | Espelha o modelo mental que o Naldo já tem do Zendesk; abre espaço pro EPIC-004 (dados StayCloud no ticket) |
-| 3 | **Conversa é a região dominante** — mínimo 50% da largura útil | Métrica objetiva de sucesso do redesign |
-| 4 | Sem 5ª coluna, nunca | Anti-padrão do Guardian: mais espaço que decoração |
+| 1 | **Preservar o layout atual e a preferência salva** | O primeiro corte é visual-only: nenhum default, toggle ou comportamento de fila muda |
+| 2 | **Preservar largura, resize e colapso atuais da navegação** | `useSidebarResize` permanece intacto; a IA pode aplicar divulgação progressiva sobre as mesmas rotas e gates |
+| 3 | **Abas persistentes de tickets** | Preservam memória de trabalho, rascunhos e alternância em uma ação |
+| 4 | **Unificar o painel direito num Context Panel com abas** (Cliente · StayCloud · Ferramentas · Notas) | Reproduz o papel dos apps operacionais do Zendesk e abre espaço para dados StayCloud no ticket |
+| 5 | **Conversa é a região dominante**, com mínimo de 50% da largura útil | Métrica objetiva de sucesso do redesign |
+| 6 | Sem 5ª coluna | Anti-padrão do Guardian: mais espaço que decoração |
 
 ---
 
@@ -81,11 +84,12 @@
 |---|---|---|---|
 | **3.1a** | Escala `woot` → indigo StayDesk + Geist em `theme/colors.js` e `tailwind.config.js` | Luiz | 🟢 Baixo (2 arquivos) |
 | **3.1b** | Calibração visual no Histoire; ajuste fino dos steps | Luiz | 🟢 Nulo |
-| **3.2** | Shell: densidade da sidebar, colapso default, logo StayDesk | Luiz | 🟡 Médio |
+| **3.2** | Shell: densidade visual da sidebar e logo StayDesk, sem mudar colapso/default | Luiz | 🟡 Médio |
 | **3.3** | Lista de conversas: hierarquia, badges, densidade | Luiz | 🟡 Médio |
 | **3.4** | Conversa + composer: proporção, bolhas, ações rápidas | Luiz + dev | 🟠 Alto |
 | **3.5** | Context panel com abas (prepara EPIC-004) | dev | 🟠 Alto |
 | **3.6** | Widget rebrand | dev | 🟢 Baixo |
+| **3.7** | IA da navegação: primários frequentes, “Mais” e Configurações separada, sem remover destinos | Luiz + squad-design | 🟡 Médio |
 
 **Ordem inegociável:** 3.1a antes de tudo. Trocar a paleta re-branda o produto inteiro num PR só — é o maior retorno visual por linha de código do projeto.
 
@@ -102,23 +106,22 @@ Para **S4 (conversa)** e **S5 (context panel)** vale mockar antes: são mudança
 
 ---
 
-## 6. ⛔ Pendência bloqueante — captura do Zendesk real
+## 6. QA do Zendesk real concluído
 
-Tentativas de acesso automatizado ao Chrome nesta sessão (5, todas falharam):
+O QA inicial foi executado em 2026-08-28 no Zendesk Support e no Agent Workspace da StayCloud, em modo somente leitura. O produto legado Zendesk Chat foi explicitamente excluído do escopo.
 
-| # | Via | Resultado |
-|---|---|---|
-| 1 | MCP Claude-in-Chrome | Não carregada na sessão |
-| 2 | MCP Claude Browser | Não carregada |
-| 3 | MCP computer-use | Não carregada |
-| 4 | AppleScript → Chrome | Erro -1743 (permissão de automação negada) |
-| 5 | Histórico do Chrome (SQLite) | Bloqueado por política de segurança |
+O levantamento validou a estrutura do workspace e registrou as customizações operacionais: views, abas, campos, status, macros, gatilhos, automações, SLA e aplicativos de contexto. O relatório sanitizado está em [qa-zendesk-agent-workspace.md](../qa-zendesk-agent-workspace.md).
 
-**O spec acima usa a IA pública documentada do Zendesk Agent Workspace** — suficiente pra estrutura, insuficiente pra capturar **as customizações de vocês** (views salvas, campos custom, apps instalados, macros).
+Correções trazidas pelo QA:
 
-**Desbloqueio (escolher 1):**
-- **A.** Conceder permissão de automação ao Claude Code (System Settings → Privacidade e Segurança → Automação → habilitar Google Chrome) → capturo tudo sozinho
-- **B.** Naldo manda screenshots das telas principais (fila, ticket aberto, painel de contexto, lista de macros, admin de triggers)
-- **C.** Credenciais de API do Zendesk → extraio views/macros/triggers/campos via API (mais preciso que screenshot)
+- A fila não permanece visível quando um ticket abre; abas persistentes sustentam o trabalho paralelo.
+- Status e comportamento pós-envio são controles separados.
+- O Context Panel funciona como uma plataforma de aplicativos operacionais.
+- A fila precisa evidenciar SLA, prioridade, colisão e motivo de atenção.
+- A migração de macros deve priorizar o pequeno núcleo de uso frequente.
 
-**Recomendação:** C para funcionalidades (dado estruturado) + B para o visual. Nada disso bloqueia 3.1a.
+## Auditoria de release
+
+A consolidação pré-commit do redesign está registrada em
+`docs/staydesk/design/frontend-release-audit-2026-08-30.md`, incluindo fronteira
+frontend/backend, evidências automatizadas e riscos residuais de homologação.

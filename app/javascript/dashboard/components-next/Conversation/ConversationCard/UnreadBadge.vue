@@ -17,7 +17,7 @@ const displayCount = computed(() =>
 <template>
   <span
     v-if="count > 0"
-    class="bg-n-teal-9 rounded-full h-4 min-w-4 max-w-5 px-1 w-fit font-medium text-xxs leading-3 text-white inline-grid place-items-center flex-shrink-0"
+    class="inline-grid h-4 min-w-4 max-w-5 w-fit flex-shrink-0 place-items-center rounded-full bg-n-slate-12 px-1 text-xxs font-medium leading-3 text-n-surface-1"
     :class="{
       'mb-0.5': alignBottom,
     }"

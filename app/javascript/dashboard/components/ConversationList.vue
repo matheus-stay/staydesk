@@ -60,14 +60,14 @@ defineExpose({ conversationListRef });
 <template>
   <div
     ref="conversationListRef"
-    class="flex-1 min-h-0 overflow-y-auto conversations-list"
+    class="conversations-list min-h-0 flex-1 overflow-y-auto bg-n-surface-1"
     :class="{ '!overflow-hidden': isContextMenuOpen }"
   >
     <Virtualizer
       ref="virtualListRef"
       v-slot="{ item }"
       :data="conversationList"
-      class="[&>div:has(+_div_.active)>*]:!border-n-surface-1 [&>div:has(+_div_.selected)>*]:!border-n-surface-1"
+      class="[&>div:has(+_div_.active)>*]:!border-n-surface-1 [&>div:has(+_div_.selected)>*]:!border-n-surface-1 [&>div>*]:transition-colors [&>div>*]:duration-[120ms] motion-reduce:[&>div>*]:transition-none"
     >
       <ConversationItem
         :source="item"

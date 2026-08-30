@@ -21,15 +21,19 @@ const dynamicCount = useMapGetter(props.getterKeys.count);
 const count = computed(() =>
   dynamicCount.value > 99 ? '99+' : dynamicCount.value
 );
+const isOpen = computed(
+  () => props.expandable && (props.isExpanded || props.hasActiveChild)
+);
 </script>
 
 <template>
   <component
-    :is="to ? 'router-link' : 'div'"
-    class="flex items-center gap-2 px-1.5 py-1 rounded-lg h-8 min-w-0"
-    role="button"
+    :is="to ? 'router-link' : 'button'"
+    class="flex h-8 min-w-0 items-center gap-2 rounded-md px-1.5 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-n-brand"
     draggable="false"
     :to="to"
+    :type="to ? undefined : 'button'"
+    :aria-expanded="expandable ? isOpen : undefined"
     :title="label"
     :class="{
       'text-n-slate-12 bg-n-alpha-2 font-medium': isActive && !hasActiveChild,
@@ -66,8 +70,8 @@ const count = computed(() =>
     </div>
     <span
       v-if="expandable"
-      v-show="isExpanded"
-      class="i-lucide-chevron-up size-3"
+      class="i-lucide-chevron-down size-3 transition-transform"
+      :class="{ 'rotate-180': isOpen }"
       @click.stop="emit('toggle')"
     />
   </component>

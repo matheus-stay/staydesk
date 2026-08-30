@@ -1,6 +1,6 @@
 <script setup>
-import { computed, ref, onMounted, nextTick, isVNode } from 'vue';
-import { onClickOutside } from '@vueuse/core';
+import { computed, ref, onMounted, nextTick, isVNode, watch } from 'vue';
+import { onClickOutside, useEventListener } from '@vueuse/core';
 import { useRouter } from 'vue-router';
 import { useSidebarContext } from './provider';
 import { useMapGetter } from 'dashboard/composables/store';
@@ -10,6 +10,9 @@ import SidebarUnreadBadge from './SidebarUnreadBadge.vue';
 import SidebarSortMenu from './SidebarSortMenu.vue';
 
 const props = defineProps({
+  popoverId: { type: String, required: true },
+  triggerId: { type: String, required: true },
+  focusOnOpen: { type: Boolean, default: false },
   label: { type: String, required: true },
   children: { type: Array, default: () => [] },
   activeChild: { type: Object, default: undefined },
@@ -29,6 +32,14 @@ const skipTransition = ref(true);
 
 const toggleSubGroup = name => {
   expandedSubGroup.value = expandedSubGroup.value === name ? null : name;
+};
+
+const getSubGroupId = name => {
+  const normalizedName = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+  return `${props.popoverId}-${normalizedName}`;
 };
 
 const handleSortToggle = isSortOpen => {
@@ -80,6 +91,50 @@ const accessibleChildren = computed(() => {
   });
 });
 
+const getFocusableItems = () =>
+  Array.from(
+    popoverRef.value?.querySelectorAll('[data-sidebar-popover-focusable]') || []
+  );
+
+const focusFirstItem = async () => {
+  if (!props.focusOnOpen) return;
+
+  await nextTick();
+  getFocusableItems()[0]?.focus();
+};
+
+const handleTabKeydown = event => {
+  if (!props.focusOnOpen || event.key !== 'Tab') return;
+
+  const focusableItems = getFocusableItems();
+  if (!focusableItems.length) {
+    event.preventDefault();
+    return;
+  }
+
+  const firstItem = focusableItems[0];
+  const lastItem = focusableItems[focusableItems.length - 1];
+
+  if (event.shiftKey && document.activeElement === firstItem) {
+    event.preventDefault();
+    lastItem.focus();
+  } else if (!event.shiftKey && document.activeElement === lastItem) {
+    event.preventDefault();
+    firstItem.focus();
+  }
+};
+
+const handleEscape = event => {
+  if (event.key !== 'Escape') return;
+
+  event.preventDefault();
+  emit('close', { restoreFocus: true });
+};
+
+useEventListener(document, 'keydown', handleEscape);
+
+watch(() => props.focusOnOpen, focusFirstItem);
+
 onMounted(async () => {
   await nextTick();
 
@@ -109,18 +164,23 @@ onMounted(async () => {
 
   await nextTick();
   skipTransition.value = false;
+  await focusFirstItem();
 });
 </script>
 
 <template>
   <TeleportWithDirection>
     <div
+      :id="popoverId"
       ref="popoverRef"
+      role="dialog"
+      :aria-labelledby="triggerId"
       class="fixed z-[100] min-w-[200px] max-w-[280px]"
       :style="{
         [isRTL ? 'right' : 'left']: `${sidebarWidth + 8}px`,
         top: `${topPosition}px`,
       }"
+      @keydown="handleTabKeydown"
       @mouseenter="emit('mouseenter')"
       @mouseleave="emit('mouseleave')"
     >
@@ -142,7 +202,11 @@ onMounted(async () => {
                 class="flex items-center rounded-lg text-n-slate-11 hover:bg-n-alpha-2 transition-colors duration-150 ease-out"
               >
                 <button
-                  class="flex flex-1 min-w-0 items-center gap-2 ps-2 py-1.5 text-left rtl:text-right"
+                  type="button"
+                  data-sidebar-popover-focusable
+                  class="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2 py-1.5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-n-brand rtl:text-right"
+                  :aria-controls="getSubGroupId(child.name)"
+                  :aria-expanded="expandedSubGroup === child.name"
                   @click="toggleSubGroup(child.name)"
                 >
                   <Icon
@@ -151,33 +215,27 @@ onMounted(async () => {
                     class="size-4 flex-shrink-0"
                   />
                   <span class="flex-1 truncate text-sm">{{ child.label }}</span>
-                </button>
-                <div class="flex flex-shrink-0 items-center gap-1 pe-2">
-                  <SidebarSortMenu
-                    v-if="child.sortOptions?.length"
-                    :active-sort="child.activeSort"
-                    :options="child.sortOptions"
-                    :open-on-hover="false"
-                    @sort="child.onSortChange"
-                    @toggle="handleSortToggle"
+                  <span
+                    class="size-4 flex-shrink-0 transition-transform i-lucide-chevron-down"
+                    :class="{
+                      'rotate-180': expandedSubGroup === child.name,
+                    }"
                   />
-                  <button
-                    type="button"
-                    class="flex size-6 flex-shrink-0 items-center justify-center rounded-md text-n-slate-11 hover:bg-n-alpha-2 focus-visible:bg-n-alpha-2 focus-visible:outline-none"
-                    @click.stop="toggleSubGroup(child.name)"
-                  >
-                    <span
-                      class="size-4 flex-shrink-0 transition-transform i-lucide-chevron-down"
-                      :class="{
-                        'rotate-180': expandedSubGroup === child.name,
-                      }"
-                    />
-                  </button>
-                </div>
+                </button>
+                <SidebarSortMenu
+                  v-if="child.sortOptions?.length"
+                  :active-sort="child.activeSort"
+                  :options="child.sortOptions"
+                  :open-on-hover="false"
+                  class="me-2"
+                  @sort="child.onSortChange"
+                  @toggle="handleSortToggle"
+                />
               </div>
               <Transition v-bind="transition">
                 <ul
                   v-if="expandedSubGroup === child.name"
+                  :id="getSubGroupId(child.name)"
                   class="m-0 p-0 list-none ltr:pl-4 rtl:pr-4 mt-1 overflow-hidden"
                 >
                   <li
@@ -186,6 +244,8 @@ onMounted(async () => {
                     class="py-0.5"
                   >
                     <button
+                      type="button"
+                      data-sidebar-popover-focusable
                       class="flex items-center gap-2 px-2 py-1.5 w-full rounded-lg text-sm text-left rtl:text-right transition-colors duration-150 ease-out"
                       :class="{
                         'text-n-slate-12 bg-n-alpha-2': isActive(subChild),
@@ -224,6 +284,8 @@ onMounted(async () => {
             <!-- Direct child item -->
             <li v-else class="py-0.5">
               <button
+                type="button"
+                data-sidebar-popover-focusable
                 class="flex items-center gap-2 px-2 py-1.5 w-full rounded-lg text-sm text-left rtl:text-right transition-colors duration-150 ease-out"
                 :class="{
                   'text-n-slate-12 bg-n-alpha-2': isActive(child),

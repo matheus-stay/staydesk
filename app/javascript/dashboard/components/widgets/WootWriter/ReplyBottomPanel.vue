@@ -276,14 +276,17 @@ export default {
 </script>
 
 <template>
-  <div class="flex justify-between p-3" :class="wrapClass">
-    <div class="left-wrap">
+  <div
+    class="flex min-h-12 items-center justify-between gap-3 border-t border-n-weak px-3 py-2 transition-colors duration-150 motion-reduce:transition-none"
+    :class="[wrapClass, isNote ? 'bg-n-amber-2/60' : 'bg-n-surface-2']"
+  >
+    <div class="left-wrap min-w-0 flex-1 !gap-1">
       <NextButton
         v-if="!isEditorDisabled"
         v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.TIP_EMOJI_ICON')"
         icon="i-ph-smiley-sticker"
         slate
-        faded
+        ghost
         sm
         @click="toggleEmojiPicker"
       />
@@ -308,7 +311,7 @@ export default {
           v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.TIP_ATTACH_ICON')"
           icon="i-ph-paperclip"
           slate
-          faded
+          ghost
           sm
         />
       </FileUpload>
@@ -317,7 +320,7 @@ export default {
         v-tooltip.top-end="$t('CONVERSATION.REPLYBOX.TIP_AUDIORECORDER_ICON')"
         :icon="!isRecordingAudio ? 'i-ph-microphone' : 'i-ph-microphone-slash'"
         slate
-        faded
+        ghost
         sm
         @click="toggleAudioRecorder"
       />
@@ -325,7 +328,7 @@ export default {
         v-if="showAudioPlayStopButton"
         :icon="audioRecorderPlayStopIcon"
         slate
-        faded
+        ghost
         sm
         :label="recordingAudioDurationText"
         @click="toggleAudioRecorderPlayPause"
@@ -335,7 +338,7 @@ export default {
         v-tooltip.top-end="signatureToggleTooltip"
         icon="i-ph-signature"
         slate
-        faded
+        ghost
         sm
         @click="toggleMessageSignature"
       />
@@ -354,7 +357,7 @@ export default {
         v-tooltip.top-end="$t('CONVERSATION.FOOTER.WHATSAPP_TEMPLATES')"
         icon="i-ph-whatsapp-logo"
         slate
-        faded
+        ghost
         sm
         @click="$emit('selectWhatsappTemplate')"
       />
@@ -363,7 +366,7 @@ export default {
         v-tooltip.top-end="'Content Templates'"
         icon="i-ph-whatsapp-logo"
         slate
-        faded
+        ghost
         sm
         @click="$emit('selectContentTemplate')"
       />
@@ -391,19 +394,19 @@ export default {
         v-tooltip.top-end="$t('HELP_CENTER.ARTICLE_SEARCH.OPEN_ARTICLE_SEARCH')"
         icon="i-ph-article-ny-times"
         slate
-        faded
+        ghost
         sm
         @click="toggleInsertArticle"
       />
     </div>
-    <div class="right-wrap">
+    <div class="right-wrap shrink-0 border-s border-n-weak ps-3">
       <NextButton
         :label="sendButtonText"
         type="submit"
         sm
         :color="isNote ? 'amber' : 'blue'"
         :disabled="isSendDisabled"
-        class="flex-shrink-0"
+        class="min-w-24 flex-shrink-0 !rounded-md !font-semibold"
         @click="onSend"
       />
     </div>

@@ -152,7 +152,10 @@ export default {
 
 <template>
   <div
-    class="flex justify-between gap-2 h-[3.25rem] items-center ltr:pl-3 ltr:pr-2 rtl:pr-3 rtl:pl-2"
+    class="flex min-h-11 items-center justify-between gap-2 border-b border-n-weak pe-2 transition-colors duration-150 motion-reduce:transition-none"
+    :class="
+      mode === REPLY_EDITOR_MODES.NOTE ? 'bg-n-amber-2/60' : 'bg-n-surface-2'
+    "
   >
     <EditorModeToggle
       :mode="mode"
@@ -160,14 +163,14 @@ export default {
       :is-reply-restricted="isReplyRestricted"
       @toggle-mode="handleModeToggle"
     />
-    <div class="flex items-center mx-4 my-0">
+    <div class="mx-4 my-0 flex flex-1 items-center justify-end">
       <div v-if="isMessageLengthReachingThreshold" class="text-xs">
         <span :class="charLengthClass">
           {{ characterLengthWarning }}
         </span>
       </div>
     </div>
-    <div v-if="captainTasksEnabled" class="flex items-center gap-2">
+    <div v-if="captainTasksEnabled" class="flex items-center gap-1">
       <div class="relative">
         <NextButton
           ref="copilotToggleRef"
