@@ -1,4 +1,5 @@
 <script>
+import { staydeskFilterApps } from 'staydesk/workspace/filters'; // staydesk:hook workspace apps
 import { mapGetters } from 'vuex';
 import ConversationHeader from './ConversationHeader.vue';
 import DashboardAppFrame from '../DashboardApp/Frame.vue';
@@ -37,8 +38,12 @@ export default {
   computed: {
     ...mapGetters({
       currentChat: 'getSelectedChat',
-      dashboardApps: 'dashboardApps/getRecords',
+      allDashboardApps: 'dashboardApps/getRecords', // staydesk:hook workspace apps
     }),
+    // staydesk:hook workspace apps
+    dashboardApps() {
+      return staydeskFilterApps(this.allDashboardApps);
+    },
     dashboardAppTabs() {
       return [
         {

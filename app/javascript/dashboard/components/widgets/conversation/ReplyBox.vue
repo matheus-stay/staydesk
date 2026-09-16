@@ -12,6 +12,7 @@ import ReplyTopPanel from 'dashboard/components/widgets/WootWriter/ReplyTopPanel
 import ReplyEmailHead from './ReplyEmailHead.vue';
 import ReplyBottomPanel from 'dashboard/components/widgets/WootWriter/ReplyBottomPanel.vue';
 import CopilotReplyBottomPanel from 'dashboard/components/widgets/WootWriter/CopilotReplyBottomPanel.vue';
+import StaydeskSubmitAs from 'staydesk/components/SubmitAs.vue'; // staydesk:hook submit as
 import ArticleSearchPopover from 'dashboard/routes/dashboard/helpcenter/components/ArticleSearch/SearchPopover.vue';
 import CopilotEditorSection from './CopilotEditorSection.vue';
 import MessageSignatureMissingAlert from './MessageSignatureMissingAlert.vue';
@@ -84,6 +85,7 @@ export default {
     QuotedEmailPreview,
     CopilotEditorSection,
     CopilotReplyBottomPanel,
+    StaydeskSubmitAs, // staydesk:hook submit as
     ConversationResolveAttributesModal,
   },
   mixins: [inboxMixin, fileUploadMixin],
@@ -1536,6 +1538,12 @@ export default {
         @request-contact-info-template="openContactInfoTemplateModal"
       />
     </Transition>
+    <StaydeskSubmitAs
+      v-if="!copilot.isActive.value"
+      :conversation-id="conversationId"
+      :send="onSendReply"
+      :disabled="isReplyButtonDisabled"
+    />
 
     <WhatsappTemplates
       :inbox-id="inbox.id"

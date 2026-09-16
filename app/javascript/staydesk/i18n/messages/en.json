@@ -62,6 +62,71 @@
       "RUNNING": "On time",
       "WARNING": "Due soon",
       "BREACHED": "Breached"
-    }
+    },
+    "WORKSPACE": {
+      "SETTINGS_TITLE": "Agent workspace",
+      "SETTINGS_DESCRIPTION": "What each team sees: menu, list layout and columns, ticket fields, side panels, apps and macros. The account default applies to every team; a team configuration overrides it.",
+      "TEAM": "Configure for",
+      "ACCOUNT_DEFAULT": "Account default",
+      "MENU": "Main menu",
+      "LIST": "Conversation list",
+      "LAYOUT": "Layout",
+      "LAYOUT_CARDS": "Cards",
+      "LAYOUT_TABLE": "Table",
+      "COLUMNS": "Table columns",
+      "FIELDS": "Ticket fields",
+      "FIELDS_HINT": "Assignee, team and priority come together; the other fields are custom attributes of the conversation.",
+      "PANELS": "Side panel sections",
+      "APPS": "Dashboard apps",
+      "MACROS": "Macros",
+      "MACROS_ALL": "All macros",
+      "MACROS_LIST": "Only the selected macros",
+      "COMPOSER": "Reply box",
+      "SUBMIT_AS": "Show \"Send as status\"",
+      "AFTER_SEND": "After sending",
+      "AFTER_SEND_STAY": "Stay on the conversation",
+      "AFTER_SEND_NEXT": "Open the next conversation",
+      "AFTER_SEND_CLOSE": "Go back to the list",
+      "INHERIT": "Inherit",
+      "SAVE": "Save",
+      "API": {
+        "SAVE_SUCCESS": "Workspace saved",
+        "SAVE_ERROR": "The workspace could not be saved"
+      },
+      "MENU_ITEMS": {
+        "Inbox": "Inbox",
+        "Conversation": "Conversations",
+        "Calls": "Calls",
+        "Contacts": "Contacts",
+        "Reports": "Reports",
+        "Captain": "Captain",
+        "Companies": "Companies",
+        "Campaigns": "Campaigns",
+        "Portals": "Help center"
+      },
+      "PANEL_ITEMS": {
+        "conversation_actions": "Conversation actions",
+        "macros": "Macros",
+        "conversation_info": "Conversation information",
+        "contact_attributes": "Contact attributes",
+        "contact_notes": "Contact notes",
+        "shared_files": "Shared files",
+        "previous_conversation": "Previous conversations",
+        "conversation_participants": "Participants",
+        "linear_issues": "Linear issues",
+        "shopify_orders": "Shopify orders"
+      },
+      "STANDARD_FIELDS": "Assignee, team and priority",
+      "YES": "Yes",
+      "NO": "No"
+    },
+    "SUBMIT_AS": {
+      "BUTTON": "Send as {status}",
+      "ERROR": "The message was sent, but the status could not be changed"
+    },
+    "NEXT": {
+      "BUTTON": "Next"
+    },
+    "FIELDS_TITLE": "Ticket fields"
   }
 }

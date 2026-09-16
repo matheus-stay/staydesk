@@ -19,6 +19,7 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/entrypoints/widget.js` | montagem | SPEC-00 | Textos StayDesk do widget |
 | `app/javascript/entrypoints/survey.js` | montagem | SPEC-00 | Textos StayDesk da pesquisa de satisfação |
 | `app/javascript/dashboard/routes/index.js` | montagem | SPEC-00 | Rotas da camada, injetadas como filhas da rota da conta por `withStaydeskRoutes` |
+| `app/javascript/dashboard/routes/dashboard/conversation/Macros/List.vue` | gancho | SPEC-04 | `v-show` por macro conforme a área de trabalho |
 
 ## Views sobrepostas (o original não muda)
 
@@ -62,7 +63,7 @@ for reduzido a classe-só (passa a `classe`) ou quando a mudança for movida par
 | `app/javascript/dashboard/components-next/message/MessageList.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components-next/message/bubbles/Base.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components-next/message/bubbles/Text/Index.vue` | legado | UX | Edição no lugar do ramo de UX |
-| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | legado | UX | Edição no lugar do ramo de UX; leva 4 linhas `staydesk:hook` da SPEC-03 (grupo de views e entrada em Configurações) |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | legado | UX | Edição no lugar do ramo de UX; leva 4 linhas `staydesk:hook` da SPEC-03 (grupo de views e entrada em Configurações) e 4 da SPEC-04 (filtro do menu) |
 | `app/javascript/dashboard/components-next/sidebar/SidebarCollapsedPopover.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components-next/sidebar/SidebarGroup.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components-next/sidebar/SidebarGroupHeader.vue` | legado | UX | Edição no lugar do ramo de UX |
@@ -75,7 +76,7 @@ for reduzido a classe-só (passa a `classe`) ou quando a mudança for movida par
 | `app/javascript/dashboard/components-next/sidebar/specs/SidebarSubGroup.spec.js` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components-next/tabbar/TabBar.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/Accordion/AccordionItem.vue` | legado | UX | Edição no lugar do ramo de UX |
-| `app/javascript/dashboard/components/ChatList.vue` | legado | UX | Edição no lugar do ramo de UX; leva 4 linhas `staydesk:hook` da SPEC-03 (view por time como pasta ativa) |
+| `app/javascript/dashboard/components/ChatList.vue` | legado | UX | Edição no lugar do ramo de UX; leva 4 linhas `staydesk:hook` da SPEC-03 (view por time como pasta ativa) e 5 da SPEC-04 (lista em tabela) |
 | `app/javascript/dashboard/components/ChatListHeader.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/ConversationList.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/ui/Tabs/TabsItem.vue` | legado | UX | Edição no lugar do ramo de UX |
@@ -84,18 +85,18 @@ for reduzido a classe-só (passa a `classe`) ou quando a mudança for movida par
 | `app/javascript/dashboard/components/widgets/WootWriter/ReplyBottomPanel.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/widgets/WootWriter/ReplyTopPanel.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/widgets/conversation/CannedResponse.vue` | legado | UX | Edição no lugar do ramo de UX |
-| `app/javascript/dashboard/components/widgets/conversation/ConversationBox.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/ConversationBox.vue` | legado | UX | Edição no lugar do ramo de UX; leva 3 linhas `staydesk:hook` da SPEC-04 (Dashboard Apps) |
 | `app/javascript/dashboard/components/widgets/conversation/ConversationCard.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/widgets/conversation/ConversationHeader.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/widgets/conversation/ConversationSidebar.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/widgets/conversation/MessagesView.vue` | legado | UX | Edição no lugar do ramo de UX |
-| `app/javascript/dashboard/components/widgets/conversation/ReplyBox.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/ReplyBox.vue` | legado | UX | Edição no lugar do ramo de UX; leva 3 linhas `staydesk:hook` da SPEC-04 (Enviar como) |
 | `app/javascript/dashboard/components/widgets/conversation/conversationBulkActions/BulkLabelActions.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/widgets/conversation/conversationBulkActions/Index.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/i18n/locale/en/chatlist.json` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/routes/dashboard/Dashboard.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/routes/dashboard/companies/pages/CompaniesIndex.vue` | legado | UX | Edição no lugar do ramo de UX |
-| `app/javascript/dashboard/routes/dashboard/conversation/ContactPanel.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/conversation/ContactPanel.vue` | legado | UX | Edição no lugar do ramo de UX; leva 3 linhas `staydesk:hook` da SPEC-04 (seções por área de trabalho) |
 | `app/javascript/dashboard/routes/dashboard/conversation/ConversationView.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/routes/dashboard/inbox/components/InboxDisplayMenu.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/routes/dashboard/inbox/components/MenuItem.vue` | legado | UX | Edição no lugar do ramo de UX |

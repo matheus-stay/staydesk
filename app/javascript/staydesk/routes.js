@@ -2,6 +2,7 @@ import { frontendURL } from 'dashboard/helper/URLHelper';
 import ConversationView from 'dashboard/routes/dashboard/conversation/ConversationView.vue';
 import SettingsWrapper from 'dashboard/routes/dashboard/settings/SettingsWrapper.vue';
 import TeamViewsSettings from './pages/TeamViewsSettings.vue';
+import WorkspaceSettings from './pages/WorkspaceSettings.vue';
 import { teamViewFolderId } from './store/teamViews';
 
 const CONVERSATION_PERMISSIONS = [
@@ -42,6 +43,18 @@ const routes = [
         path: '',
         name: 'staydesk_team_views_settings',
         component: TeamViewsSettings,
+        meta: { permissions: ['administrator'] },
+      },
+    ],
+  },
+  {
+    path: frontendURL('accounts/:accountId/settings/staydesk/workspace'),
+    component: SettingsWrapper,
+    children: [
+      {
+        path: '',
+        name: 'staydesk_workspace_settings',
+        component: WorkspaceSettings,
         meta: { permissions: ['administrator'] },
       },
     ],

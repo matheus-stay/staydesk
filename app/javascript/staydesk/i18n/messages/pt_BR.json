@@ -62,6 +62,71 @@
       "RUNNING": "No prazo",
       "WARNING": "Vencendo",
       "BREACHED": "Vencido"
-    }
+    },
+    "WORKSPACE": {
+      "SETTINGS_TITLE": "Área de trabalho do agente",
+      "SETTINGS_DESCRIPTION": "O que cada time enxerga: menu, layout e colunas da lista, campos do ticket, seções laterais, apps e macros. O padrão da conta vale para todos os times; a configuração de um time sobrepõe.",
+      "TEAM": "Configurar para",
+      "ACCOUNT_DEFAULT": "Padrão da conta",
+      "MENU": "Menu principal",
+      "LIST": "Lista de conversas",
+      "LAYOUT": "Layout",
+      "LAYOUT_CARDS": "Cartões",
+      "LAYOUT_TABLE": "Tabela",
+      "COLUMNS": "Colunas da tabela",
+      "FIELDS": "Campos do ticket",
+      "FIELDS_HINT": "Responsável, time e prioridade vêm juntos; os demais campos são atributos personalizados da conversa.",
+      "PANELS": "Seções do painel lateral",
+      "APPS": "Dashboard apps",
+      "MACROS": "Macros",
+      "MACROS_ALL": "Todas as macros",
+      "MACROS_LIST": "Só as macros marcadas",
+      "COMPOSER": "Caixa de resposta",
+      "SUBMIT_AS": "Mostrar \"Enviar como status\"",
+      "AFTER_SEND": "Depois de enviar",
+      "AFTER_SEND_STAY": "Permanecer na conversa",
+      "AFTER_SEND_NEXT": "Abrir a próxima conversa",
+      "AFTER_SEND_CLOSE": "Voltar para a lista",
+      "INHERIT": "Herdar",
+      "SAVE": "Salvar",
+      "API": {
+        "SAVE_SUCCESS": "Área de trabalho salva",
+        "SAVE_ERROR": "Não foi possível salvar a área de trabalho"
+      },
+      "MENU_ITEMS": {
+        "Inbox": "Caixa de entrada",
+        "Conversation": "Conversas",
+        "Calls": "Chamadas",
+        "Contacts": "Contatos",
+        "Reports": "Relatórios",
+        "Captain": "Captain",
+        "Companies": "Empresas",
+        "Campaigns": "Campanhas",
+        "Portals": "Central de ajuda"
+      },
+      "PANEL_ITEMS": {
+        "conversation_actions": "Ações da conversa",
+        "macros": "Macros",
+        "conversation_info": "Informações da conversa",
+        "contact_attributes": "Atributos do contato",
+        "contact_notes": "Notas do contato",
+        "shared_files": "Arquivos compartilhados",
+        "previous_conversation": "Conversas anteriores",
+        "conversation_participants": "Participantes",
+        "linear_issues": "Issues do Linear",
+        "shopify_orders": "Pedidos do Shopify"
+      },
+      "STANDARD_FIELDS": "Responsável, time e prioridade",
+      "YES": "Sim",
+      "NO": "Não"
+    },
+    "SUBMIT_AS": {
+      "BUTTON": "Enviar como {status}",
+      "ERROR": "A mensagem foi enviada, mas o status não pôde ser alterado"
+    },
+    "NEXT": {
+      "BUTTON": "Avançar"
+    },
+    "FIELDS_TITLE": "Campos do ticket"
   }
 }

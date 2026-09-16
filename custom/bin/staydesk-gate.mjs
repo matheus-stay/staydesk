@@ -95,13 +95,15 @@ const isClassOnly = hunk =>
 
 const isStaydeskLine = line => /staydesk/i.test(line);
 
-// Linha em branco não conta; toda outra linha nova precisa nomear a camada.
+// Linha em branco não conta. Um gancho ou é uma troca linha a linha em que toda
+// linha nova nomeia a camada, ou um bloco só de linhas novas (uma montagem de
+// componente que o prettier quebrou em várias linhas) cuja primeira nomeia a camada.
 const isHook = hunk => {
   const added = hunk.plus.filter(line => line.trim() !== '');
+  if (!added.length) return false;
+  if (hunk.minus.length === 0) return isStaydeskLine(added[0]);
   return (
-    added.length > 0 &&
-    added.every(isStaydeskLine) &&
-    hunk.minus.length <= hunk.plus.length
+    added.every(isStaydeskLine) && hunk.minus.length <= hunk.plus.length
   );
 };
 

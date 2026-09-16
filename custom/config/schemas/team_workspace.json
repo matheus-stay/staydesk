@@ -1,0 +1,136 @@
+{
+  "title": "StayDesk team workspace",
+  "description": "O que um time enxerga na área de trabalho do agente. Toda chave é opcional: o que faltar herda do padrão da conta e, no fim, do padrão do produto.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "menu": {
+      "description": "Itens da barra principal visíveis (nomes do Sidebar do upstream).",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Inbox",
+          "Conversation",
+          "Calls",
+          "Contacts",
+          "Reports",
+          "Captain",
+          "Companies",
+          "Campaigns",
+          "Portals"
+        ]
+      }
+    },
+    "list": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layout": {
+          "type": "string",
+          "enum": [
+            "cards",
+            "table"
+          ]
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "sla",
+              "status",
+              "subject",
+              "contact",
+              "inbox",
+              "created_at",
+              "waiting_since",
+              "assignee",
+              "team",
+              "priority",
+              "labels"
+            ]
+          }
+        },
+        "sort_by": {
+          "type": "string"
+        },
+        "page_size": {
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 100
+        }
+      }
+    },
+    "conversation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fields": {
+          "description": "Campos do painel de propriedades, em ordem: assignee, team, priority, labels ou chave de atributo personalizado.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "panels": {
+          "description": "Seções do painel direito, em ordem (nomes do ContactPanel do upstream).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "apps": {
+          "description": "Ids dos Dashboard Apps visíveis; ausente = todos.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "macros": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "all",
+            "list"
+          ]
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "composer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "submit_as": {
+          "type": "boolean"
+        },
+        "after_send": {
+          "type": "string",
+          "enum": [
+            "stay",
+            "next",
+            "close"
+          ]
+        }
+      }
+    },
+    "roles": {
+      "description": "Sobreposição por papel (administrator, agent, light), com as mesmas chaves acima.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      }
+    }
+  }
+}

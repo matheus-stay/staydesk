@@ -31,6 +31,8 @@ import {
 import { useEmitter } from 'dashboard/composables/emitter';
 import { useConversationRequiredAttributes } from 'dashboard/composables/useConversationRequiredAttributes';
 import { useTeamViews } from 'staydesk/composables/useTeamViews'; // staydesk:hook team views
+import { useWorkspace } from 'staydesk/composables/useWorkspace'; // staydesk:hook workspace table
+import StaydeskConversationTable from 'staydesk/components/ConversationTable.vue'; // staydesk:hook workspace table
 
 import { emitter } from 'shared/helpers/mitt';
 
@@ -143,6 +145,7 @@ const hasAppliedFilters = computed(() => {
 });
 
 const staydeskTeamViews = useTeamViews(); // staydesk:hook team views
+const staydeskWorkspace = useWorkspace(); // staydesk:hook workspace table
 const activeFolder = computed(() => {
   if (props.foldersId) {
     const activeView = folders.value.filter(
@@ -969,6 +972,7 @@ watch(chatLists, () => {
       @select-all-conversations="toggleSelectAll"
     />
     <ConversationList
+      v-if="!staydeskWorkspace.isTable.value"
       :conversation-list="conversationList"
       :is-loading="chatListLoading"
       :show-end-of-list-message="showEndOfListMessage"
@@ -978,6 +982,14 @@ watch(chatLists, () => {
       :conversation-type="conversationType"
       :show-assignee="showAssigneeInConversationCard"
       :is-on-expanded-layout="isOnExpandedLayout"
+      @load-more="loadMoreConversations"
+    />
+    <StaydeskConversationTable
+      v-else
+      :conversation-list="conversationList"
+      :columns="staydeskWorkspace.columns.value"
+      :is-loading="chatListLoading"
+      :show-end-of-list-message="showEndOfListMessage"
       @load-more="loadMoreConversations"
     />
     <Dialog

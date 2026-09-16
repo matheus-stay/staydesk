@@ -2,6 +2,7 @@ import { computed, h, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { useTeamViews } from './useTeamViews';
+import { useWorkspace } from './useWorkspace';
 
 const colorDot = color =>
   h('span', {
@@ -15,9 +16,10 @@ export const useStaydeskSidebar = () => {
   const { t } = useI18n();
   const { accountScopedRoute } = useAccount();
   const { views, ensureLoaded, pollCounts, countFor } = useTeamViews();
+  const workspace = useWorkspace();
 
   onMounted(async () => {
-    await ensureLoaded();
+    await Promise.all([ensureLoaded(), workspace.ensureLoaded()]);
     pollCounts();
   });
 
@@ -52,7 +54,18 @@ export const useStaydeskSidebar = () => {
       activeOn: ['staydesk_team_views_settings'],
       to: accountScopedRoute('staydesk_team_views_settings'),
     },
+    {
+      name: 'StaydeskWorkspaceSettings',
+      label: t('STAYDESK.WORKSPACE.SETTINGS_TITLE'),
+      icon: 'i-lucide-layout-dashboard',
+      activeOn: ['staydesk_workspace_settings'],
+      to: accountScopedRoute('staydesk_workspace_settings'),
+    },
   ]);
 
-  return { viewsItems, settingsItems };
+  return {
+    viewsItems,
+    settingsItems,
+    filterMenuNames: workspace.filterMenuNames,
+  };
 };

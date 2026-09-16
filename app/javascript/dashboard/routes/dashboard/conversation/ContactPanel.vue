@@ -24,7 +24,7 @@ import ShopifyOrdersList from 'dashboard/components/widgets/conversation/Shopify
 import SidebarActionsHeader from 'dashboard/components-next/SidebarActionsHeader.vue';
 import LinearIssuesList from 'dashboard/components/widgets/conversation/linear/IssuesList.vue';
 import LinearSetupCTA from 'dashboard/components/widgets/conversation/linear/LinearSetupCTA.vue';
-
+import { useWorkspace } from 'staydesk/composables/useWorkspace'; // staydesk:hook workspace panels
 const props = defineProps({
   conversationId: {
     type: [Number, String],
@@ -38,8 +38,9 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-});
+}); // staydesk:hook workspace panels
 
+const staydeskWorkspace = useWorkspace();
 const {
   updateUISettings,
   isContactSidebarItemOpen,
@@ -128,6 +129,9 @@ const closeContactPanel = () => {
 
 onMounted(() => {
   conversationSidebarItems.value = conversationSidebarItemsOrder.value;
+  conversationSidebarItems.value = staydeskWorkspace.filterPanels(
+    conversationSidebarItems.value
+  ); // staydesk:hook workspace panels
   getContactDetails();
   store.dispatch('attributes/get', 0);
   // Load integrations to ensure linear integration state is available

@@ -962,24 +962,30 @@ const PRIMARY_MENU_ITEM_NAMES = [
   'Reports',
 ];
 const MORE_MENU_ITEM_NAMES = ['Captain', 'Companies', 'Campaigns', 'Portals'];
+const staydeskPrimary = computed(() =>
+  staydeskSidebar.filterMenuNames(PRIMARY_MENU_ITEM_NAMES)
+); // staydesk:hook workspace menu
+const staydeskMore = computed(() =>
+  staydeskSidebar.filterMenuNames(MORE_MENU_ITEM_NAMES)
+); // staydesk:hook workspace menu
 
 const menuItemsByName = computed(
   () => new Map(menuItems.value.map(item => [item.name, item]))
 );
 
 const primaryMenuItems = computed(() =>
-  PRIMARY_MENU_ITEM_NAMES.map(name => menuItemsByName.value.get(name)).filter(
-    Boolean
-  )
+  staydeskPrimary.value
+    .map(name => menuItemsByName.value.get(name))
+    .filter(Boolean)
 );
 
 const moreMenuItem = computed(() => ({
   name: 'More',
   label: t('CONVERSATION.HEADER.OPEN'),
   icon: 'i-lucide-layout-grid',
-  children: MORE_MENU_ITEM_NAMES.map(name =>
-    menuItemsByName.value.get(name)
-  ).filter(Boolean),
+  children: staydeskMore.value
+    .map(name => menuItemsByName.value.get(name))
+    .filter(Boolean),
   disclosureOnly: true,
 }));
 

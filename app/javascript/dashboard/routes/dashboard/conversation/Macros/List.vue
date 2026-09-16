@@ -4,6 +4,7 @@ import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { useMacroExecution } from 'dashboard/composables/useMacroExecution';
 import { useOrderedMacros } from 'dashboard/composables/useOrderedMacros';
+import { useWorkspace } from 'staydesk/composables/useWorkspace'; // staydesk:hook workspace macros
 
 import Draggable from 'vuedraggable';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
@@ -21,6 +22,7 @@ const props = defineProps({
 const store = useStore();
 const { accountScopedUrl } = useAccount();
 const { orderedMacros } = useOrderedMacros();
+const staydeskWorkspace = useWorkspace(); // staydesk:hook workspace macros
 const {
   executingMacroId,
   execute,
@@ -89,6 +91,7 @@ onMounted(() => {
     >
       <template #item="{ element }">
         <MacroItem
+          v-show="staydeskWorkspace.allowsMacro(element.id)"
           :key="element.id"
           :macro="element"
           :is-executing="executingMacroId === element.id"
