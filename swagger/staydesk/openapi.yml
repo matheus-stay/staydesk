@@ -1,0 +1,119 @@
+openapi: '3.1.0'
+info:
+  title: StayDesk — API própria
+  description: Rotas que a camada StayDesk acrescenta ao Chatwoot, sob /api/v1/accounts/{account_id}/staydesk/. Mesma autenticação da API do Chatwoot (api_access_token do usuário ou do usuário-serviço).
+  version: 0.1.0
+paths:
+  /api/v1/accounts/{account_id}/staydesk/ping:
+    get:
+      summary: Versão do fork e do upstream
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/workspace:
+    get:
+      summary: Área de trabalho resolvida para quem chama (menu, lista, campos, seções, apps, macros, caixa de resposta, papel, times)
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/team_workspaces:
+    get:
+      summary: Configurações por time (administrador)
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/team_workspaces/{team_id}:
+    get:
+      summary: Configuração de um time; `default` é o padrão da conta
+      responses:
+        '200':
+          description: ok
+    put:
+      summary: Grava a configuração ({ config }), validada pelo JSON Schema em custom/config/schemas/team_workspace.json
+      responses:
+        '200':
+          description: ok
+        '422':
+          description: fora do esquema
+  /api/v1/accounts/{account_id}/staydesk/team_workspaces/schema:
+    get:
+      summary: O JSON Schema da configuração
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/team_views:
+    get:
+      summary: Views visíveis ao usuário (administrador vê todas)
+      responses:
+        '200':
+          description: ok
+    post:
+      summary: Cria uma view (administrador); corpo em team_view
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/team_views/{id}:
+    patch:
+      summary: Atualiza (administrador)
+      responses:
+        '200':
+          description: ok
+    delete:
+      summary: Remove (administrador)
+      responses:
+        '204':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/team_views/{id}/conversations:
+    get:
+      summary: Conversas da view, mesma resposta de POST /conversations/filter; parâmetro page
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/team_views/counts:
+    get:
+      summary: Contagem por view visível ao usuário; cache de 30 s
+      responses:
+        '200':
+          description: '{ counts: { id: n } }'
+  /api/v1/accounts/{account_id}/staydesk/agent_roles:
+    get:
+      summary: Papel StayDesk (full ou light) por agente (administrador)
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/agent_roles/{user_id}:
+    put:
+      summary: Define o papel ({ kind })
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/events:
+    get:
+      summary: Eventos de tempo (reporting_events) e de mudança (status, responsável, time, prioridade) por conversa (administrador)
+      parameters:
+        - in: query
+          name: since
+          schema: { type: string, format: date-time }
+        - in: query
+          name: until
+          schema: { type: string, format: date-time }
+        - in: query
+          name: conversation_id
+          description: display_id da conversa
+          schema: { type: integer }
+        - in: query
+          name: kind
+          description: nome do reporting_event ou tipo do evento de mudança
+          schema: { type: string }
+        - in: query
+          name: after_reporting_id
+          schema: { type: integer }
+        - in: query
+          name: after_event_id
+          schema: { type: integer }
+        - in: query
+          name: limit
+          schema: { type: integer, maximum: 500 }
+      responses:
+        '200':
+          description: '{ reporting_events: [...], conversation_events: [...] }, cada lista em ordem de id'
