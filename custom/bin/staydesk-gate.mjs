@@ -27,6 +27,9 @@ const OWN_PATHS = [
   /^docs\/staydesk\//,
   /^spec\/staydesk\//,
   /^swagger\/staydesk\//,
+  // Gerado por `rails db:migrate`; as migrations de custom/ entram aqui para o
+  // db:chatwoot_prepare de uma instalação nova carregá-las junto com o esquema.
+  /^db\/schema\.rb$/,
   /^\.github\/workflows\/staydesk[_-]/,
   /^theme\//,
   /^tailwind\.config\.js$/,

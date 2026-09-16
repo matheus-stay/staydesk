@@ -10,6 +10,7 @@ Como o StayDesk acrescenta código ao Chatwoot sem transformar o sync com o ofic
 | Frontend próprio | `app/javascript/staydesk/` | Plugin `app.use(StayDesk, { i18n })` em `entrypoints/dashboard.js`; rotas por spread em `dashboard/routes/index.js`; textos por `mergeLocaleMessage` nos três entrypoints; alias `staydesk` em `vite.shared` |
 | Tokens e marca | `theme/`, `tailwind.config.js`, `public/brand-assets/`, `InstallationConfig` | Pontos de extensão que o próprio Chatwoot oferece |
 | Testes | `spec/staydesk/`, `app/javascript/staydesk/**/specs/` | Rodam com a suíte normal |
+| Esquema do banco | `db/schema.rb` | Gerado por `rails db:migrate` e commitado com as tabelas `staydesk_*`: numa instalação nova, `db:chatwoot_prepare` carrega o esquema e roda `db:seed` antes das migrations, e o seed aborta se houver migration pendente |
 
 ## As quatro formas de tocar arquivo do núcleo
 

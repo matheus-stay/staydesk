@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_08_31_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_16_180000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -505,8 +505,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_31_000000) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["account_id"], name: "index_captain_faq_suggestions_on_account_id"
     t.index ["account_id", "assistant_id", "status", "language"], name: "idx_cap_faq_suggestions_on_account_assistant_status_language"
+    t.index ["account_id"], name: "index_captain_faq_suggestions_on_account_id"
     t.index ["assistant_id"], name: "index_captain_faq_suggestions_on_assistant_id"
     t.index ["embedding"], name: "vector_idx_captain_faq_suggestions_embedding", opclass: :vector_cosine_ops, using: :ivfflat
   end
@@ -749,8 +749,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_31_000000) do
     t.jsonb "phone_number_health", default: {}, null: false
     t.datetime "phone_number_health_checked_at"
     t.string "phone_number_health_error", limit: 500
-    t.index ["phone_number_health_checked_at"], name: "index_channel_whatsapp_on_phone_number_health_checked_at"
     t.index ["phone_number"], name: "index_channel_whatsapp_on_phone_number", unique: true
+    t.index ["phone_number_health_checked_at"], name: "index_channel_whatsapp_on_phone_number_health_checked_at"
   end
 
   create_table "companies", force: :cascade do |t|
@@ -1090,10 +1090,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_31_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "inbox_id"
-    t.index ["account_id", "name", "template_type", "locale"], name: "index_email_templates_on_account_scope", unique: true, where: "(account_id IS NOT NULL) AND (inbox_id IS NULL)"
+    t.index ["account_id", "name", "template_type", "locale"], name: "index_email_templates_on_account_scope", unique: true, where: "((account_id IS NOT NULL) AND (inbox_id IS NULL))"
     t.index ["inbox_id", "name", "template_type", "locale"], name: "index_email_templates_on_inbox_scope", unique: true, where: "(inbox_id IS NOT NULL)"
     t.index ["inbox_id"], name: "index_email_templates_on_inbox_id"
-    t.index ["name", "template_type", "locale"], name: "index_email_templates_on_installation_scope", unique: true, where: "(account_id IS NULL) AND (inbox_id IS NULL)"
+    t.index ["name", "template_type", "locale"], name: "index_email_templates_on_installation_scope", unique: true, where: "((account_id IS NULL) AND (inbox_id IS NULL))"
   end
 
   create_table "folders", force: :cascade do |t|
@@ -1456,6 +1456,57 @@ ActiveRecord::Schema[7.1].define(version: 2026_08_31_000000) do
     t.string "description"
     t.float "resolution_time_threshold"
     t.index ["account_id"], name: "index_sla_policies_on_account_id"
+  end
+
+  create_table "staydesk_account_user_roles", force: :cascade do |t|
+    t.bigint "account_user_id", null: false
+    t.string "kind", default: "full", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_user_id"], name: "index_staydesk_account_user_roles_on_account_user_id", unique: true
+  end
+
+  create_table "staydesk_conversation_events", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_id", null: false
+    t.string "kind", null: false
+    t.string "from_value"
+    t.string "to_value"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.index ["account_id", "created_at"], name: "idx_on_account_id_created_at_8db1e90b4e"
+    t.index ["account_id", "kind", "created_at"], name: "idx_on_account_id_kind_created_at_b7a1cd4290"
+    t.index ["account_id"], name: "index_staydesk_conversation_events_on_account_id"
+    t.index ["conversation_id"], name: "index_staydesk_conversation_events_on_conversation_id"
+  end
+
+  create_table "staydesk_team_views", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.string "description"
+    t.string "color"
+    t.string "icon"
+    t.jsonb "query", default: {}, null: false
+    t.jsonb "columns", default: [], null: false
+    t.string "sort_by"
+    t.integer "position", default: 0, null: false
+    t.bigint "team_ids", default: [], null: false, array: true
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "position"], name: "index_staydesk_team_views_on_account_id_and_position"
+    t.index ["account_id"], name: "index_staydesk_team_views_on_account_id"
+    t.index ["team_ids"], name: "index_staydesk_team_views_on_team_ids", using: :gin
+  end
+
+  create_table "staydesk_team_workspaces", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "team_id"
+    t.jsonb "config", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "team_id"], name: "index_staydesk_team_workspaces_on_account_id_and_team_id", unique: true, nulls_not_distinct: true
+    t.index ["account_id"], name: "index_staydesk_team_workspaces_on_account_id"
   end
 
   create_table "taggings", id: :serial, force: :cascade do |t|
