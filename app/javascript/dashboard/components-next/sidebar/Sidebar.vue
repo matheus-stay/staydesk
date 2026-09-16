@@ -23,6 +23,7 @@ import EmojiIcon from 'next/emoji-icon-picker/EmojiIcon.vue';
 import SidebarAccountSwitcher from './SidebarAccountSwitcher.vue';
 import Logo from 'next/icon/Logo.vue';
 import ComposeConversation from 'dashboard/components-next/NewConversation/ComposeConversation.vue';
+import { useStaydeskSidebar } from 'staydesk/composables/useStaydeskSidebar'; // staydesk:hook
 import {
   SIDEBAR_SORT_SECTIONS,
   getSidebarSortOptions,
@@ -45,6 +46,7 @@ const emit = defineEmits([
 ]);
 
 const { accountScopedRoute, isOnChatwootCloud } = useAccount();
+const staydeskSidebar = useStaydeskSidebar(); // staydesk:hook
 const { isEnterprise } = useConfig();
 const store = useStore();
 
@@ -432,6 +434,7 @@ const menuItems = computed(() => {
             to: accountScopedRoute('folder_conversations', { id: view.id }),
           })),
         },
+        ...staydeskSidebar.viewsItems.value, // staydesk:hook team views
         {
           name: 'Teams',
           label: t('SIDEBAR.TEAMS'),
@@ -784,6 +787,7 @@ const menuItems = computed(() => {
       label: t('SIDEBAR.SETTINGS'),
       icon: 'i-lucide-bolt',
       children: [
+        ...staydeskSidebar.settingsItems.value, // staydesk:hook team views settings
         {
           name: 'Settings Account Settings',
           label: t('SIDEBAR.ACCOUNT_SETTINGS'),

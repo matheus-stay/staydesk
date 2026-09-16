@@ -1,0 +1,61 @@
+{
+  "STAYDESK": {
+    "TEAM_VIEWS": {
+      "SIDEBAR": "Visualizações",
+      "SETTINGS_TITLE": "Visualizações por time",
+      "SETTINGS_DESCRIPTION": "Visualizações compartilhadas: o mesmo filtro para o time inteiro, com colunas, ordenação e contagem ao vivo.",
+      "NEW": "Nova visualização",
+      "EDIT": "Editar visualização",
+      "EMPTY": "Nenhuma visualização por time ainda. Crie uma e escolha os times que devem vê-la.",
+      "FORM": {
+        "NAME": "Nome",
+        "NAME_PLACEHOLDER": "ex.: Tickets pendentes",
+        "DESCRIPTION": "Descrição",
+        "COLOR": "Cor",
+        "TEAMS": "Visível para",
+        "TEAMS_HINT": "Sem nenhum time marcado, a visualização aparece para a conta inteira.",
+        "SORT_BY": "Ordenar por",
+        "COLUMNS": "Colunas",
+        "CONDITIONS": "Condições",
+        "ADD_CONDITION": "Adicionar condição",
+        "SAVE": "Salvar",
+        "CANCEL": "Cancelar"
+      },
+      "COLUMN": {
+        "sla": "SLA",
+        "status": "Status",
+        "subject": "Assunto",
+        "contact": "Contato",
+        "inbox": "Caixa de entrada",
+        "created_at": "Criada em",
+        "waiting_since": "Aguardando desde",
+        "assignee": "Responsável",
+        "team": "Time",
+        "priority": "Prioridade",
+        "labels": "Etiquetas"
+      },
+      "SORT": {
+        "last_activity_at_desc": "Última atividade, mais recente primeiro",
+        "last_activity_at_asc": "Última atividade, mais antiga primeiro",
+        "created_at_desc": "Criação, mais recente primeiro",
+        "created_at_asc": "Criação, mais antiga primeiro",
+        "priority_desc": "Prioridade, maior primeiro",
+        "priority_asc": "Prioridade, menor primeiro",
+        "waiting_since_desc": "Esperando há mais tempo primeiro",
+        "waiting_since_asc": "Esperando há menos tempo primeiro",
+        "priority_desc_created_at_asc": "Prioridade, depois a mais antiga",
+        "unread": "Não lidas primeiro"
+      },
+      "API": {
+        "SAVE_SUCCESS": "Visualização salva",
+        "SAVE_ERROR": "Não foi possível salvar a visualização",
+        "DELETE_SUCCESS": "Visualização removida",
+        "DELETE_ERROR": "Não foi possível remover a visualização"
+      },
+      "DELETE": {
+        "BUTTON": "Excluir",
+        "CONFIRM": "Excluir a visualização \"{name}\"?"
+      }
+    }
+  }
+}

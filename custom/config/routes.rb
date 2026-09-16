@@ -10,6 +10,14 @@ Rails.application.routes.draw do
         scope module: :accounts do
           namespace :staydesk do
             resource :ping, only: [:show], controller: 'ping'
+            resources :team_views, only: [:index, :show, :create, :update, :destroy] do
+              collection do
+                get :counts
+              end
+              member do
+                get :conversations
+              end
+            end
           end
         end
       end

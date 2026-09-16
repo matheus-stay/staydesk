@@ -30,6 +30,7 @@ import {
 } from 'dashboard/composables/useTransformKeys';
 import { useEmitter } from 'dashboard/composables/emitter';
 import { useConversationRequiredAttributes } from 'dashboard/composables/useConversationRequiredAttributes';
+import { useTeamViews } from 'staydesk/composables/useTeamViews'; // staydesk:hook team views
 
 import { emitter } from 'shared/helpers/mitt';
 
@@ -141,13 +142,14 @@ const hasAppliedFilters = computed(() => {
   return appliedFilters.value.length !== 0;
 });
 
+const staydeskTeamViews = useTeamViews(); // staydesk:hook team views
 const activeFolder = computed(() => {
   if (props.foldersId) {
     const activeView = folders.value.filter(
       view => view.id === Number(props.foldersId)
     );
     const [firstValue] = activeView;
-    return firstValue;
+    return firstValue || staydeskTeamViews.asFolder(props.foldersId); // staydesk:hook team views
   }
   return undefined;
 });
@@ -909,7 +911,7 @@ watch(chatLists, () => {
     <ChatListHeader
       :page-title="pageTitle"
       :has-applied-filters="hasAppliedFilters"
-      :has-active-folders="hasActiveFolders"
+      :has-active-folders="hasActiveFolders && !activeFolder?.staydeskTeamView"
       :active-status="activeStatus"
       :is-on-expanded-layout="isOnExpandedLayout"
       :conversation-stats="conversationStats"

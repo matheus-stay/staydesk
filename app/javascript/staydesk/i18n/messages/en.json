@@ -1,0 +1,61 @@
+{
+  "STAYDESK": {
+    "TEAM_VIEWS": {
+      "SIDEBAR": "Views",
+      "SETTINGS_TITLE": "Team views",
+      "SETTINGS_DESCRIPTION": "Shared views: the same filter for a whole team, with its own columns, sort order and live count.",
+      "NEW": "New view",
+      "EDIT": "Edit view",
+      "EMPTY": "No team views yet. Create one and pick the teams that should see it.",
+      "FORM": {
+        "NAME": "Name",
+        "NAME_PLACEHOLDER": "e.g. Pending tickets",
+        "DESCRIPTION": "Description",
+        "COLOR": "Color",
+        "TEAMS": "Visible to",
+        "TEAMS_HINT": "Leave every team unchecked to show the view to the whole account.",
+        "SORT_BY": "Sort by",
+        "COLUMNS": "Columns",
+        "CONDITIONS": "Conditions",
+        "ADD_CONDITION": "Add condition",
+        "SAVE": "Save",
+        "CANCEL": "Cancel"
+      },
+      "COLUMN": {
+        "sla": "SLA",
+        "status": "Status",
+        "subject": "Subject",
+        "contact": "Contact",
+        "inbox": "Inbox",
+        "created_at": "Created",
+        "waiting_since": "Waiting since",
+        "assignee": "Assignee",
+        "team": "Team",
+        "priority": "Priority",
+        "labels": "Labels"
+      },
+      "SORT": {
+        "last_activity_at_desc": "Last activity, newest first",
+        "last_activity_at_asc": "Last activity, oldest first",
+        "created_at_desc": "Created, newest first",
+        "created_at_asc": "Created, oldest first",
+        "priority_desc": "Priority, highest first",
+        "priority_asc": "Priority, lowest first",
+        "waiting_since_desc": "Waiting longest first",
+        "waiting_since_asc": "Waiting shortest first",
+        "priority_desc_created_at_asc": "Priority, then oldest",
+        "unread": "Unread first"
+      },
+      "API": {
+        "SAVE_SUCCESS": "View saved",
+        "SAVE_ERROR": "The view could not be saved",
+        "DELETE_SUCCESS": "View removed",
+        "DELETE_ERROR": "The view could not be removed"
+      },
+      "DELETE": {
+        "BUTTON": "Delete",
+        "CONFIRM": "Delete the view \"{name}\"?"
+      }
+    }
+  }
+}
