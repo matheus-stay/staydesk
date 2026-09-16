@@ -5,12 +5,17 @@ import { useAlert } from 'dashboard/composables';
 import SettingsLayout from 'dashboard/routes/dashboard/settings/SettingsLayout.vue';
 import BaseSettingsHeader from 'dashboard/routes/dashboard/settings/components/BaseSettingsHeader.vue';
 import AgentRolesAPI from '../api/agentRoles';
+import Select from 'dashboard/components-next/select/Select.vue';
 
 // Papel StayDesk por agente: completo ou leve (lê e só escreve nota interna).
 const KINDS = ['full', 'light'];
 
 const { t } = useI18n();
 const agents = ref([]);
+const kindOptions = KINDS.map(value => ({
+  value,
+  label: t(`STAYDESK.AGENT_ROLES.KIND.${value}`),
+}));
 const isLoading = ref(false);
 const saving = ref({});
 
@@ -60,18 +65,14 @@ onMounted(load);
               {{ t(`AGENT_MGMT.AGENT_TYPES.${agent.role.toUpperCase()}`) }}
             </td>
             <td class="py-3 text-right">
-              <select
-                :value="agent.kind"
+              <Select
+                :model-value="agent.kind"
+                :options="kindOptions"
                 :disabled="
                   agent.role === 'administrator' || saving[agent.user_id]
                 "
-                class="h-9 rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
-                @change="setKind(agent, $event.target.value)"
-              >
-                <option v-for="kind in KINDS" :key="kind" :value="kind">
-                  {{ t(`STAYDESK.AGENT_ROLES.KIND.${kind}`) }}
-                </option>
-              </select>
+                @update:model-value="kind => setKind(agent, kind)"
+              />
             </td>
           </tr>
         </tbody>

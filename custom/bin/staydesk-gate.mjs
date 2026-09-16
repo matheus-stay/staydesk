@@ -34,6 +34,7 @@ const OWN_PATHS = [
   /^theme\//,
   /^tailwind\.config\.js$/,
   /^public\/brand-assets\//,
+  /^public\/fonts\//,
   /^public\/[^/]+\.(png|ico|svg|json|xml|webmanifest)$/,
 ];
 

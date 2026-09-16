@@ -7,6 +7,7 @@ import wootConstants from 'dashboard/constants/globals';
 import Button from 'dashboard/components-next/button/Button.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import ConditionRow from 'dashboard/components-next/filter/ConditionRow.vue';
+import Select from 'dashboard/components-next/select/Select.vue';
 import {
   DEFAULT_COLUMNS,
   TEAM_VIEW_COLUMNS,
@@ -23,11 +24,13 @@ const props = defineProps({
 const emit = defineEmits(['save', 'cancel']);
 
 const { t } = useI18n();
+const sortOptions = Object.values(wootConstants.SORT_BY_TYPE).map(value => ({
+  value,
+  label: t(`STAYDESK.TEAM_VIEWS.SORT.${value}`),
+}));
 const store = useStore();
 const teams = useMapGetter('teams/getTeams');
 const { filterTypes, attributeFilterTypes } = useConversationFilterContext();
-
-const SORT_OPTIONS = Object.values(wootConstants.SORT_BY_TYPE);
 
 const form = ref({
   name: '',
@@ -123,14 +126,7 @@ const submit = () => {
       </label>
       <label class="grid gap-1 text-sm text-n-slate-12 md:col-span-2">
         <span>{{ t('STAYDESK.TEAM_VIEWS.FORM.SORT_BY') }}</span>
-        <select
-          v-model="form.sortBy"
-          class="h-9 px-3 text-sm border rounded-lg border-n-weak bg-n-alpha-1 text-n-slate-12"
-        >
-          <option v-for="option in SORT_OPTIONS" :key="option" :value="option">
-            {{ t(`STAYDESK.TEAM_VIEWS.SORT.${option}`) }}
-          </option>
-        </select>
+        <Select v-model="form.sortBy" :options="sortOptions" />
       </label>
     </div>
 

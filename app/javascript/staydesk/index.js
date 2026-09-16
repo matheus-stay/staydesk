@@ -1,6 +1,7 @@
 import dashboardOverrides from './i18n/dashboard';
 import { mergeStaydeskMessages } from './i18n/merge';
 import { applyDefaultColorScheme } from './config/theme';
+import './assets/staydesk.css';
 
 // Plugin da camada StayDesk para o dashboard. Montado uma vez, em
 // entrypoints/dashboard.js: app.use(StayDesk, { i18n }).

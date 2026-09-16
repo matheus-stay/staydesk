@@ -7,6 +7,7 @@ import SettingsLayout from 'dashboard/routes/dashboard/settings/SettingsLayout.v
 import BaseSettingsHeader from 'dashboard/routes/dashboard/settings/components/BaseSettingsHeader.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
 import wootConstants from 'dashboard/constants/globals';
+import Select from 'dashboard/components-next/select/Select.vue';
 import WorkspaceAPI from '../api/workspace';
 import { TEAM_VIEW_COLUMNS } from '../helpers/teamViewQuery';
 
@@ -41,6 +42,39 @@ const SORT_OPTIONS = Object.values(wootConstants.SORT_BY_TYPE);
 const { t } = useI18n();
 const store = useStore();
 const teams = useMapGetter('teams/getTeams');
+const inherit = () => ({ value: '', label: t('STAYDESK.WORKSPACE.INHERIT') });
+const teamOptions = computed(() => [
+  { value: 'default', label: t('STAYDESK.WORKSPACE.ACCOUNT_DEFAULT') },
+  ...teams.value.map(team => ({ value: team.id, label: team.name })),
+]);
+const layoutOptions = computed(() => [
+  inherit(),
+  { value: 'cards', label: t('STAYDESK.WORKSPACE.LAYOUT_CARDS') },
+  { value: 'table', label: t('STAYDESK.WORKSPACE.LAYOUT_TABLE') },
+]);
+const sortOptions = computed(() => [
+  inherit(),
+  ...SORT_OPTIONS.map(value => ({
+    value,
+    label: t(`STAYDESK.TEAM_VIEWS.SORT.${value}`),
+  })),
+]);
+const macrosOptions = computed(() => [
+  inherit(),
+  { value: 'all', label: t('STAYDESK.WORKSPACE.MACROS_ALL') },
+  { value: 'list', label: t('STAYDESK.WORKSPACE.MACROS_LIST') },
+]);
+const submitAsOptions = computed(() => [
+  inherit(),
+  { value: 'true', label: t('STAYDESK.WORKSPACE.YES') },
+  { value: 'false', label: t('STAYDESK.WORKSPACE.NO') },
+]);
+const afterSendOptions = computed(() => [
+  inherit(),
+  { value: 'stay', label: t('STAYDESK.WORKSPACE.AFTER_SEND_STAY') },
+  { value: 'next', label: t('STAYDESK.WORKSPACE.AFTER_SEND_NEXT') },
+  { value: 'close', label: t('STAYDESK.WORKSPACE.AFTER_SEND_CLOSE') },
+]);
 const dashboardApps = useMapGetter('dashboardApps/getRecords');
 const macros = useMapGetter('macros/getMacros');
 const attributesByModel = useMapGetter('attributes/getAttributesByModel');
@@ -182,17 +216,7 @@ watch(selectedTeam, load);
       <form class="grid gap-6" @submit.prevent="save">
         <label class="grid gap-1 text-sm text-n-slate-12">
           <span>{{ t('STAYDESK.WORKSPACE.TEAM') }}</span>
-          <select
-            v-model="selectedTeam"
-            class="h-9 max-w-sm rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
-          >
-            <option value="default">
-              {{ t('STAYDESK.WORKSPACE.ACCOUNT_DEFAULT') }}
-            </option>
-            <option v-for="team in teams" :key="team.id" :value="team.id">
-              {{ team.name }}
-            </option>
-          </select>
+          <Select v-model="selectedTeam" :options="teamOptions" />
         </label>
 
         <fieldset class="grid gap-2">
@@ -222,34 +246,11 @@ watch(selectedTeam, load);
           <div class="grid gap-4 md:grid-cols-2">
             <label class="grid gap-1 text-sm text-n-slate-12">
               <span>{{ t('STAYDESK.WORKSPACE.LAYOUT') }}</span>
-              <select
-                v-model="form.layout"
-                class="h-9 rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm"
-              >
-                <option value="">{{ t('STAYDESK.WORKSPACE.INHERIT') }}</option>
-                <option value="cards">
-                  {{ t('STAYDESK.WORKSPACE.LAYOUT_CARDS') }}
-                </option>
-                <option value="table">
-                  {{ t('STAYDESK.WORKSPACE.LAYOUT_TABLE') }}
-                </option>
-              </select>
+              <Select v-model="form.layout" :options="layoutOptions" />
             </label>
             <label class="grid gap-1 text-sm text-n-slate-12">
               <span>{{ t('STAYDESK.TEAM_VIEWS.FORM.SORT_BY') }}</span>
-              <select
-                v-model="form.sortBy"
-                class="h-9 rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm"
-              >
-                <option value="">{{ t('STAYDESK.WORKSPACE.INHERIT') }}</option>
-                <option
-                  v-for="option in SORT_OPTIONS"
-                  :key="option"
-                  :value="option"
-                >
-                  {{ t(`STAYDESK.TEAM_VIEWS.SORT.${option}`) }}
-                </option>
-              </select>
+              <Select v-model="form.sortBy" :options="sortOptions" />
             </label>
           </div>
           <span class="text-sm text-n-slate-12">{{
@@ -344,18 +345,7 @@ watch(selectedTeam, load);
           <legend class="text-sm font-medium text-n-slate-12">
             {{ t('STAYDESK.WORKSPACE.MACROS') }}
           </legend>
-          <select
-            v-model="form.macrosMode"
-            class="h-9 max-w-sm rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
-          >
-            <option value="">{{ t('STAYDESK.WORKSPACE.INHERIT') }}</option>
-            <option value="all">
-              {{ t('STAYDESK.WORKSPACE.MACROS_ALL') }}
-            </option>
-            <option value="list">
-              {{ t('STAYDESK.WORKSPACE.MACROS_LIST') }}
-            </option>
-          </select>
+          <Select v-model="form.macrosMode" :options="macrosOptions" />
           <div v-if="form.macrosMode === 'list'" class="flex flex-wrap gap-3">
             <label
               v-for="macro in macros"
@@ -379,32 +369,11 @@ watch(selectedTeam, load);
           <div class="grid gap-4 md:grid-cols-2">
             <label class="grid gap-1 text-sm text-n-slate-12">
               <span>{{ t('STAYDESK.WORKSPACE.SUBMIT_AS') }}</span>
-              <select
-                v-model="form.submitAs"
-                class="h-9 rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm"
-              >
-                <option value="">{{ t('STAYDESK.WORKSPACE.INHERIT') }}</option>
-                <option value="true">{{ t('STAYDESK.WORKSPACE.YES') }}</option>
-                <option value="false">{{ t('STAYDESK.WORKSPACE.NO') }}</option>
-              </select>
+              <Select v-model="form.submitAs" :options="submitAsOptions" />
             </label>
             <label class="grid gap-1 text-sm text-n-slate-12">
               <span>{{ t('STAYDESK.WORKSPACE.AFTER_SEND') }}</span>
-              <select
-                v-model="form.afterSend"
-                class="h-9 rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm"
-              >
-                <option value="">{{ t('STAYDESK.WORKSPACE.INHERIT') }}</option>
-                <option value="stay">
-                  {{ t('STAYDESK.WORKSPACE.AFTER_SEND_STAY') }}
-                </option>
-                <option value="next">
-                  {{ t('STAYDESK.WORKSPACE.AFTER_SEND_NEXT') }}
-                </option>
-                <option value="close">
-                  {{ t('STAYDESK.WORKSPACE.AFTER_SEND_CLOSE') }}
-                </option>
-              </select>
+              <Select v-model="form.afterSend" :options="afterSendOptions" />
             </label>
           </div>
         </fieldset>

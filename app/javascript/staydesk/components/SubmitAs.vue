@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useAlert } from 'dashboard/composables';
 import Button from 'dashboard/components-next/button/Button.vue';
+import Select from 'dashboard/components-next/select/Select.vue';
 import { useWorkspace } from '../composables/useWorkspace';
 import { useNextConversation } from '../composables/useNextConversation';
 
@@ -32,6 +33,12 @@ const enabled = computed(
 );
 const selected = computed(
   () => status.value || currentChat.value.status || 'open'
+);
+const statusOptions = computed(() =>
+  STATUSES.map(value => ({
+    value,
+    label: t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${value}.TEXT`),
+  }))
 );
 
 const afterSend = async () => {
@@ -65,15 +72,7 @@ const submit = async () => {
     v-if="enabled"
     class="flex items-center justify-end gap-2 border-t border-n-weak px-3 py-2"
   >
-    <select
-      v-model="status"
-      class="h-8 rounded-lg border border-n-weak bg-n-alpha-1 px-2 text-sm text-n-slate-12"
-      :disabled="disabled"
-    >
-      <option v-for="option in STATUSES" :key="option" :value="option">
-        {{ t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${option}.TEXT`) }}
-      </option>
-    </select>
+    <Select v-model="status" :options="statusOptions" :disabled="disabled" />
     <Button
       sm
       solid

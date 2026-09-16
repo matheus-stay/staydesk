@@ -41,8 +41,9 @@ const tailwindConfig = {
     extend: {
       fontFamily: {
         sans: defaultSansFonts,
-        inter: ['Inter', ...defaultSansFonts],
-        interDisplay: ['InterDisplay', ...defaultSansFonts],
+        // StayDesk: Geist (StayGallery) na frente; Inter fica como reserva.
+        inter: ['Geist', 'Inter', ...defaultSansFonts],
+        interDisplay: ['Geist', 'InterDisplay', ...defaultSansFonts],
       },
       fontWeight: {
         420: '420',
