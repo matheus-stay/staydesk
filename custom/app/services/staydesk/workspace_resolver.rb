@@ -27,7 +27,10 @@ class Staydesk::WorkspaceResolver
   private
 
   def role
-    @account.account_users.find_by(user_id: @user.id)&.role || 'agent'
+    account_user = @account.account_users.find_by(user_id: @user.id)
+    return 'light' if account_user&.staydesk_light?
+
+    account_user&.role || 'agent'
   end
 
   def team_ids

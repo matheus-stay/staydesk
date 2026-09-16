@@ -127,6 +127,18 @@
     "NEXT": {
       "BUTTON": "Avançar"
     },
-    "FIELDS_TITLE": "Campos do ticket"
+    "FIELDS_TITLE": "Campos do ticket",
+    "AGENT_ROLES": {
+      "SETTINGS_TITLE": "Papéis dos agentes",
+      "SETTINGS_DESCRIPTION": "Agente leve lê as conversas dos seus times e caixas de entrada e só escreve nota interna. Administrador é sempre completo.",
+      "KIND": {
+        "full": "Agente completo",
+        "light": "Agente leve"
+      },
+      "API": {
+        "SAVE_SUCCESS": "Papel salvo",
+        "SAVE_ERROR": "Não foi possível salvar o papel"
+      }
+    }
   }
 }

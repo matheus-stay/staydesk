@@ -11,6 +11,7 @@ Rails.application.routes.draw do
           namespace :staydesk do
             resource :ping, only: [:show], controller: 'ping'
             resource :workspace, only: [:show], controller: 'workspace'
+            resources :agent_roles, only: [:index, :update], param: :user_id
             resources :team_workspaces, only: [:index, :show, :update], param: :team_id do
               collection do
                 get :schema

@@ -26,6 +26,7 @@ const OWN_PATHS = [
   /^app\/javascript\/staydesk\//,
   /^docs\/staydesk\//,
   /^spec\/staydesk\//,
+  /^swagger\/staydesk\//,
   /^\.github\/workflows\/staydesk[_-]/,
   /^theme\//,
   /^tailwind\.config\.js$/,

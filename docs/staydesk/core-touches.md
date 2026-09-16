@@ -1,7 +1,7 @@
 # Registro de toques no núcleo
 
 Todo arquivo do Chatwoot (fora de `custom/`, `app/javascript/staydesk/`, `docs/staydesk/`, `spec/staydesk/`,
-tokens e ícones) que o StayDesk altera está listado aqui, com o tipo do toque. O gate
+`swagger/staydesk/`, tokens e ícones) que o StayDesk altera está listado aqui, com o tipo do toque. O gate
 (`node custom/bin/staydesk-gate.mjs`) lê esta tabela: arquivo alterado e não listado é violação;
 arquivo listado é checado conforme o tipo. Regras em `camada-staydesk.md`.
 

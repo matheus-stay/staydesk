@@ -61,6 +61,13 @@ export const useStaydeskSidebar = () => {
       activeOn: ['staydesk_workspace_settings'],
       to: accountScopedRoute('staydesk_workspace_settings'),
     },
+    {
+      name: 'StaydeskAgentRolesSettings',
+      label: t('STAYDESK.AGENT_ROLES.SETTINGS_TITLE'),
+      icon: 'i-lucide-user-round-cog',
+      activeOn: ['staydesk_agent_roles_settings'],
+      to: accountScopedRoute('staydesk_agent_roles_settings'),
+    },
   ]);
 
   return {

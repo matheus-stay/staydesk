@@ -3,6 +3,7 @@ import ConversationView from 'dashboard/routes/dashboard/conversation/Conversati
 import SettingsWrapper from 'dashboard/routes/dashboard/settings/SettingsWrapper.vue';
 import TeamViewsSettings from './pages/TeamViewsSettings.vue';
 import WorkspaceSettings from './pages/WorkspaceSettings.vue';
+import AgentRolesSettings from './pages/AgentRolesSettings.vue';
 import { teamViewFolderId } from './store/teamViews';
 
 const CONVERSATION_PERMISSIONS = [
@@ -55,6 +56,18 @@ const routes = [
         path: '',
         name: 'staydesk_workspace_settings',
         component: WorkspaceSettings,
+        meta: { permissions: ['administrator'] },
+      },
+    ],
+  },
+  {
+    path: frontendURL('accounts/:accountId/settings/staydesk/agent-roles'),
+    component: SettingsWrapper,
+    children: [
+      {
+        path: '',
+        name: 'staydesk_agent_roles_settings',
+        component: AgentRolesSettings,
         meta: { permissions: ['administrator'] },
       },
     ],

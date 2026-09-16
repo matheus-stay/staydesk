@@ -127,6 +127,18 @@
     "NEXT": {
       "BUTTON": "Next"
     },
-    "FIELDS_TITLE": "Ticket fields"
+    "FIELDS_TITLE": "Ticket fields",
+    "AGENT_ROLES": {
+      "SETTINGS_TITLE": "Agent roles",
+      "SETTINGS_DESCRIPTION": "Light agents read the conversations of their teams and inboxes and only write private notes. Administrators are always full.",
+      "KIND": {
+        "full": "Full agent",
+        "light": "Light agent"
+      },
+      "API": {
+        "SAVE_SUCCESS": "Role saved",
+        "SAVE_ERROR": "The role could not be saved"
+      }
+    }
   }
 }

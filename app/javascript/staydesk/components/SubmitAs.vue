@@ -21,13 +21,15 @@ const STATUSES = ['open', 'pending', 'snoozed', 'resolved'];
 const { t } = useI18n();
 const store = useStore();
 const router = useRouter();
-const { composer } = useWorkspace();
+const { composer, role } = useWorkspace();
 const { goToNext, goToList } = useNextConversation();
 const currentChat = useMapGetter('getSelectedChat');
 
 const status = ref(null);
 const isSubmitting = ref(false);
-const enabled = computed(() => composer.value.submit_as !== false);
+const enabled = computed(
+  () => composer.value.submit_as !== false && role.value !== 'light'
+);
 const selected = computed(
   () => status.value || currentChat.value.status || 'open'
 );
