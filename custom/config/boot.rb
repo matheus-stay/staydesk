@@ -3,8 +3,20 @@
 # Registra os caminhos da camada StayDesk na aplicação Rails: autoload, views,
 # rotas, migrations, tarefas rake e initializers de custom/. Chamado de
 # config/application.rb, o único ponto de montagem do backend.
+require_relative '../../lib/chatwoot_app'
+
 module StaydeskBoot
+  # No núcleo, ChatwootApp.extensions devolve %w[enterprise custom] só porque
+  # custom/ existe, injetando os módulos Enterprise mesmo com DISABLE_ENTERPRISE.
+  # Aqui enterprise só entra quando ChatwootApp.enterprise? é verdadeiro.
+  module Extensions
+    def extensions
+      enterprise? ? %w[enterprise custom] : %w[custom]
+    end
+  end
+
   def self.configure(config)
+    ChatwootApp.singleton_class.prepend(Extensions)
     root = Rails.root
     config.eager_load_paths << root.join('custom/lib')
     config.eager_load_paths += Dir[root.join('custom/app/*').to_s]
