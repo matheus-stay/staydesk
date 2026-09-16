@@ -50,7 +50,13 @@ resto é fixo nos dicionários. A camada mescla sobreposições por cima, sem ed
 `node custom/bin/marca.mjs varredura` falha quando sobra texto visível com "Chatwoot" sem sobreposição
 (dicionários, `config/locales`, views ERB e Liquid). Roda no CI junto com o gate.
 
-## 4. O que nunca se renomeia
+## 4. Tema claro por padrão
+
+O Chatwoot sem preferência guardada segue o sistema operacional. O StayDesk nasce claro: na primeira
+visita o plugin grava `light` na preferência local (`app/javascript/staydesk/config/theme.js`). A escolha
+do usuário em Perfil › Aparência (claro, escuro ou automático) continua valendo depois disso.
+
+## 5. O que nunca se renomeia
 
 Contratos de código: `window.chatwootSDK`, `window.$chatwoot`, `window.chatwootSettings`
 (SDK do widget nos sites dos clientes), o cookie `cw_conversation`, o módulo `Chatwoot` do Rails,
