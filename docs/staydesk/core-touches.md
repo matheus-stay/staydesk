@@ -20,6 +20,19 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/entrypoints/survey.js` | montagem | SPEC-00 | Textos StayDesk da pesquisa de satisfação |
 | `app/javascript/dashboard/routes/index.js` | montagem | SPEC-00 | Rotas da camada |
 
+## Views sobrepostas (o original não muda)
+
+| Arquivo | Tipo | Spec | Motivo |
+|---|---|---|---|
+| `app/views/super_admin/devise/sessions/new.html.erb` | view | SPEC-02 | Título e `alt` do logo fixos no HTML |
+| `app/views/super_admin/application/_navigation.html.erb` | view | SPEC-02 | `alt` do logo e texto de versão fixos |
+| `app/views/installation/onboarding/index.html.erb` | view | SPEC-02 | Título, `alt` e boas-vindas da instalação |
+| `app/views/mailers/administrator_notifications/account_compliance_mailer/account_deleted.liquid` | view | SPEC-02 | E-mail com o nome fixo |
+| `app/views/mailers/administrator_notifications/account_notification_mailer/account_deletion_user_initiated.liquid` | view | SPEC-02 | E-mail com o nome fixo |
+| `app/views/mailers/administrator_notifications/account_notification_mailer/account_deletion_for_inactivity.liquid` | view | SPEC-02 | E-mail com o nome fixo |
+
+Ícones e manifesto em `public/` são substituídos no lugar (binários e JSON de marca); o gate os ignora.
+
 ## Legado do ramo de UX (a migrar)
 
 Edições no lugar feitas antes desta regra, quase todas de classe. Cada arquivo sai desta lista quando

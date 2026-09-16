@@ -23,3 +23,5 @@ jobs:
           node-version: 24
       - name: Check core touches
         run: node custom/bin/staydesk-gate.mjs --base develop
+      - name: Check brand texts
+        run: node custom/bin/marca.mjs varredura

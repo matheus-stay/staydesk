@@ -1,0 +1,11 @@
+# Textos do backend que o núcleo escreve com "Chatwoot". O Rails mescla este arquivo
+# por cima de config/locales/pt_BR.yml (mesmas chaves). Conferido por custom/bin/marca.mjs.
+pt_BR:
+  integration_apps:
+    dyte:
+      short_description: 'Iniciar chamadas de vídeo/voz com clientes diretamente do StayDesk.'
+      description: 'O Cloudflare RealtimeKit permite que seus atendentes iniciem chamadas de vídeo e voz com seus clientes diretamente pelo StayDesk.'
+    slack:
+      description: "Integre o StayDesk com o Slack para manter seu time em sincronia. Essa integração permite que você receba notificações de novas conversas e as responda diretamente na interface do Slack."
+    webhooks:
+      description: 'Eventos webhook fornecem atualizações sobre atividades em tempo real na sua conta StayDesk. Você pode se inscrever em seus eventos preferidos, e o StayDesk enviará as chamadas HTTP com as atualizações.'

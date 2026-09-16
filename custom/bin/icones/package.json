@@ -1,0 +1,9 @@
+{
+  "name": "staydesk-icones",
+  "private": true,
+  "description": "Gera os ícones do StayDesk (favicon, badge, Apple, Android, Microsoft) a partir de public/brand-assets/icon.svg",
+  "type": "module",
+  "dependencies": {
+    "@resvg/resvg-js": "2.6.2"
+  }
+}

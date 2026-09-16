@@ -43,6 +43,7 @@ migrados aos poucos para classe-só ou para a camada.
 
 ```bash
 node custom/bin/staydesk-gate.mjs            # gate contra develop (espelho do oficial)
+node custom/bin/marca.mjs varredura          # nenhum texto visível diz Chatwoot (docs marca.md)
 pnpm exec vitest --no-watch app/javascript/staydesk
 bundle exec rspec spec/staydesk
 ```

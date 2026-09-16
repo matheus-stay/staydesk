@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 // Gate de toques no núcleo.
 //
 // Compara HEAD com a base do upstream (merge-base com `develop`, o espelho do
@@ -127,11 +128,15 @@ const run = () => {
       return;
     }
     if (type === 'view') {
-      violations.push(`${path}: registrado como view; o original não pode mudar`);
+      violations.push(
+        `${path}: registrado como view; o original não pode mudar`
+      );
       return;
     }
     if (status !== 'M') {
-      violations.push(`${path}: arquivo ${status === 'A' ? 'novo' : 'removido'} em pasta do upstream; mover para custom/ ou app/javascript/staydesk/`);
+      violations.push(
+        `${path}: arquivo ${status === 'A' ? 'novo' : 'removido'} em pasta do upstream; mover para custom/ ou app/javascript/staydesk/`
+      );
       return;
     }
     checkHunks(type, hunksOf(base, path)).forEach(hunk => {
@@ -141,11 +146,15 @@ const run = () => {
 
   const baseShort = base.slice(0, 10);
   if (violations.length) {
-    console.error(`staydesk-gate: ${violations.length} violação(ões) contra ${upstreamRef} (${baseShort})`);
+    console.error(
+      `staydesk-gate: ${violations.length} violação(ões) contra ${upstreamRef} (${baseShort})`
+    );
     violations.forEach(v => console.error(`  - ${v}`));
     process.exit(1);
   }
-  console.log(`staydesk-gate: ok contra ${upstreamRef} (${baseShort}); ${legacy} arquivo(s) legado(s) a migrar`);
+  console.log(
+    `staydesk-gate: ok contra ${upstreamRef} (${baseShort}); ${legacy} arquivo(s) legado(s) a migrar`
+  );
 };
 
 run();

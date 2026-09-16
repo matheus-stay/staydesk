@@ -1,1 +1,155 @@
-{}
+{
+  "AUDIT_LOGS": {
+    "SIDEBAR_TXT": "<p><b>Logs de Auditoria</b> </p><p> Os Logs de Auditoria são rastros para eventos e ações em um Sistema StayDesk. </p>",
+    "LIST": {
+      "DESC": "Logs de auditoria são rastros para eventos e ações em um Sistema de StayDesk."
+    }
+  },
+  "CONVERSATION": {
+    "INSTAGRAM_RESTRICTION_BANNER": "As mensagens do Instagram estão sendo afetadas por um problema na API da Meta, e não por uma falha no StayDesk. Algumas mensagens ou ações podem sofrer atrasos ou ficar temporariamente indisponíveis. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível.",
+    "NATIVE_APP_ADVISORY": "Esta mensagem foi enviada a partir do aplicativo nativo. Responda pelo StayDesk para manter a janela de mensagens ativa."
+  },
+  "GENERAL_SETTINGS": {
+    "UPDATE_CHATWOOT": "Uma atualização {latestChatwootVersion} para o StayDesk está disponível. Por favor, atualize sua instância.",
+    "PAYMENT_PENDING": "Seu pagamento está pendente. Por favor, atualize suas informações de pagamento para continuar usando o StayDesk",
+    "UPGRADE": "Atualize para continuar usando o StayDesk",
+    "LIMITS_UPGRADE": "Sua conta excedeu os limites de uso. Por favor, faça um upgrade do seu plano para continuar usando o StayDesk"
+  },
+  "HELP_CENTER": {
+    "CREATE_PORTAL_DIALOG": {
+      "NAME": {
+        "PLACEHOLDER": "Guia do Usuário | StayDesk"
+      }
+    },
+    "PORTAL_SETTINGS": {
+      "INTEGRATIONS": {
+        "LIVE_CHAT": {
+          "TITLE": "Chat ao vivo com o StayDesk"
+        }
+      }
+    }
+  },
+  "INBOX_MGMT": {
+    "CREATE_FLOW": {
+      "CHANNEL": {
+        "BODY": "Escolha o provedor que você deseja integrar com o StayDesk."
+      }
+    },
+    "ADD": {
+      "FB": {
+        "HELP": "Obs: ao fazer login, apenas temos acesso às mensagens da sua página. Suas mensagens privadas nunca podem ser acessadas pelo StayDesk.",
+        "RESTRICTED_WARNING": "A criação de caixas de entrada do Facebook está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível."
+      },
+      "INSTAGRAM": {
+        "RESTRICTED_WARNING": "A criação de caixas de entrada do Instagram está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível.",
+        "SETTINGS_RESTRICTED_WARNING": "As mensagens do Instagram estão sendo afetadas por um problema na API da Meta, e não por uma falha no StayDesk. Algumas mensagens ou ações podem sofrer atrasos ou ficar temporariamente indisponíveis. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível."
+      },
+      "WHATSAPP": {
+        "EMBEDDED_SIGNUP": {
+          "ACCESS_REQUEST": {
+            "DESCRIPTION": "Conecte um novo número ou um número existente do aplicativo WhatsApp Business sem configuração manual. Para solicitar essa opção, informe à nossa equipe o que sua empresa faz, como você usará o WhatsApp e qual conta do StayDesk precisa de acesso."
+          },
+          "RESTRICTED_WARNING": "O WhatsApp Embedded Signup está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Você pode utilizar a configuração manual para números compatíveis com a Cloud API. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível."
+        },
+        "API": {
+          "MANUAL_RESTRICTION_WARNING": "O WhatsApp Embedded Signup está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. A configuração manual funciona apenas para números que já estão conectados à WhatsApp Cloud API. Números que utilizam a coexistência com o aplicativo WhatsApp Business ainda não são compatíveis com esse fluxo. Estamos trabalhando em conjunto com a Meta para resolver o problema o mais rápido possível. Agradecemos pela sua paciência."
+        }
+      },
+      "AUTH": {
+        "DESC": "O StayDesk suporta widgets de chats ao vivo, Facebook Messenger, perfis do Twitter, WhatsApp, E-mails, etc., como canais. Se você quiser criar um canal personalizado, você pode criá-lo usando o canal API. Para começar, escolha um dos canais abaixo."
+      },
+      "DETAILS": {
+        "DESC": "No menu abaixo, selecione a Página do Facebook que você deseja se conectar ao StayDesk. Você também pode dar um nome personalizado para sua caixa de entrada para uma melhor identificação."
+      },
+      "FINISH": {
+        "DESC": "Você concluiu a integração da sua página do Facebook com o StayDesk. Na próxima vez que um cliente enviar uma mensagem para sua página, a conversa aparecerá automaticamente na sua caixa de entrada. <br> Também estamos fornecendo um script de widget que você pode adicionar facilmente ao seu site. Assim que estiver disponível no seu site, os clientes poderão enviar mensagens diretamente do seu site, sem a ajuda de nenhuma ferramenta externa, e a conversa aparecerá aqui, no StayDesk. Legal, hein? Com certeza estamos tentamos ser :)"
+      }
+    },
+    "SETTINGS_POPUP": {
+      "WHATSAPP_BUSINESS_MANAGEMENT_TOKEN_UPDATE_SUBHEADER": "Forneça um token com acesso a esta conta do WhatsApp Business quando o StayDesk não conseguir recuperar seus modelos de mensagem. O StayDesk utiliza esse token apenas para sincronizar os modelos de mensagem.",
+      "WHATSAPP_MANUAL_MIGRATION": {
+        "DIALOG": {
+          "VERIFY_NOTICE": "O StayDesk verificará estas credenciais com o Meta antes de aplicar quaisquer alterações. Se a verificação falhar, a configuração atual ficará intacta."
+        },
+        "STEPS": {
+          "REVIEW_MIGRATION": {
+            "DESCRIPTION": "Confirme os detalhes da conexão antes de reconectar esta caixa de entrada. O StayDesk verificará o token, WABA e o número de telefone com meta antes de aplicar as alterações."
+          }
+        }
+      }
+    },
+    "WIDGET_BUILDER": {
+      "BRANDING_TEXT": "Desenvolvido por StayDesk"
+    }
+  },
+  "INTEGRATION_SETTINGS": {
+    "DESCRIPTION": "StayDesk se integra com várias ferramentas e serviços para melhorar a eficiência de seu time. Explore a lista abaixo para configurar seus aplicativos favoritos.",
+    "WEBHOOK": {
+      "PAYWALL": {
+        "AVAILABLE_ON": "Use webhooks para receber eventos em tempo real de sua conta StayDesk."
+      },
+      "FORM": {
+        "DESC": "Webhook Os eventos fornecem informações em tempo real sobre o que está acontecendo na sua conta do StayDesk. Digite um URL válido para configurar um retorno de chamada."
+      },
+      "SIDEBAR_TXT": "<p><b>Webhooks</b> </p> <p>Webhooks são retornos de chamada HTTP que podem ser definidos para todas as contas. Eles são acionados por eventos como a criação de mensagens no StayDesk. Você pode criar mais de um webhook para esta conta. <br /> <br /> Para criar um <b> webhook </b>, clique no botão <b> Adicionar novo webhook </b>. Você também pode remover qualquer webhook existente clicando no botão Excluir.</p>"
+    },
+    "SLACK": {
+      "HELP_TEXT": {
+        "BODY": "Com essa integração, todas as suas conversas recebidas serão sincronizadas com o canal ***{selectedChannelName}*** em seu espaço de trabalho Slack. Você pode gerenciar todas as suas conversas com clientes diretamente no canal e nunca perder uma mensagem.\n\nAqui estão os principais recursos da integração:\n\n**Responda a conversas de dentro do Slack:** Para responder a uma conversa no canal ***{selectedChannelName}*** Slack, simplesmente digite a sua mensagem e envie-a como um tópico. Isso criará uma resposta ao cliente por meio do StayDesk. Simples assim!\n\n **Crie notas privadas:** Se você quiser criar notas privadas em vez de respostas, inicie sua mensagem com ***`nota:`***. Isso garante que sua mensagem seja privada e não seja visível para o cliente.\n\n**Associar um perfil de agente:** Se a pessoa que respondeu no Slack tem um perfil de agente no StayDesk sob o mesmo e-mail, as respostas serão associadas automaticamente com esse perfil de agente. Isso significa que você pode facilmente controlar quem disse o quê e quando. Por outro lado, quando o respondente não tiver um perfil de agente associado, as respostas aparecerão do perfil do bot para o cliente."
+      },
+      "SELECT_CHANNEL": {
+        "DESCRIPTION": "Seu espaço de trabalho Slack agora está ligado com o StayDesk. No entanto, a integração está inativa no momento. Para ativar a integração e conectar um canal ao StayDesk, por favor, clique no botão abaixo.\n\n**Nota:** Se você está tentando conectar-se a um canal privado, adicione o aplicativo StayDesk no canal do Slack antes de prosseguir com esta etapa."
+      }
+    },
+    "DASHBOARD_APPS": {
+      "SIDEBAR_TXT": "<p><b>Painel de Aplicativos</b></p><p>O Painel de Aplicativos permite que as organizações incorporem um aplicativo dentro do Painel de Aplicativos do StayDesk para fornecer o contexto para agentes de suporte ao cliente. Este recurso permite-lhe criar uma aplicação independente e incorporá-la dentro da dashboard para fornecer informações do usuário, seus pedidos ou seu histórico de pagamentos anteriores.</p><p>Quando você incorpora seu aplicativo usando o Painel de Aplicativos do StayDesk, sua aplicação irá obter o contexto da conversa e entrar em contato como um evento de janela. Implementar um ouvinte para o evento de mensagem em sua página receber o contexto.</p><p>Para adicionar um novo aplicativo no Painel de Aplicativos, clique no botão 'Adicionar um novo aplicativo'.</p>"
+    }
+  },
+  "LABEL_MGMT": {
+    "SUGGESTIONS": {
+      "POWERED_BY": "StayDesk AI"
+    }
+  },
+  "LOGIN": {
+    "TITLE": "Entrar no StayDesk"
+  },
+  "MFA_VERIFICATION": {
+    "HELP_MODAL": {
+      "CONTACT_DESC_CLOUD": "Se você perdeu o acesso tanto ao aplicativo autenticador quanto aos códigos de backup, entre em contato com o suporte do StayDesk para obter ajuda."
+    }
+  },
+  "ONBOARDING_INBOX_SETUP": {
+    "META_RESTRICTION": {
+      "MESSAGE": "A configuração de caixas de entrada do Facebook, Instagram e WhatsApp está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível."
+    }
+  },
+  "RESET_PASSWORD": {
+    "DESCRIPTION": "Digite o endereço de e-mail que você usa para acessar o StayDesk para obter as instruções de redefinição da senha.",
+    "API": {
+      "ERROR_MESSAGE": "Não foi possível conectar ao servidor StayDesk. Por favor, tente novamente."
+    }
+  },
+  "PROFILE_SETTINGS": {
+    "FORM": {
+      "INTERFACE_SECTION": {
+        "NOTE": "Personalize a aparência do seu painel do StayDesk."
+      }
+    }
+  },
+  "SECURITY_SETTINGS": {
+    "SAML": {
+      "SP_ENTITY_ID": {
+        "TOOLTIP": "Identificador exclusivo do StayDesk como Provedor de Serviço - configure-o nas configurações do seu IdP"
+      }
+    }
+  },
+  "REGISTER": {
+    "GET_STARTED": "Comece a utilizar StayDesk"
+  },
+  "YEAR_IN_REVIEW": {
+    "SHARE_MODAL": {
+      "SHARE_TEXT": "Confira minha retrospectiva de {year} com o StayDesk!",
+      "BRANDING": "Feito com StayDesk"
+    }
+  }
+}
