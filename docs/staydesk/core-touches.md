@@ -1,0 +1,100 @@
+# Registro de toques no núcleo
+
+Todo arquivo do Chatwoot (fora de `custom/`, `app/javascript/staydesk/`, `docs/staydesk/`, `spec/staydesk/`,
+tokens e ícones) que o StayDesk altera está listado aqui, com o tipo do toque. O gate
+(`node custom/bin/staydesk-gate.mjs`) lê esta tabela: arquivo alterado e não listado é violação;
+arquivo listado é checado conforme o tipo. Regras em `camada-staydesk.md`.
+
+Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha que chama a camada),
+`classe` (só classe Tailwind), `view` (partial sobreposta em `custom/app/views`; o original não muda),
+`legado` (edição no lugar herdada do ramo de UX; não é checada e deve ser migrada).
+
+## Montagem e ganchos
+
+| Arquivo | Tipo | Spec | Motivo |
+|---|---|---|---|
+| `config/application.rb` | montagem | SPEC-00 | Chama `custom/config/boot.rb`, que registra os caminhos de `custom/` |
+| `vite.shared.ts` | montagem | SPEC-00 | Alias `staydesk` |
+| `app/javascript/entrypoints/dashboard.js` | montagem | SPEC-00 | Plugin da camada com os textos do dashboard |
+| `app/javascript/entrypoints/widget.js` | montagem | SPEC-00 | Textos StayDesk do widget |
+| `app/javascript/entrypoints/survey.js` | montagem | SPEC-00 | Textos StayDesk da pesquisa de satisfação |
+| `app/javascript/dashboard/routes/index.js` | montagem | SPEC-00 | Rotas da camada |
+
+## Legado do ramo de UX (a migrar)
+
+Edições no lugar feitas antes desta regra, quase todas de classe. Cada arquivo sai desta lista quando
+for reduzido a classe-só (passa a `classe`) ou quando a mudança for movida para a camada.
+
+| Arquivo | Tipo | Spec | Motivo |
+|---|---|---|---|
+| `app/javascript/dashboard/components-next/Companies/CompaniesHeader/CompanyHeader.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Companies/CompaniesListLayout.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Companies/CompanyDetail/CompanyContactsSidebar.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Companies/CompanyDetail/CompanyNotesSidebar.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Contacts/ContactsCard/ContactsCard.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Contacts/ContactsForm/ContactImportDialog.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Contacts/ContactsHeader/ContactHeader.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Contacts/ContactsListLayout.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Contacts/ContactsSidebar/ContactMerge.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Contacts/Pages/ContactsList.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Conversation/ConversationCard/ConversationCardExpanded.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Conversation/ConversationCard/UnreadBadge.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Conversation/SidepanelSwitch.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/Inbox/InboxCard.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/button/Button.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/copilot/CopilotInput.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/input/ChoiceToggle.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/input/Input.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/message/Message.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/message/MessageList.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/message/bubbles/Base.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/message/bubbles/Text/Index.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/sidebar/SidebarCollapsedPopover.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/sidebar/SidebarGroup.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/sidebar/SidebarGroupHeader.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/sidebar/SidebarGroupLeaf.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/sidebar/SidebarSubGroup.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/sidebar/specs/ChannelLeaf.spec.js` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/sidebar/specs/SidebarCollapsedPopover.spec.js` | legado | UX | Arquivo novo do ramo de UX em pasta do upstream |
+| `app/javascript/dashboard/components-next/sidebar/specs/SidebarGroup.spec.js` | legado | UX | Arquivo novo do ramo de UX em pasta do upstream |
+| `app/javascript/dashboard/components-next/sidebar/specs/SidebarGroupHeader.spec.js` | legado | UX | Arquivo novo do ramo de UX em pasta do upstream |
+| `app/javascript/dashboard/components-next/sidebar/specs/SidebarSubGroup.spec.js` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components-next/tabbar/TabBar.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/Accordion/AccordionItem.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/ChatList.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/ChatListHeader.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/ConversationList.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/ui/Tabs/TabsItem.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/ChatTypeTabs.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/WootWriter/EditorModeToggle.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/WootWriter/ReplyBottomPanel.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/WootWriter/ReplyTopPanel.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/CannedResponse.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/ConversationBox.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/ConversationCard.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/ConversationHeader.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/ConversationSidebar.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/MessagesView.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/ReplyBox.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/conversationBulkActions/BulkLabelActions.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/components/widgets/conversation/conversationBulkActions/Index.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/i18n/locale/en/chatlist.json` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/Dashboard.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/companies/pages/CompaniesIndex.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/conversation/ContactPanel.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/conversation/ConversationView.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/inbox/components/InboxDisplayMenu.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/inbox/components/MenuItem.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/inbox/helpers/InboxViewHelpers.js` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/settings/reports/ReportContainer.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/settings/reports/components/BotMetrics.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/settings/reports/components/CsatMetrics.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/settings/reports/components/CsatTable.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/settings/reports/components/ReportDrilldownCard.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/settings/reports/components/SLA/SLAMetrics.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/settings/reports/components/SLA/SLATable.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/settings/reports/components/SummaryReports.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/dashboard/routes/dashboard/settings/reports/components/overview/MetricCard.vue` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/shared/store/globalConfig.js` | legado | UX | Edição no lugar do ramo de UX |
+| `app/javascript/shared/store/specs/globalConfig.spec.js` | legado | UX | Arquivo novo do ramo de UX em pasta do upstream |

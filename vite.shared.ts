@@ -11,6 +11,7 @@ export const aliases = {
   survey: path.resolve('./app/javascript/survey'),
   widget: path.resolve('./app/javascript/widget'),
   assets: path.resolve('./app/javascript/dashboard/assets'),
+  staydesk: path.resolve('./app/javascript/staydesk'),
 };
 
 export const vueOptions = {

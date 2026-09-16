@@ -1,0 +1,25 @@
+name: StayDesk gate
+
+on:
+  push:
+    branches:
+      - 'staydesk-*'
+      - 'sync/**'
+  pull_request:
+    branches:
+      - 'staydesk-*'
+
+jobs:
+  core-touches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch upstream mirror
+        run: git fetch origin develop:develop
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check core touches
+        run: node custom/bin/staydesk-gate.mjs --base develop

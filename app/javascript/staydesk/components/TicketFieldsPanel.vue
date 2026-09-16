@@ -3,9 +3,9 @@ import { computed, onMounted, ref } from 'vue';
 import { useMapGetter, useStore } from 'dashboard/composables/store';
 
 import AccordionItem from 'dashboard/components/Accordion/AccordionItem.vue';
-import ConversationAction from './ConversationAction.vue';
-import ConversationInfo from './ConversationInfo.vue';
-import ConversationParticipant from './ConversationParticipant.vue';
+import ConversationAction from 'dashboard/routes/dashboard/conversation/ConversationAction.vue';
+import ConversationInfo from 'dashboard/routes/dashboard/conversation/ConversationInfo.vue';
+import ConversationParticipant from 'dashboard/routes/dashboard/conversation/ConversationParticipant.vue';
 
 const props = defineProps({
   conversationId: {

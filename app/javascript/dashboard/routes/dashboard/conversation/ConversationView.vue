@@ -9,11 +9,11 @@ import { BUS_EVENTS } from 'shared/constants/busEvents';
 import CmdBarConversationSnooze from 'dashboard/routes/dashboard/commands/CmdBarConversationSnooze.vue';
 import { emitter } from 'shared/helpers/mitt';
 import SidepanelSwitch from 'dashboard/components-next/Conversation/SidepanelSwitch.vue';
-import ConversationWorkspaceTabs from 'dashboard/components-next/Conversation/ConversationWorkspaceTabs.vue';
+import ConversationWorkspaceTabs from 'staydesk/components/ConversationWorkspaceTabs.vue';
 import ConversationSidebar from 'dashboard/components/widgets/conversation/ConversationSidebar.vue';
 import { conversationListPageURL } from 'dashboard/helper/URLHelper';
-import { useConversationWorkspaceTabs } from 'dashboard/composables/useConversationWorkspaceTabs';
-import TicketFieldsPanel from './TicketFieldsPanel.vue';
+import { useConversationWorkspaceTabs } from 'staydesk/composables/useConversationWorkspaceTabs';
+import TicketFieldsPanel from 'staydesk/components/TicketFieldsPanel.vue';
 
 export default {
   components: {

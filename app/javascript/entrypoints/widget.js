@@ -6,6 +6,7 @@ import store from '../widget/store';
 import App from '../widget/App.vue';
 import ActionCableConnector from '../widget/helpers/actionCable';
 import i18nMessages from '../widget/i18n';
+import { mergeStaydeskWidgetMessages } from 'staydesk/i18n/widget';
 import router from '../widget/router';
 import { directive as onClickaway } from 'vue3-click-away';
 import { domPurifyConfig } from '../shared/helpers/HTMLSanitizer';
@@ -24,6 +25,7 @@ const i18n = createI18n({
 
 const app = createApp(App);
 app.use(i18n);
+mergeStaydeskWidgetMessages(i18n);
 app.use(store);
 app.use(router);
 app.use(VueDOMPurifyHTML, domPurifyConfig);

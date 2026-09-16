@@ -18,6 +18,7 @@ import { sync } from 'vuex-router-sync';
 import { createPinia } from 'pinia';
 import router, { initalizeRouter } from 'dashboard/routes';
 import store from 'dashboard/store';
+import StayDesk from 'staydesk';
 import constants from 'dashboard/constants/globals';
 import * as Sentry from '@sentry/vue';
 import {
@@ -49,6 +50,7 @@ app.use(i18n);
 app.use(store);
 app.use(pinia);
 app.use(router);
+app.use(StayDesk, { i18n });
 
 // [VITE] Disabled this, need to renable later
 if (window.errorLoggingConfig) {
