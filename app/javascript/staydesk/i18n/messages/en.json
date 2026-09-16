@@ -56,6 +56,12 @@
         "BUTTON": "Delete",
         "CONFIRM": "Delete the view \"{name}\"?"
       }
+    },
+    "SLA": {
+      "PAUSED": "Paused",
+      "RUNNING": "On time",
+      "WARNING": "Due soon",
+      "BREACHED": "Breached"
     }
   }
 }

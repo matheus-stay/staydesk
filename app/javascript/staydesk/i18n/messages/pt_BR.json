@@ -56,6 +56,12 @@
         "BUTTON": "Excluir",
         "CONFIRM": "Excluir a visualização \"{name}\"?"
       }
+    },
+    "SLA": {
+      "PAUSED": "Pausado",
+      "RUNNING": "No prazo",
+      "WARNING": "Vencendo",
+      "BREACHED": "Vencido"
     }
   }
 }

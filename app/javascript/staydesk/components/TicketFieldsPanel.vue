@@ -6,6 +6,7 @@ import AccordionItem from 'dashboard/components/Accordion/AccordionItem.vue';
 import ConversationAction from 'dashboard/routes/dashboard/conversation/ConversationAction.vue';
 import ConversationInfo from 'dashboard/routes/dashboard/conversation/ConversationInfo.vue';
 import ConversationParticipant from 'dashboard/routes/dashboard/conversation/ConversationParticipant.vue';
+import SlaBadge from './SlaBadge.vue';
 
 const props = defineProps({
   conversationId: {
@@ -62,6 +63,7 @@ onMounted(() => {
           {{ `#${conversationId}` }}
         </p>
       </div>
+      <SlaBadge :attributes="currentChat.custom_attributes" />
     </header>
 
     <div class="flex-1 overflow-y-auto pb-8 pt-3">
