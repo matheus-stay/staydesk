@@ -22,6 +22,7 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/dashboard/routes/dashboard/conversation/Macros/List.vue` | gancho | SPEC-04 | `v-show` por macro conforme a área de trabalho |
 | `app/javascript/dashboard/components-next/sidebar/SidebarProfileMenuStatus.vue` | gancho | SPEC-09 | Lista de status e troca de status pelo catálogo da conta (4 linhas) |
 | `app/javascript/dashboard/routes/dashboard/settings/automation/constants.js` | gancho | SPEC-08 | Eventos de SLA na lista de eventos e nas condições por evento das automações |
+| `app/javascript/dashboard/components/widgets/conversation/MoreActions.vue` | gancho | SPEC-10 | Seletor de status personalizado no lugar do botão Resolver quando a conta tem catálogo (3 linhas) |
 
 ## Views sobrepostas (o original não muda)
 

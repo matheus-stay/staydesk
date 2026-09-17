@@ -7,8 +7,10 @@ import { useI18n } from 'vue-i18n';
 import { emitter } from 'shared/helpers/mitt';
 import EmailTranscriptModal from './EmailTranscriptModal.vue';
 import ResolveAction from '../../buttons/ResolveAction.vue';
+import StaydeskTicketStatusPicker from 'staydesk/components/TicketStatusPicker.vue'; // staydesk:hook
 import ButtonV4 from 'dashboard/components-next/button/Button.vue';
 import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.vue';
+import { useStaydeskTicketStatus } from 'staydesk/composables/useTicketStatus'; // staydesk:hook
 
 import {
   CMD_MUTE_CONVERSATION,
@@ -19,6 +21,7 @@ import {
 // No props needed as we're getting currentChat from the store directly
 const store = useStore();
 const { t } = useI18n();
+const staydeskTicketStatus = useStaydeskTicketStatus(); // staydesk:hook
 
 const [showEmailActionsModal, toggleEmailModal] = useToggle(false);
 const [showActionsDropdown, toggleDropdown] = useToggle(false);
@@ -92,7 +95,9 @@ onUnmounted(() => {
 
 <template>
   <div class="relative flex items-center gap-2 actions--container">
+    <StaydeskTicketStatusPicker v-if="staydeskTicketStatus.enabled.value" />
     <ResolveAction
+      v-else
       :conversation-id="currentChat.id"
       :status="currentChat.status"
     />

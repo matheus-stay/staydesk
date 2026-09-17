@@ -8,6 +8,7 @@ import { dynamicTime } from 'shared/helpers/timeHelper';
 import Button from 'dashboard/components-next/button/Button.vue';
 import SlaBadge from './SlaBadge.vue';
 import { DEFAULT_COLUMNS } from '../helpers/teamViewQuery';
+import { useTicketStatusStore } from '../store/ticketStatus';
 
 // A lista de conversas em tabela, como a view do Zendesk: colunas configuradas
 // pela área de trabalho do time, ordenação vinda da lista, clique abre a conversa.
@@ -25,6 +26,8 @@ const route = useRoute();
 const router = useRouter();
 const currentChat = useMapGetter('getSelectedChat');
 const inboxes = useMapGetter('inboxes/getInboxes');
+const ticketStatuses = useTicketStatusStore();
+ticketStatuses.ensureLoaded();
 
 const visibleColumns = computed(() =>
   props.columns.length ? props.columns : DEFAULT_COLUMNS
@@ -44,8 +47,9 @@ const seconds = value => (value ? dynamicTime(value) : '');
 const cell = (conversation, column) => {
   switch (column) {
     case 'status':
-      return t(
-        `CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${conversation.status}.TEXT`
+      return (
+        ticketStatuses.forConversation(conversation)?.name ||
+        t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${conversation.status}.TEXT`)
       );
     case 'subject':
       return subject(conversation);

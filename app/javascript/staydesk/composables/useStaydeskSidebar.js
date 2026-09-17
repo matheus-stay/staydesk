@@ -89,6 +89,13 @@ export const useStaydeskSidebar = () => {
       activeOn: ['staydesk_agent_statuses_settings'],
       to: accountScopedRoute('staydesk_agent_statuses_settings'),
     },
+    {
+      name: 'StaydeskTicketStatusesSettings',
+      label: t('STAYDESK.TICKET_STATUS.SETTINGS_TITLE'),
+      icon: 'i-lucide-tags',
+      activeOn: ['staydesk_ticket_statuses_settings'],
+      to: accountScopedRoute('staydesk_ticket_statuses_settings'),
+    },
   ]);
 
   return {

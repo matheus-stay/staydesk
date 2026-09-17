@@ -259,6 +259,41 @@
         "BUTTON": "Delete",
         "CONFIRM": "Delete the status \"{name}\"? Its history is removed too."
       }
+    },
+    "TICKET_STATUS": {
+      "SETTINGS_TITLE": "Ticket statuses",
+      "SETTINGS_DESCRIPTION": "The statuses your operation uses, as in Zendesk. Each maps to one of the four StayDesk statuses (open, pending, snoozed, resolved); filters, views and automations see it through the \"Ticket status\" attribute.",
+      "EMPTY": "No custom statuses. Without a catalog, agents use the four default statuses.",
+      "NEW": "New status",
+      "EDIT": "Edit",
+      "MOVE_UP": "Move up",
+      "MOVE_DOWN": "Move down",
+      "DEFAULT_BADGE": "default",
+      "FORM": {
+        "NAME": "Name",
+        "DESCRIPTION": "Description (optional)",
+        "BASE_STATUS": "Maps to",
+        "BASE_STATUS_HINT": "When the base status changes another way (automation, bot, auto resolve), the conversation gets the default status of that base.",
+        "COLOR": "Color",
+        "DEFAULT_FOR_BASE": "Default for this base status",
+        "ACTIVE": "Active (shown to agents)"
+      },
+      "PICKER": {
+        "LABEL": "Status",
+        "APPLY": "Apply",
+        "SUCCESS": "Status changed",
+        "ERROR": "Could not change the status"
+      },
+      "DELETE": {
+        "BUTTON": "Delete",
+        "CONFIRM": "Delete the status \"{name}\"? Conversations using it will show the default of the base status."
+      },
+      "API": {
+        "SAVE_SUCCESS": "Status saved",
+        "SAVE_ERROR": "Could not save the status",
+        "DELETE_SUCCESS": "Status deleted",
+        "DELETE_ERROR": "Could not delete the status"
+      }
     }
   },
   "AUTOMATION": {

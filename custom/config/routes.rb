@@ -22,8 +22,14 @@ Rails.application.routes.draw do
             resources :applied_slas, only: [:index]
             resources :agent_statuses, only: [:index, :create, :update, :destroy]
             resources :agent_status_periods, only: [:index, :create]
+            resources :ticket_statuses, only: [:index, :create, :update, :destroy] do
+              collection do
+                put :reorder
+              end
+            end
             resources :conversations, only: [] do
               resource :sla, only: [:show], controller: 'conversation_slas'
+              resource :ticket_status, only: [:create], controller: 'conversation_ticket_statuses'
             end
             resources :team_workspaces, only: [:index, :show, :update], param: :team_id do
               collection do

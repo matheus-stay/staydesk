@@ -8,6 +8,7 @@ import Button from 'dashboard/components-next/button/Button.vue';
 import Select from 'dashboard/components-next/select/Select.vue';
 import { useWorkspace } from '../composables/useWorkspace';
 import { useNextConversation } from '../composables/useNextConversation';
+import { useTicketStatusStore } from '../store/ticketStatus';
 
 // "Enviar como <status>", como no Zendesk: manda a resposta e muda o status numa
 // ação só. Depois, conforme a área de trabalho: fica, abre a próxima ou fecha.
@@ -25,21 +26,55 @@ const router = useRouter();
 const { composer, role } = useWorkspace();
 const { goToNext, goToList } = useNextConversation();
 const currentChat = useMapGetter('getSelectedChat');
+const ticketStatuses = useTicketStatusStore();
 
 const status = ref(null);
 const isSubmitting = ref(false);
 const enabled = computed(
   () => composer.value.submit_as !== false && role.value !== 'light'
 );
-const selected = computed(
-  () => status.value || currentChat.value.status || 'open'
-);
+ticketStatuses.ensureLoaded();
+// Com catálogo (SPEC-10) o valor é "ts:<id>" do status personalizado; sem, o status base.
+const currentValue = computed(() => {
+  if (ticketStatuses.enabled) {
+    const current = ticketStatuses.forConversation(currentChat.value);
+    return current ? `ts:${current.id}` : null;
+  }
+  return currentChat.value.status || 'open';
+});
+const selected = computed(() => status.value || currentValue.value);
 const statusOptions = computed(() =>
-  STATUSES.map(value => ({
-    value,
-    label: t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${value}.TEXT`),
-  }))
+  ticketStatuses.enabled
+    ? ticketStatuses.active.map(item => ({
+        value: `ts:${item.id}`,
+        label: item.name,
+      }))
+    : STATUSES.map(value => ({
+        value,
+        label: t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${value}.TEXT`),
+      }))
 );
+const selectedLabel = computed(
+  () =>
+    statusOptions.value.find(option => option.value === selected.value)
+      ?.label || ''
+);
+
+const changeStatus = async () => {
+  if (selected.value === currentValue.value) return;
+  if (String(selected.value).startsWith('ts:')) {
+    const data = await ticketStatuses.apply(
+      props.conversationId,
+      Number(selected.value.slice(3))
+    );
+    await store.dispatch('updateConversation', data);
+    return;
+  }
+  await store.dispatch('toggleStatus', {
+    conversationId: props.conversationId,
+    status: selected.value,
+  });
+};
 
 const afterSend = async () => {
   const mode = composer.value.after_send;
@@ -52,12 +87,7 @@ const submit = async () => {
   isSubmitting.value = true;
   try {
     await props.send();
-    if (selected.value !== currentChat.value.status) {
-      await store.dispatch('toggleStatus', {
-        conversationId: props.conversationId,
-        status: selected.value,
-      });
-    }
+    await changeStatus();
     await afterSend();
   } catch {
     useAlert(t('STAYDESK.SUBMIT_AS.ERROR'));
@@ -81,11 +111,7 @@ const submit = async () => {
       :is-loading="isSubmitting"
       @click="submit"
     >
-      {{
-        t('STAYDESK.SUBMIT_AS.BUTTON', {
-          status: t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${selected}.TEXT`),
-        })
-      }}
+      {{ t('STAYDESK.SUBMIT_AS.BUTTON', { status: selectedLabel }) }}
     </Button>
   </div>
 </template>

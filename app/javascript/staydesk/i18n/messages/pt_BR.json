@@ -259,6 +259,41 @@
         "BUTTON": "Excluir",
         "CONFIRM": "Excluir o status \"{name}\"? O histórico dele também é removido."
       }
+    },
+    "TICKET_STATUS": {
+      "SETTINGS_TITLE": "Status dos tickets",
+      "SETTINGS_DESCRIPTION": "Os status que a operação usa, como no Zendesk. Cada um corresponde a um dos quatro status do StayDesk (aberto, pendente, adiado, resolvido); filtros, visualizações e automações enxergam o status pelo atributo \"Status do ticket\".",
+      "EMPTY": "Nenhum status personalizado. Sem catálogo, o agente usa os quatro status padrão.",
+      "NEW": "Novo status",
+      "EDIT": "Editar",
+      "MOVE_UP": "Subir",
+      "MOVE_DOWN": "Descer",
+      "DEFAULT_BADGE": "padrão",
+      "FORM": {
+        "NAME": "Nome",
+        "DESCRIPTION": "Descrição (opcional)",
+        "BASE_STATUS": "Corresponde a",
+        "BASE_STATUS_HINT": "Quando o status base mudar por outro caminho (automação, bot, resolução automática), a conversa recebe o status padrão daquela base.",
+        "COLOR": "Cor",
+        "DEFAULT_FOR_BASE": "Padrão para esse status base",
+        "ACTIVE": "Ativo (aparece para os agentes)"
+      },
+      "PICKER": {
+        "LABEL": "Status",
+        "APPLY": "Aplicar",
+        "SUCCESS": "Status alterado",
+        "ERROR": "Não foi possível alterar o status"
+      },
+      "DELETE": {
+        "BUTTON": "Excluir",
+        "CONFIRM": "Excluir o status \"{name}\"? As conversas com ele passam a mostrar o padrão do status base."
+      },
+      "API": {
+        "SAVE_SUCCESS": "Status salvo",
+        "SAVE_ERROR": "Não foi possível salvar o status",
+        "DELETE_SUCCESS": "Status excluído",
+        "DELETE_ERROR": "Não foi possível excluir o status"
+      }
     }
   },
   "AUTOMATION": {

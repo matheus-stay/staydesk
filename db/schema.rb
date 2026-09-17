@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_17_110000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_17_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1585,6 +1585,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_17_110000) do
     t.datetime "updated_at", null: false
     t.index ["account_id", "team_id"], name: "index_staydesk_team_workspaces_on_account_id_and_team_id", unique: true, nulls_not_distinct: true
     t.index ["account_id"], name: "index_staydesk_team_workspaces_on_account_id"
+  end
+
+  create_table "staydesk_ticket_statuses", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.string "description"
+    t.string "color"
+    t.string "base_status", null: false
+    t.boolean "default_for_base", default: false, null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "name"], name: "index_staydesk_ticket_statuses_on_account_id_and_name", unique: true
+    t.index ["account_id", "position"], name: "index_staydesk_ticket_statuses_on_account_id_and_position"
+    t.index ["account_id"], name: "index_staydesk_ticket_statuses_on_account_id"
   end
 
   create_table "taggings", id: :serial, force: :cascade do |t|
