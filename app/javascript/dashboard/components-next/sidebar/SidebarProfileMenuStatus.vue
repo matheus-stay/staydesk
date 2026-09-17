@@ -5,6 +5,7 @@ import wootConstants from 'dashboard/constants/globals';
 import { useAlert } from 'dashboard/composables';
 import { useI18n } from 'vue-i18n';
 import { useImpersonation } from 'dashboard/composables/useImpersonation';
+import { useAgentStatus } from 'staydesk/composables/useAgentStatus'; // staydesk:hook agent status
 
 import {
   DropdownContainer,
@@ -25,6 +26,7 @@ const currentUserAutoOffline = useMapGetter('getCurrentUserAutoOffline');
 const { isImpersonating } = useImpersonation();
 
 const { AVAILABILITY_STATUS_KEYS } = wootConstants;
+const staydeskAgentStatus = useAgentStatus(); // staydesk:hook agent status
 const statusList = computed(() => {
   return [
     t('PROFILE_SETTINGS.FORM.AVAILABILITY.STATUS.ONLINE'),
@@ -36,6 +38,8 @@ const statusList = computed(() => {
 const statusColors = ['bg-n-teal-9', 'bg-n-amber-9', 'bg-n-slate-9'];
 
 const availabilityStatuses = computed(() => {
+  if (staydeskAgentStatus.hasStatuses.value)
+    return staydeskAgentStatus.menuItems.value; // staydesk:hook agent status
   return statusList.value.map((statusLabel, index) => ({
     label: statusLabel,
     value: AVAILABILITY_STATUS_KEYS[index],
@@ -60,6 +64,7 @@ const autoOfflineToggle = computed({
 });
 
 function changeAvailabilityStatus(availability) {
+  if (staydeskAgentStatus.handle(availability)) return; // staydesk:hook agent status
   if (isImpersonating.value) {
     useAlert(t('PROFILE_SETTINGS.FORM.AVAILABILITY.IMPERSONATING_ERROR'));
     return;

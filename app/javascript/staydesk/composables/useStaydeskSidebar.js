@@ -82,6 +82,13 @@ export const useStaydeskSidebar = () => {
       activeOn: ['staydesk_calendars_settings'],
       to: accountScopedRoute('staydesk_calendars_settings'),
     },
+    {
+      name: 'StaydeskAgentStatusesSettings',
+      label: t('STAYDESK.AGENT_STATUS.SETTINGS_TITLE'),
+      icon: 'i-lucide-user-round-check',
+      activeOn: ['staydesk_agent_statuses_settings'],
+      to: accountScopedRoute('staydesk_agent_statuses_settings'),
+    },
   ]);
 
   return {

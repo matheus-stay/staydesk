@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_17_100200) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_17_110000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1464,6 +1464,32 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_17_100200) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_user_id"], name: "index_staydesk_account_user_roles_on_account_user_id", unique: true
+  end
+
+  create_table "staydesk_agent_status_periods", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "account_user_id", null: false
+    t.bigint "agent_status_id", null: false
+    t.datetime "started_at", null: false
+    t.datetime "ended_at"
+    t.index ["account_id", "started_at"], name: "idx_on_account_id_started_at_d375553dc8"
+    t.index ["account_id"], name: "index_staydesk_agent_status_periods_on_account_id"
+    t.index ["account_user_id", "ended_at"], name: "idx_on_account_user_id_ended_at_b3bb15fe64"
+    t.index ["account_user_id"], name: "index_staydesk_agent_status_periods_on_account_user_id"
+    t.index ["agent_status_id"], name: "index_staydesk_agent_status_periods_on_agent_status_id"
+  end
+
+  create_table "staydesk_agent_statuses", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.string "color"
+    t.string "availability", default: "online", null: false
+    t.bigint "inbox_ids", default: [], null: false, array: true
+    t.integer "position", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_staydesk_agent_statuses_on_account_id"
   end
 
   create_table "staydesk_applied_slas", force: :cascade do |t|

@@ -20,6 +20,8 @@ Rails.application.routes.draw do
               end
             end
             resources :applied_slas, only: [:index]
+            resources :agent_statuses, only: [:index, :create, :update, :destroy]
+            resources :agent_status_periods, only: [:index, :create]
             resources :conversations, only: [] do
               resource :sla, only: [:show], controller: 'conversation_slas'
             end

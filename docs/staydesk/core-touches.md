@@ -20,6 +20,7 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/entrypoints/survey.js` | montagem | SPEC-00 | Textos StayDesk da pesquisa de satisfação |
 | `app/javascript/dashboard/routes/index.js` | montagem | SPEC-00 | Rotas da camada, injetadas como filhas da rota da conta por `withStaydeskRoutes` |
 | `app/javascript/dashboard/routes/dashboard/conversation/Macros/List.vue` | gancho | SPEC-04 | `v-show` por macro conforme a área de trabalho |
+| `app/javascript/dashboard/components-next/sidebar/SidebarProfileMenuStatus.vue` | gancho | SPEC-09 | Lista de status e troca de status pelo catálogo da conta (4 linhas) |
 | `app/javascript/dashboard/routes/dashboard/settings/automation/constants.js` | gancho | SPEC-08 | Eventos de SLA na lista de eventos e nas condições por evento das automações |
 
 ## Views sobrepostas (o original não muda)

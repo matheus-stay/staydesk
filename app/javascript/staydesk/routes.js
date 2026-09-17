@@ -6,6 +6,7 @@ import WorkspaceSettings from './pages/WorkspaceSettings.vue';
 import AgentRolesSettings from './pages/AgentRolesSettings.vue';
 import SlaSettings from './pages/SlaSettings.vue';
 import CalendarsSettings from './pages/CalendarsSettings.vue';
+import AgentStatusesSettings from './pages/AgentStatusesSettings.vue';
 import { teamViewFolderId } from './store/teamViews';
 
 const CONVERSATION_PERMISSIONS = [
@@ -94,6 +95,18 @@ const routes = [
         path: '',
         name: 'staydesk_calendars_settings',
         component: CalendarsSettings,
+        meta: { permissions: ['administrator'] },
+      },
+    ],
+  },
+  {
+    path: frontendURL('accounts/:accountId/settings/staydesk/agent-statuses'),
+    component: SettingsWrapper,
+    children: [
+      {
+        path: '',
+        name: 'staydesk_agent_statuses_settings',
+        component: AgentStatusesSettings,
         meta: { permissions: ['administrator'] },
       },
     ],

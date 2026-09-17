@@ -229,6 +229,36 @@
         "BUTTON": "Delete",
         "CONFIRM": "Delete the calendar \"{name}\"? Policies using it switch to the wall clock."
       }
+    },
+    "AGENT_STATUS": {
+      "SETTINGS_TITLE": "Agent statuses",
+      "SETTINGS_DESCRIPTION": "What an agent handles right now: everything, only chat, only tickets, or away. Agents pick it in the availability menu; automatic assignment only hands out conversations from the inboxes the status serves.",
+      "NEW": "New status",
+      "EDIT": "Edit status",
+      "EMPTY": "No custom status yet. Create statuses like Available, Chat only, Tickets only and Away.",
+      "ALL_INBOXES": "All inboxes",
+      "AVAILABILITY": {
+        "online": "Available",
+        "busy": "Away"
+      },
+      "FORM": {
+        "NAME": "Name",
+        "AVAILABILITY": "Counts as",
+        "COLOR": "Color",
+        "INBOXES": "Serves these inboxes",
+        "INBOXES_HINT": "None selected means every inbox.",
+        "ACTIVE": "Active"
+      },
+      "API": {
+        "SAVE_SUCCESS": "Status saved",
+        "SAVE_ERROR": "The status could not be saved",
+        "DELETE_SUCCESS": "Status removed",
+        "DELETE_ERROR": "The status could not be removed"
+      },
+      "DELETE": {
+        "BUTTON": "Delete",
+        "CONFIRM": "Delete the status \"{name}\"? Its history is removed too."
+      }
     }
   },
   "AUTOMATION": {

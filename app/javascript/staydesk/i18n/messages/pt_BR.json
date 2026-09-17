@@ -229,6 +229,36 @@
         "BUTTON": "Excluir",
         "CONFIRM": "Excluir o calendário \"{name}\"? As políticas que o usam passam a contar 24 horas."
       }
+    },
+    "AGENT_STATUS": {
+      "SETTINGS_TITLE": "Status dos agentes",
+      "SETTINGS_DESCRIPTION": "O que o agente atende agora: tudo, só chat, só tickets ou ausente. O agente escolhe no menu de disponibilidade; a distribuição automática só entrega conversas das caixas que o status atende.",
+      "NEW": "Novo status",
+      "EDIT": "Editar status",
+      "EMPTY": "Nenhum status personalizado ainda. Crie status como Disponível, Só chat, Só tickets e Ausente.",
+      "ALL_INBOXES": "Todas as caixas",
+      "AVAILABILITY": {
+        "online": "Disponível",
+        "busy": "Ausente"
+      },
+      "FORM": {
+        "NAME": "Nome",
+        "AVAILABILITY": "Conta como",
+        "COLOR": "Cor",
+        "INBOXES": "Atende estas caixas",
+        "INBOXES_HINT": "Nenhuma marcada significa todas as caixas.",
+        "ACTIVE": "Ativo"
+      },
+      "API": {
+        "SAVE_SUCCESS": "Status salvo",
+        "SAVE_ERROR": "Não foi possível salvar o status",
+        "DELETE_SUCCESS": "Status removido",
+        "DELETE_ERROR": "Não foi possível remover o status"
+      },
+      "DELETE": {
+        "BUTTON": "Excluir",
+        "CONFIRM": "Excluir o status \"{name}\"? O histórico dele também é removido."
+      }
     }
   },
   "AUTOMATION": {
