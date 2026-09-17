@@ -13,12 +13,25 @@ export const useAgentStatus = () => {
   const store = useAgentStatusStore();
   const vuex = useStore();
   const currentAccountId = useMapGetter('getCurrentAccountId');
+  const currentAvailability = useMapGetter('getCurrentUserAvailability');
 
   onMounted(() => {
     if (!store.uiFlags.hasFetched) store.fetch();
   });
 
   const hasStatuses = computed(() => store.active.length > 0);
+
+  // Enquanto o agente não escolheu, o item ativo é o que casa com a
+  // disponibilidade atual do Chatwoot (ou o primeiro): o menu do upstream
+  // precisa de um item ativo para desenhar o gatilho.
+  const activeId = computed(() => {
+    if (store.currentStatusId) return store.currentStatusId;
+    const match =
+      store.active.find(
+        status => status.availability === currentAvailability.value
+      ) || store.active[0];
+    return match?.id ?? null;
+  });
 
   const menuItems = computed(() =>
     store.active.map(status => {
@@ -31,7 +44,7 @@ export const useAgentStatus = () => {
           class: 'size-[12px] rounded',
           style: { backgroundColor: color },
         }),
-        active: status.id === store.currentStatusId,
+        active: status.id === activeId.value,
       };
     })
   );
