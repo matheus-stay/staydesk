@@ -16,7 +16,8 @@
 class Staydesk::ConversationEvent < ApplicationRecord
   self.table_name = 'staydesk_conversation_events'
 
-  KINDS = %w[status_changed assignee_changed team_changed priority_changed].freeze
+  KINDS = %w[status_changed assignee_changed team_changed priority_changed
+             staydesk_sla_warning staydesk_sla_breached staydesk_sla_met].freeze
   TRACKED = { 'status' => 'status_changed', 'assignee_id' => 'assignee_changed',
               'team_id' => 'team_changed', 'priority' => 'priority_changed' }.freeze
 

@@ -58,10 +58,64 @@
       }
     },
     "SLA": {
+      "SETTINGS_TITLE": "Políticas de SLA",
+      "SETTINGS_DESCRIPTION": "Alvos de primeira resposta, próxima resposta e resolução, por prioridade, com calendário comercial. A primeira política ativa cujas condições batem com a conversa é a que vale.",
+      "NEW": "Nova política",
+      "EDIT": "Editar política",
+      "EMPTY": "Nenhuma política de SLA ainda. Crie a primeira e o SLA passa a correr nas conversas novas.",
+      "INACTIVE": "Inativa",
+      "CONDITIONS_COUNT": "{count} condição(ões)",
       "PAUSED": "Pausado",
       "RUNNING": "No prazo",
       "WARNING": "Vencendo",
-      "BREACHED": "Vencido"
+      "BREACHED": "Vencido",
+      "MET": "Cumprido",
+      "DETAIL_TITLE": "SLA",
+      "NO_SLA": "Nenhum SLA se aplica a esta conversa",
+      "DUE": "vence",
+      "MET_AT": "cumprido",
+      "METRIC": {
+        "first_response": "Primeira resposta",
+        "next_response": "Próxima resposta",
+        "resolution": "Resolução"
+      },
+      "METRIC_SHORT": {
+        "first_response": "1ª resp.",
+        "next_response": "próx. resp.",
+        "resolution": "resolução"
+      },
+      "PRIORITY": {
+        "default": "Padrão",
+        "urgent": "Urgente",
+        "high": "Alta",
+        "medium": "Média",
+        "low": "Baixa"
+      },
+      "FORM": {
+        "NAME": "Nome",
+        "NAME_PLACEHOLDER": "ex.: WhatsApp urgente",
+        "DESCRIPTION": "Descrição",
+        "CALENDAR": "Calendário",
+        "NO_CALENDAR": "24 horas (relógio de parede)",
+        "WARNING_RATIO": "Avisar quando faltar % do alvo",
+        "PAUSE_STATUSES": "Pausar enquanto",
+        "TARGETS": "Alvos em minutos",
+        "TARGETS_HINT": "Célula vazia pula a métrica. Prioridade sem valor usa o Padrão.",
+        "PRIORITY": "Prioridade",
+        "CONDITIONS": "Vale quando",
+        "CONDITIONS_HINT": "Sem condição, vale para toda conversa. As políticas são avaliadas em ordem; a primeira que bate vence.",
+        "ACTIVE": "Ativa"
+      },
+      "API": {
+        "SAVE_SUCCESS": "Política salva",
+        "SAVE_ERROR": "Não foi possível salvar a política",
+        "DELETE_SUCCESS": "Política removida",
+        "DELETE_ERROR": "Não foi possível remover a política"
+      },
+      "DELETE": {
+        "BUTTON": "Excluir",
+        "CONFIRM": "Excluir a política \"{name}\"? As conversas perdem o SLA."
+      }
     },
     "WORKSPACE": {
       "SETTINGS_TITLE": "Área de trabalho do agente",
@@ -139,6 +193,49 @@
         "SAVE_SUCCESS": "Papel salvo",
         "SAVE_ERROR": "Não foi possível salvar o papel"
       }
+    },
+    "CALENDARS": {
+      "SETTINGS_TITLE": "Calendários de horário comercial",
+      "SETTINGS_DESCRIPTION": "Horário por dia da semana e feriados. Política de SLA que aponta para um calendário só conta o tempo dentro desse horário.",
+      "NEW": "Novo calendário",
+      "EDIT": "Editar calendário",
+      "EMPTY": "Nenhum calendário ainda. Sem calendário, os alvos de SLA correm 24 horas.",
+      "SUMMARY": "{days} dia(s) com horário · {holidays} feriado(s)",
+      "DAYS": {
+        "0": "Domingo",
+        "1": "Segunda",
+        "2": "Terça",
+        "3": "Quarta",
+        "4": "Quinta",
+        "5": "Sexta",
+        "6": "Sábado"
+      },
+      "FORM": {
+        "NAME": "Nome",
+        "TIMEZONE": "Fuso horário",
+        "WEEKLY_HOURS": "Horários",
+        "TO": "às",
+        "HOLIDAYS": "Feriados",
+        "HOLIDAY_NAME": "Nome",
+        "ADD_HOLIDAY": "Adicionar feriado"
+      },
+      "API": {
+        "SAVE_SUCCESS": "Calendário salvo",
+        "SAVE_ERROR": "Não foi possível salvar o calendário",
+        "DELETE_SUCCESS": "Calendário removido",
+        "DELETE_ERROR": "Não foi possível remover o calendário"
+      },
+      "DELETE": {
+        "BUTTON": "Excluir",
+        "CONFIRM": "Excluir o calendário \"{name}\"? As políticas que o usam passam a contar 24 horas."
+      }
+    }
+  },
+  "AUTOMATION": {
+    "EVENTS": {
+      "STAYDESK_SLA_WARNING": "SLA vencendo",
+      "STAYDESK_SLA_BREACHED": "SLA vencido",
+      "STAYDESK_SLA_MET": "SLA cumprido"
     }
   }
 }

@@ -11,6 +11,7 @@ import ConversationInfo from 'dashboard/routes/dashboard/conversation/Conversati
 import ConversationParticipant from 'dashboard/routes/dashboard/conversation/ConversationParticipant.vue';
 import NextInView from './NextInView.vue';
 import SlaBadge from './SlaBadge.vue';
+import SlaDetail from './SlaDetail.vue';
 import { useWorkspace } from '../composables/useWorkspace';
 
 // O painel de propriedades do ticket, como no Zendesk: responsável, time,
@@ -139,6 +140,19 @@ onMounted(() => {
             class="pt-3"
             :conversation-id="conversationId"
             :inbox-id="inboxId"
+          />
+        </section>
+
+        <section class="rounded border border-n-weak bg-n-surface-1 px-3 pb-3">
+          <h2
+            class="border-b border-n-weak py-3 text-sm font-medium text-n-slate-12"
+          >
+            {{ t('STAYDESK.SLA.DETAIL_TITLE') }}
+          </h2>
+          <SlaDetail
+            class="pt-3"
+            :conversation-id="conversationId"
+            :attributes="customAttributes"
           />
         </section>
 

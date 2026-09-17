@@ -58,10 +58,64 @@
       }
     },
     "SLA": {
+      "SETTINGS_TITLE": "SLA policies",
+      "SETTINGS_DESCRIPTION": "Targets for first response, next response and resolution, by priority, with a business-hours calendar. The first active policy whose conditions match a conversation applies.",
+      "NEW": "New policy",
+      "EDIT": "Edit policy",
+      "EMPTY": "No SLA policy yet. Create the first one and the SLA starts running on new conversations.",
+      "INACTIVE": "Inactive",
+      "CONDITIONS_COUNT": "{count} condition(s)",
       "PAUSED": "Paused",
       "RUNNING": "On time",
       "WARNING": "Due soon",
-      "BREACHED": "Breached"
+      "BREACHED": "Breached",
+      "MET": "Met",
+      "DETAIL_TITLE": "SLA",
+      "NO_SLA": "No SLA applies to this conversation",
+      "DUE": "due",
+      "MET_AT": "met",
+      "METRIC": {
+        "first_response": "First response",
+        "next_response": "Next response",
+        "resolution": "Resolution"
+      },
+      "METRIC_SHORT": {
+        "first_response": "1st resp.",
+        "next_response": "next resp.",
+        "resolution": "resolution"
+      },
+      "PRIORITY": {
+        "default": "Default",
+        "urgent": "Urgent",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      },
+      "FORM": {
+        "NAME": "Name",
+        "NAME_PLACEHOLDER": "e.g. WhatsApp urgent",
+        "DESCRIPTION": "Description",
+        "CALENDAR": "Calendar",
+        "NO_CALENDAR": "24/7 (wall clock)",
+        "WARNING_RATIO": "Warn when % of the target is left",
+        "PAUSE_STATUSES": "Pause while",
+        "TARGETS": "Targets in minutes",
+        "TARGETS_HINT": "Leave a cell empty to skip that metric. Priorities without a value fall back to Default.",
+        "PRIORITY": "Priority",
+        "CONDITIONS": "Applies when",
+        "CONDITIONS_HINT": "No conditions means every conversation. Policies are checked in order; the first match wins.",
+        "ACTIVE": "Active"
+      },
+      "API": {
+        "SAVE_SUCCESS": "Policy saved",
+        "SAVE_ERROR": "The policy could not be saved",
+        "DELETE_SUCCESS": "Policy removed",
+        "DELETE_ERROR": "The policy could not be removed"
+      },
+      "DELETE": {
+        "BUTTON": "Delete",
+        "CONFIRM": "Delete the policy \"{name}\"? Conversations lose their SLA."
+      }
     },
     "WORKSPACE": {
       "SETTINGS_TITLE": "Agent workspace",
@@ -139,6 +193,49 @@
         "SAVE_SUCCESS": "Role saved",
         "SAVE_ERROR": "The role could not be saved"
       }
+    },
+    "CALENDARS": {
+      "SETTINGS_TITLE": "Business hours calendars",
+      "SETTINGS_DESCRIPTION": "Hours per weekday and holidays. An SLA policy that points to a calendar only counts time inside these hours.",
+      "NEW": "New calendar",
+      "EDIT": "Edit calendar",
+      "EMPTY": "No calendar yet. Without one, SLA targets run around the clock.",
+      "SUMMARY": "{days} day(s) with hours · {holidays} holiday(s)",
+      "DAYS": {
+        "0": "Sunday",
+        "1": "Monday",
+        "2": "Tuesday",
+        "3": "Wednesday",
+        "4": "Thursday",
+        "5": "Friday",
+        "6": "Saturday"
+      },
+      "FORM": {
+        "NAME": "Name",
+        "TIMEZONE": "Time zone",
+        "WEEKLY_HOURS": "Hours",
+        "TO": "to",
+        "HOLIDAYS": "Holidays",
+        "HOLIDAY_NAME": "Name",
+        "ADD_HOLIDAY": "Add holiday"
+      },
+      "API": {
+        "SAVE_SUCCESS": "Calendar saved",
+        "SAVE_ERROR": "The calendar could not be saved",
+        "DELETE_SUCCESS": "Calendar removed",
+        "DELETE_ERROR": "The calendar could not be removed"
+      },
+      "DELETE": {
+        "BUTTON": "Delete",
+        "CONFIRM": "Delete the calendar \"{name}\"? Policies using it switch to the wall clock."
+      }
+    }
+  },
+  "AUTOMATION": {
+    "EVENTS": {
+      "STAYDESK_SLA_WARNING": "SLA about to breach",
+      "STAYDESK_SLA_BREACHED": "SLA breached",
+      "STAYDESK_SLA_MET": "SLA met"
     }
   }
 }

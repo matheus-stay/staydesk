@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_16_180000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_17_100200) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1466,6 +1466,41 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_16_180000) do
     t.index ["account_user_id"], name: "index_staydesk_account_user_roles_on_account_user_id", unique: true
   end
 
+  create_table "staydesk_applied_slas", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_id", null: false
+    t.bigint "sla_policy_id", null: false
+    t.string "status", default: "running", null: false
+    t.datetime "first_response_due_at"
+    t.datetime "first_response_met_at"
+    t.datetime "next_response_due_at"
+    t.datetime "next_response_met_at"
+    t.datetime "resolution_due_at"
+    t.datetime "resolution_met_at"
+    t.datetime "paused_at"
+    t.integer "paused_seconds", default: 0, null: false
+    t.string "breached_metrics", default: [], null: false, array: true
+    t.string "warned_metrics", default: [], null: false, array: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "status"], name: "index_staydesk_applied_slas_on_account_id_and_status"
+    t.index ["account_id", "updated_at"], name: "index_staydesk_applied_slas_on_account_id_and_updated_at"
+    t.index ["account_id"], name: "index_staydesk_applied_slas_on_account_id"
+    t.index ["conversation_id"], name: "index_staydesk_applied_slas_on_conversation_id", unique: true
+    t.index ["sla_policy_id"], name: "index_staydesk_applied_slas_on_sla_policy_id"
+  end
+
+  create_table "staydesk_calendars", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.string "timezone", default: "America/Sao_Paulo", null: false
+    t.jsonb "weekly_hours", default: [], null: false
+    t.jsonb "holidays", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_staydesk_calendars_on_account_id"
+  end
+
   create_table "staydesk_conversation_events", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "conversation_id", null: false
@@ -1478,6 +1513,23 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_16_180000) do
     t.index ["account_id", "kind", "created_at"], name: "idx_on_account_id_kind_created_at_b7a1cd4290"
     t.index ["account_id"], name: "index_staydesk_conversation_events_on_account_id"
     t.index ["conversation_id"], name: "index_staydesk_conversation_events_on_conversation_id"
+  end
+
+  create_table "staydesk_sla_policies", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.string "description"
+    t.integer "position", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.jsonb "conditions", default: [], null: false
+    t.jsonb "targets", default: {}, null: false
+    t.bigint "calendar_id"
+    t.string "pause_statuses", default: ["pending", "snoozed"], null: false, array: true
+    t.decimal "warning_ratio", precision: 3, scale: 2, default: "0.2", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "position"], name: "index_staydesk_sla_policies_on_account_id_and_position"
+    t.index ["account_id"], name: "index_staydesk_sla_policies_on_account_id"
   end
 
   create_table "staydesk_team_views", force: :cascade do |t|

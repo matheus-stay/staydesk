@@ -13,6 +13,16 @@ Rails.application.routes.draw do
             resource :workspace, only: [:show], controller: 'workspace'
             resources :agent_roles, only: [:index, :update], param: :user_id
             resources :events, only: [:index]
+            resources :calendars, only: [:index, :show, :create, :update, :destroy]
+            resources :sla_policies, only: [:index, :show, :create, :update, :destroy] do
+              collection do
+                put :reorder
+              end
+            end
+            resources :applied_slas, only: [:index]
+            resources :conversations, only: [] do
+              resource :sla, only: [:show], controller: 'conversation_slas'
+            end
             resources :team_workspaces, only: [:index, :show, :update], param: :team_id do
               collection do
                 get :schema

@@ -68,6 +68,20 @@ export const useStaydeskSidebar = () => {
       activeOn: ['staydesk_agent_roles_settings'],
       to: accountScopedRoute('staydesk_agent_roles_settings'),
     },
+    {
+      name: 'StaydeskSlaSettings',
+      label: t('STAYDESK.SLA.SETTINGS_TITLE'),
+      icon: 'i-lucide-timer',
+      activeOn: ['staydesk_sla_settings'],
+      to: accountScopedRoute('staydesk_sla_settings'),
+    },
+    {
+      name: 'StaydeskCalendarsSettings',
+      label: t('STAYDESK.CALENDARS.SETTINGS_TITLE'),
+      icon: 'i-lucide-calendar-days',
+      activeOn: ['staydesk_calendars_settings'],
+      to: accountScopedRoute('staydesk_calendars_settings'),
+    },
   ]);
 
   return {

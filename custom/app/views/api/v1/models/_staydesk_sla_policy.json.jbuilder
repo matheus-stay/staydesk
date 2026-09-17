@@ -1,0 +1,12 @@
+json.id resource.id
+json.name resource.name
+json.description resource.description
+json.position resource.position
+json.active resource.active
+json.conditions resource.conditions
+json.targets resource.targets
+json.calendar_id resource.calendar_id
+json.pause_statuses resource.pause_statuses
+json.warning_ratio resource.warning_ratio.to_f
+json.created_at resource.created_at
+json.updated_at resource.updated_at

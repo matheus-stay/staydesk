@@ -1,3 +1,4 @@
+import * as staydeskSla from 'staydesk/automation/events'; // staydesk:hook sla events
 import {
   OPERATOR_TYPES_1,
   OPERATOR_TYPES_2,
@@ -685,6 +686,7 @@ export const AUTOMATIONS = {
     ],
   },
 };
+Object.assign(AUTOMATIONS, staydeskSla.staydeskAutomationEvents(AUTOMATIONS)); // staydesk:hook sla events
 
 export const AUTOMATION_RULE_EVENTS = [
   {
@@ -708,6 +710,7 @@ export const AUTOMATION_RULE_EVENTS = [
     value: 'CONVERSATION_OPENED',
   },
 ];
+AUTOMATION_RULE_EVENTS.push(...staydeskSla.STAYDESK_AUTOMATION_EVENTS); // staydesk:hook sla events
 
 export const AUTOMATION_ACTION_TYPES = [
   {

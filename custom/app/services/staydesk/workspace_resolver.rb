@@ -17,9 +17,12 @@ class Staydesk::WorkspaceResolver
     @account = account
   end
 
+  # Cada time vale o que define e herda o resto; com vários times, as listas se unem
+  # (ordem do primeiro) e os escalares ficam com o último.
   def resolve
-    config = deep_merge(PRODUCT_DEFAULT, account_default)
-    team_configs.each { |team_config| config = merge_team(config, team_config) }
+    base = deep_merge(PRODUCT_DEFAULT, account_default)
+    effective = team_configs.map { |team_config| deep_merge(base, team_config) }
+    config = effective.empty? ? base : effective.reduce { |merged, team_config| merge_team(merged, team_config) }
     config = deep_merge(config, role_override(config))
     config.slice(*SECTIONS).merge('role' => role, 'team_ids' => team_ids)
   end
@@ -45,7 +48,7 @@ class Staydesk::WorkspaceResolver
     Staydesk::TeamWorkspace.where(account: @account, team_id: team_ids).order(:team_id).map(&:config)
   end
 
-  # Time por time: chaves escalares vencem, listas fazem união preservando a ordem já vista.
+  # Entre times: chaves escalares vencem, listas fazem união preservando a ordem já vista.
   def merge_team(config, team_config)
     deep_merge(config, team_config) do |_key, current, incoming|
       current.is_a?(Array) && incoming.is_a?(Array) ? (current | incoming) : incoming
@@ -57,7 +60,7 @@ class Staydesk::WorkspaceResolver
   end
 
   def deep_merge(base, other, &block)
-    base.merge(other.except('roles')) do |key, current, incoming|
+    base.merge(other) do |key, current, incoming|
       if current.is_a?(Hash) && incoming.is_a?(Hash)
         deep_merge(current, incoming, &block)
       elsif block
@@ -65,6 +68,6 @@ class Staydesk::WorkspaceResolver
       else
         incoming
       end
-    end.merge('roles' => (base['roles'] || {}).merge(other['roles'] || {}))
+    end
   end
 end

@@ -2,6 +2,7 @@
 module Custom::Conversation
   def self.prepended(base)
     base.after_update_commit :staydesk_record_events
+    base.has_one :staydesk_applied_sla, class_name: 'Staydesk::AppliedSla', dependent: :destroy
   end
 
   private
