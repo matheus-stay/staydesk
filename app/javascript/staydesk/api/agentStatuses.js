@@ -25,6 +25,10 @@ class AgentStatusesAPI extends ApiClient {
     return axios.delete(`${this.url}/agent_statuses/${id}`);
   }
 
+  loads() {
+    return axios.get(`${this.url}/agent_loads`);
+  }
+
   changeMine(agentStatusId) {
     return axios.post(`${this.url}/agent_status_periods`, {
       agent_status_id: agentStatusId,

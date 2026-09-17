@@ -97,7 +97,7 @@ onUnmounted(() => {
   <div class="relative flex items-center gap-2 actions--container">
     <StaydeskTicketStatusPicker v-if="staydeskTicketStatus.enabled.value" />
     <ResolveAction
-      v-else
+      v-if="!staydeskTicketStatus.enabled.value"
       :conversation-id="currentChat.id"
       :status="currentChat.status"
     />

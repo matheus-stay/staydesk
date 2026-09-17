@@ -22,6 +22,7 @@ Rails.application.routes.draw do
             resources :applied_slas, only: [:index]
             resources :agent_statuses, only: [:index, :create, :update, :destroy]
             resources :agent_status_periods, only: [:index, :create]
+            resources :agent_loads, only: [:index]
             resources :ticket_statuses, only: [:index, :create, :update, :destroy] do
               collection do
                 put :reorder

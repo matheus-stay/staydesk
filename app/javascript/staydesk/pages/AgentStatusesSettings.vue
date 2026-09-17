@@ -19,15 +19,18 @@ const inboxes = useMapGetter('inboxes/getInboxes');
 const editing = ref(null);
 const deleting = ref(null);
 const deleteDialog = useTemplateRef('deleteDialog');
-const form = ref({
+const emptyForm = () => ({
   name: '',
   color: '#1a9f63',
   availability: 'online',
   inboxIds: [],
   active: true,
+  capacity: { chat: '', ticket: '' },
 });
+const form = ref(emptyForm());
 
 const statuses = computed(() => store.statuses);
+const loads = computed(() => store.loads);
 const availabilityOptions = computed(() => [
   { value: 'online', label: t('STAYDESK.AGENT_STATUS.AVAILABILITY.online') },
   { value: 'busy', label: t('STAYDESK.AGENT_STATUS.AVAILABILITY.busy') },
@@ -50,14 +53,12 @@ const startEdit = status => {
         availability: status.availability,
         inboxIds: [...status.inbox_ids],
         active: status.active,
+        capacity: {
+          chat: status.capacity?.chat ?? '',
+          ticket: status.capacity?.ticket ?? '',
+        },
       }
-    : {
-        name: '',
-        color: '#1a9f63',
-        availability: 'online',
-        inboxIds: [],
-        active: true,
-      };
+    : emptyForm();
 };
 
 const toggleInbox = id => {
@@ -75,6 +76,10 @@ const save = async () => {
       availability: form.value.availability,
       inbox_ids: form.value.inboxIds,
       active: form.value.active,
+      capacity: {
+        chat: form.value.capacity.chat,
+        ticket: form.value.capacity.ticket,
+      },
     });
     useAlert(t('STAYDESK.AGENT_STATUS.API.SAVE_SUCCESS'));
     editing.value = null;
@@ -100,7 +105,32 @@ const confirmDelete = async () => {
   }
 };
 
-onMounted(() => store.fetch());
+// Rótulo de um limite: número, "não recebe" quando é zero, "sem limite" quando não há.
+const capacityLabel = value => {
+  if (value === 0) return t('STAYDESK.AGENT_STATUS.CAPACITY.NONE');
+  if (value === null || value === undefined || value === '')
+    return t('STAYDESK.AGENT_STATUS.CAPACITY.UNLIMITED');
+  return String(value);
+};
+
+const capacitySummary = status => {
+  const chat = status.capacity?.chat;
+  const ticket = status.capacity?.ticket;
+  if (chat === undefined && ticket === undefined)
+    return t('STAYDESK.AGENT_STATUS.CAPACITY.UNLIMITED');
+  return [
+    `${t('STAYDESK.AGENT_STATUS.CAPACITY.CHAT')}: ${capacityLabel(chat)}`,
+    `${t('STAYDESK.AGENT_STATUS.CAPACITY.TICKET')}: ${capacityLabel(ticket)}`,
+  ].join(' · ');
+};
+
+const loadLabel = (entry, queue) =>
+  `${entry.load?.[queue] ?? 0} / ${capacityLabel(entry.capacity?.[queue])}`;
+
+onMounted(() => {
+  store.fetch();
+  store.fetchLoads();
+});
 </script>
 
 <template>
@@ -151,6 +181,29 @@ onMounted(() => store.fetch());
             />
           </label>
         </div>
+        <div class="grid gap-4 md:grid-cols-2">
+          <label class="grid gap-1 text-sm text-n-slate-12">
+            <span>{{ t('STAYDESK.AGENT_STATUS.FORM.CAPACITY_CHAT') }}</span>
+            <input
+              v-model="form.capacity.chat"
+              type="number"
+              min="0"
+              class="h-9 w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
+            />
+          </label>
+          <label class="grid gap-1 text-sm text-n-slate-12">
+            <span>{{ t('STAYDESK.AGENT_STATUS.FORM.CAPACITY_TICKET') }}</span>
+            <input
+              v-model="form.capacity.ticket"
+              type="number"
+              min="0"
+              class="h-9 w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
+            />
+          </label>
+        </div>
+        <p class="text-xs text-n-slate-11">
+          {{ t('STAYDESK.AGENT_STATUS.FORM.CAPACITY_HINT') }}
+        </p>
         <fieldset class="grid gap-2">
           <legend class="text-sm text-n-slate-12">
             {{ t('STAYDESK.AGENT_STATUS.FORM.INBOXES') }}
@@ -214,6 +267,9 @@ onMounted(() => store.fetch());
               }}
             </td>
             <td class="py-3 pr-4 text-n-slate-11">{{ inboxNames(status) }}</td>
+            <td class="py-3 pr-4 text-n-slate-11">
+              {{ capacitySummary(status) }}
+            </td>
             <td class="whitespace-nowrap py-3 text-right">
               <Button
                 v-tooltip.top="t('STAYDESK.AGENT_STATUS.EDIT')"
@@ -234,6 +290,73 @@ onMounted(() => store.fetch());
           </tr>
         </tbody>
       </table>
+      <section class="mt-8">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-medium text-n-slate-12">
+              {{ t('STAYDESK.AGENT_STATUS.LOAD.TITLE') }}
+            </h3>
+            <p class="text-xs text-n-slate-11">
+              {{ t('STAYDESK.AGENT_STATUS.LOAD.DESCRIPTION') }}
+            </p>
+          </div>
+          <Button
+            sm
+            faded
+            slate
+            :is-loading="store.uiFlags.isFetchingLoads"
+            @click="store.fetchLoads()"
+          >
+            {{ t('STAYDESK.AGENT_STATUS.LOAD.REFRESH') }}
+          </Button>
+        </div>
+        <table class="mt-3 w-full text-sm">
+          <thead>
+            <tr class="text-left text-xs uppercase text-n-slate-11">
+              <th class="py-2 pr-4 font-medium">
+                {{ t('STAYDESK.AGENT_STATUS.LOAD.AGENT') }}
+              </th>
+              <th class="py-2 pr-4 font-medium">
+                {{ t('STAYDESK.AGENT_STATUS.LOAD.STATUS') }}
+              </th>
+              <th class="py-2 pr-4 font-medium">
+                {{ t('STAYDESK.AGENT_STATUS.CAPACITY.CHAT') }}
+              </th>
+              <th class="py-2 font-medium">
+                {{ t('STAYDESK.AGENT_STATUS.CAPACITY.TICKET') }}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-n-weak">
+            <tr v-for="entry in loads" :key="entry.user_id">
+              <td class="py-2 pr-4 text-n-slate-12">{{ entry.name }}</td>
+              <td class="py-2 pr-4 text-n-slate-11">
+                <span
+                  v-if="entry.status"
+                  class="inline-flex items-center gap-2"
+                >
+                  <span
+                    class="inline-block size-2 rounded-full"
+                    :style="{
+                      backgroundColor: entry.status.color || '#1a9f63',
+                    }"
+                  />
+                  {{ entry.status.name }}
+                </span>
+                <span v-else>
+                  {{ t('STAYDESK.AGENT_STATUS.LOAD.NO_STATUS') }}
+                </span>
+              </td>
+              <td class="py-2 pr-4 text-n-slate-11">
+                {{ loadLabel(entry, 'chat') }}
+              </td>
+              <td class="py-2 text-n-slate-11">
+                {{ loadLabel(entry, 'ticket') }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
     </template>
   </SettingsLayout>
   <Dialog

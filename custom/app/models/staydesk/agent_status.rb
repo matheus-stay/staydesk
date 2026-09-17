@@ -5,6 +5,7 @@
 #  id           :bigint           not null, primary key
 #  active       :boolean          default(TRUE), not null
 #  availability :string           default("online"), not null   (online | busy)
+#  capacity     :jsonb            default({}), not null  ({"chat" => 5, "ticket" => 12}; ausente = sem limite)
 #  color        :string
 #  inbox_ids    :bigint           default([]), not null, is an Array  (vazio = todas as caixas)
 #  name         :string           not null
@@ -19,17 +20,48 @@ class Staydesk::AgentStatus < ApplicationRecord
   self.table_name = 'staydesk_agent_statuses'
 
   AVAILABILITIES = %w[online busy].freeze
+  # Filas de atendimento simultâneo (SPEC-11): conversas de caixas de e-mail contam
+  # como ticket; as demais, como chat. Cada fila tem o próprio limite.
+  QUEUES = %w[chat ticket].freeze
 
   belongs_to :account
-  has_many :periods, class_name: 'Staydesk::AgentStatusPeriod', foreign_key: :agent_status_id, dependent: :destroy, inverse_of: :agent_status
+  has_many :periods, class_name: 'Staydesk::AgentStatusPeriod', dependent: :destroy, inverse_of: :agent_status
 
   validates :name, presence: true, uniqueness: { scope: :account_id }
   validates :availability, inclusion: { in: AVAILABILITIES }
+  validate :capacity_must_be_whole_numbers
+
+  before_validation :normalize_capacity
 
   scope :ordered, -> { order(:position, :id) }
   scope :active, -> { where(active: true) }
 
   def serves_inbox?(inbox_id)
     inbox_ids.empty? || inbox_ids.include?(inbox_id)
+  end
+
+  # Quantas conversas simultâneas desta fila o agente aceita neste status.
+  # nil = sem limite; 0 = não recebe distribuição automática desta fila.
+  def capacity_for(queue)
+    value = (capacity || {})[queue.to_s]
+    return nil if value.blank? && value != 0
+
+    value.to_i
+  end
+
+  private
+
+  def normalize_capacity
+    self.capacity = (capacity || {}).slice(*QUEUES).filter_map do |queue, value|
+      next if value.nil? || value.to_s.strip.empty?
+
+      [queue, value.to_i]
+    end.to_h
+  end
+
+  def capacity_must_be_whole_numbers
+    return if (capacity || {}).values.all? { |value| value.is_a?(Integer) && value >= 0 }
+
+    errors.add(:capacity, 'deve ter números inteiros a partir de zero')
   end
 end

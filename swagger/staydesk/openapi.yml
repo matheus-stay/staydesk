@@ -117,3 +117,98 @@ paths:
       responses:
         '200':
           description: '{ reporting_events: [...], conversation_events: [...] }, cada lista em ordem de id'
+  /api/v1/accounts/{account_id}/staydesk/calendars:
+    get:
+      summary: Calendários de atendimento do SLA (horário semanal e feriados)
+      responses:
+        '200':
+          description: ok
+    post:
+      summary: Cria um calendário (administrador)
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/sla_policies:
+    get:
+      summary: Políticas de SLA da conta, na ordem de avaliação
+      responses:
+        '200':
+          description: ok
+    post:
+      summary: Cria uma política (administrador)
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/sla_policies/reorder:
+    put:
+      summary: Reordena as políticas ({ ids }, administrador)
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/applied_slas:
+    get:
+      summary: SLAs aplicados, para o dashboard consumir (filtros de status e período)
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/conversations/{conversation_id}/sla:
+    get:
+      summary: SLA da conversa (política, alvos, vencimentos e status)
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/agent_statuses:
+    get:
+      summary: 'Catálogo de status do agente e o status atual de quem chama: { statuses, current_status_id }'
+      responses:
+        '200':
+          description: ok
+    post:
+      summary: Cria um status (administrador); aceita capacity ({ chat, ticket })
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/agent_status_periods:
+    get:
+      summary: Períodos de status por agente, para o dashboard somar por dia (administrador)
+      parameters:
+        - in: query
+          name: user_id
+          schema: { type: integer }
+      responses:
+        '200':
+          description: ok
+    post:
+      summary: Troca o status de quem chama ({ agent_status_id })
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/agent_loads:
+    get:
+      summary: Carga simultânea por agente e por fila, contra o limite do status atual (administrador)
+      responses:
+        '200':
+          description: 'lista de { user_id, name, status, load: { chat, ticket }, capacity: { chat, ticket } }; limite nulo é sem limite'
+  /api/v1/accounts/{account_id}/staydesk/ticket_statuses:
+    get:
+      summary: Catálogo de status do ticket, na ordem de exibição
+      responses:
+        '200':
+          description: ok
+    post:
+      summary: Cria um status (administrador); base_status é um dos quatro do Chatwoot
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/ticket_statuses/reorder:
+    put:
+      summary: Reordena o catálogo ({ ids }, administrador)
+      responses:
+        '200':
+          description: ok
+  /api/v1/accounts/{account_id}/staydesk/conversations/{conversation_id}/ticket_status:
+    post:
+      summary: Aplica um status personalizado à conversa ({ ticket_status_id, snoozed_until })
+      responses:
+        '200':
+          description: a conversa no formato padrão da API

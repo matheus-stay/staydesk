@@ -247,7 +247,10 @@
         "COLOR": "Color",
         "INBOXES": "Serves these inboxes",
         "INBOXES_HINT": "None selected means every inbox.",
-        "ACTIVE": "Active"
+        "ACTIVE": "Active",
+        "CAPACITY_CHAT": "Concurrent chats",
+        "CAPACITY_TICKET": "Concurrent tickets",
+        "CAPACITY_HINT": "How many conversations automatic distribution hands over at once in this status. Blank means no limit; zero takes the agent out of that queue. Email inboxes count as tickets, everything else as chat, and only what is being handled counts."
       },
       "API": {
         "SAVE_SUCCESS": "Status saved",
@@ -258,6 +261,22 @@
       "DELETE": {
         "BUTTON": "Delete",
         "CONFIRM": "Delete the status \"{name}\"? Its history is removed too."
+      },
+      "CAPACITY": {
+        "COLUMN": "Concurrent load",
+        "UNLIMITED": "No limit",
+        "NONE": "Receives none",
+        "CHAT": "Chats",
+        "TICKET": "Tickets"
+      },
+      "LOAD": {
+        "TITLE": "Load right now",
+        "DESCRIPTION": "Conversations being handled right now, per queue, against the limit of each agent's current status.",
+        "AGENT": "Agent",
+        "STATUS": "Status",
+        "NO_STATUS": "No custom status",
+        "REFRESH": "Refresh",
+        "EMPTY": "Nobody is handling anything right now."
       }
     },
     "TICKET_STATUS": {

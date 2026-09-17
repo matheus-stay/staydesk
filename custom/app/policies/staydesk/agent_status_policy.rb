@@ -14,4 +14,8 @@ class Staydesk::AgentStatusPolicy < ApplicationPolicy
   def destroy?
     @account_user.administrator?
   end
+
+  def loads?
+    @account_user.administrator?
+  end
 end

@@ -5,7 +5,13 @@ export const useAgentStatusStore = defineStore('staydeskAgentStatus', {
   state: () => ({
     statuses: [],
     currentStatusId: null,
-    uiFlags: { isFetching: false, hasFetched: false, isSaving: false },
+    loads: [],
+    uiFlags: {
+      isFetching: false,
+      hasFetched: false,
+      isSaving: false,
+      isFetchingLoads: false,
+    },
   }),
 
   getters: {
@@ -25,6 +31,17 @@ export const useAgentStatusStore = defineStore('staydeskAgentStatus', {
         this.uiFlags.hasFetched = true;
       } finally {
         this.uiFlags.isFetching = false;
+      }
+    },
+
+    // Painel de carga: quantas conversas cada agente atende agora em cada fila.
+    async fetchLoads() {
+      this.uiFlags.isFetchingLoads = true;
+      try {
+        const { data } = await AgentStatusesAPI.loads();
+        this.loads = data;
+      } finally {
+        this.uiFlags.isFetchingLoads = false;
       }
     },
 

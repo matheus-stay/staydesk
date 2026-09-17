@@ -247,7 +247,10 @@
         "COLOR": "Cor",
         "INBOXES": "Atende estas caixas",
         "INBOXES_HINT": "Nenhuma marcada significa todas as caixas.",
-        "ACTIVE": "Ativo"
+        "ACTIVE": "Ativo",
+        "CAPACITY_CHAT": "Chats simultâneos",
+        "CAPACITY_TICKET": "Tickets simultâneos",
+        "CAPACITY_HINT": "Quantas conversas a distribuição automática entrega ao mesmo tempo neste status. Em branco é sem limite; zero tira o agente daquela fila. Conversas de caixas de e-mail contam como ticket, as demais como chat, e só conta o que está em atendimento."
       },
       "API": {
         "SAVE_SUCCESS": "Status salvo",
@@ -258,6 +261,22 @@
       "DELETE": {
         "BUTTON": "Excluir",
         "CONFIRM": "Excluir o status \"{name}\"? O histórico dele também é removido."
+      },
+      "CAPACITY": {
+        "COLUMN": "Carga simultânea",
+        "UNLIMITED": "Sem limite",
+        "NONE": "Não recebe",
+        "CHAT": "Chats",
+        "TICKET": "Tickets"
+      },
+      "LOAD": {
+        "TITLE": "Carga agora",
+        "DESCRIPTION": "Conversas em atendimento neste momento, por fila, contra o limite do status em que cada agente está.",
+        "AGENT": "Agente",
+        "STATUS": "Status",
+        "NO_STATUS": "Sem status personalizado",
+        "REFRESH": "Atualizar",
+        "EMPTY": "Ninguém em atendimento agora."
       }
     },
     "TICKET_STATUS": {
