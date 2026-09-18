@@ -29,6 +29,7 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/dashboard/routes/dashboard/settings/attributes/EditAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
 | `app/javascript/dashboard/routes/dashboard/conversation/contact/ContactInfo.vue` | gancho | UX | O nome do cliente abre o perfil; a edição fica no lápis |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Botão de compactar a barra lateral |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Rodapé da barra (compactar e Central) fora da parte que rola |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | gancho | UX | O grupo "Mais" some quando não tem item (1 linha) |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Volta para o atendimento no topo da barra, dentro da central |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | gancho | UX | Os itens da Central passam pelo organizador por seções |

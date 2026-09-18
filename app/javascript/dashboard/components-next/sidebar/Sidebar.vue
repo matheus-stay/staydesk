@@ -1122,21 +1122,23 @@ const settingsMenuItem = computed(() => menuItemsByName.value.get('Settings'));
           v-bind="moreMenuItem"
         />
       </ul>
-      <ul
-        class="mt-auto flex min-w-0 flex-col gap-1 border-t border-n-weak pt-2"
-        :class="{ 'items-center': isEffectivelyCollapsed }"
-      >
-        <StaydeskSidebarToggle
-          :is-collapsed="isEffectivelyCollapsed"
-          @toggle="onResizeHandleDoubleClick"
-        />
-        <StaydeskSettingsLink
-          v-if="settingsMenuItem"
-          :item="settingsMenuItem"
-          :is-collapsed="isEffectivelyCollapsed"
-        />
-      </ul>
     </nav>
+    <!-- staydesk:hook rodapé fixo: fora da parte que rola, para o compactar e a
+         Central ficarem à mão mesmo com o menu comprido da Central -->
+    <ul
+      class="flex min-w-0 flex-shrink-0 flex-col gap-1 border-t border-n-weak pb-1 pt-2"
+      :class="isEffectivelyCollapsed ? 'items-center px-1' : 'px-2'"
+    >
+      <StaydeskSidebarToggle
+        :is-collapsed="isEffectivelyCollapsed"
+        @toggle="onResizeHandleDoubleClick"
+      />
+      <StaydeskSettingsLink
+        v-if="settingsMenuItem"
+        :item="settingsMenuItem"
+        :is-collapsed="isEffectivelyCollapsed"
+      />
+    </ul>
     <section
       class="flex relative flex-col flex-shrink-0 gap-1 justify-between items-center"
     >
