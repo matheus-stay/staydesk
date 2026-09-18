@@ -34,8 +34,10 @@ class Staydesk::Zendesk::TicketsController < Staydesk::Zendesk::BaseController
 
   # PUT tickets/:id.json { ticket: { status, priority, assignee_id, group_id, tags, custom_fields, comment: { body, public } } }
   def update
-    dados = params.require(:ticket).permit(:status, :priority, :assignee_id, :group_id, :subject, tags: [],
-                                                                                                  custom_fields: [:id, :value], comment: [:body, :public])
+    dados = params.require(:ticket).permit(
+      :status, :priority, :assignee_id, :group_id, :subject,
+      tags: [], custom_fields: [:id, :value], comment: [:body, :public]
+    )
     Staydesk::Zendesk::TicketUpdater.new(conta, conversa).perform(dados.to_h)
     render json: { ticket: serializador.ticket(conversa.reload) }
   end
