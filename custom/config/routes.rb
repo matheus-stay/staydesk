@@ -39,6 +39,7 @@ Rails.application.routes.draw do
             resources :load_queues, only: [:index, :create, :update, :destroy]
             resources :kpis, only: [:index]
             resources :api_tokens, only: [:index, :create, :update, :destroy]
+            resources :ticket_fields, only: [:index]
             resources :offer_stats, only: [:index]
             resources :ticket_statuses, only: [:index, :create, :update, :destroy] do
               collection do
@@ -46,6 +47,7 @@ Rails.application.routes.draw do
               end
             end
             resources :conversations, only: [] do
+              resource :ticket_fields, only: [:show, :update], controller: 'ticket_fields'
               resource :sla, only: [:show], controller: 'conversation_slas'
               resource :ticket_status, only: [:create], controller: 'conversation_ticket_statuses'
             end

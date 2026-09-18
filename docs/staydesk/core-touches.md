@@ -23,6 +23,10 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `tailwind.config.js` | gancho | UX | A camada StayDesk entra no scan do Tailwind (2 linhas) |
 | `app/controllers/concerns/access_token_auth_helper.rb` | gancho | API | Token de API do StayDesk entra na autenticação (1 linha) |
 | `lib/current.rb` | gancho | API | O token de API do pedido viaja em Current (2 linhas) |
+| `app/controllers/api/v1/accounts/custom_attribute_definitions_controller.rb` | gancho | Campos | Permite `staydesk_required_to_resolve` (1 linha) |
+| `app/views/api/v1/models/_custom_attribute_definition.json.jbuilder` | view | Campos | Sobreposição em `custom/app/views` com a marcação de obrigatório |
+| `app/javascript/dashboard/routes/dashboard/settings/attributes/AddAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
+| `app/javascript/dashboard/routes/dashboard/settings/attributes/EditAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
 | `app/javascript/dashboard/routes/dashboard/conversation/contact/ContactInfo.vue` | gancho | UX | O nome do cliente abre o perfil; a edição fica no lápis |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Botão de compactar a barra lateral |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | gancho | UX | O grupo "Mais" some quando não tem item (1 linha) |

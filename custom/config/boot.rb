@@ -24,6 +24,8 @@ module StaydeskBoot
     config.paths['config/routes.rb'] << 'custom/config/routes.rb'
     config.paths['db/migrate'] << 'custom/db/migrate'
     config.paths['lib/tasks'] << 'custom/lib/tasks'
+    # Depois dos textos do núcleo, para as nossas chaves vencerem as dele.
+    config.i18n.load_path += Dir[root.join('custom/config/locales/**/*.yml').to_s]
     Dir[root.join('custom/config/initializers/**/*.rb').to_s].each { |f| require f }
   end
 end

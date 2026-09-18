@@ -55,6 +55,13 @@ const contact = computed(() => contactGetter.value(contactId.value));
 const contactAttributes = computed(
   () => contact.value.additional_attributes || {}
 );
+// Campo obrigatório para resolver ganha asterisco, e a lista do que falta fica
+// no topo do painel: o agente descobre antes de tentar resolver, não depois.
+const rotuloDoCampo = definition =>
+  definition.staydesk_required_to_resolve
+    ? `${definition.attribute_display_name} *`
+    : definition.attribute_display_name;
+
 const customAttributes = computed(
   () => currentChat.value.custom_attributes || {}
 );
@@ -77,6 +84,19 @@ const customFields = computed(() => {
     )
     .filter(Boolean);
 });
+
+const faltandoParaResolver = computed(() =>
+  customFields.value
+    .filter(definition => definition.staydesk_required_to_resolve)
+    .filter(definition => {
+      const valor = customAttributes.value[definition.attribute_key];
+      if (valor === null || valor === undefined) return true;
+      if (Array.isArray(valor)) return !valor.length;
+      if (typeof valor === 'boolean') return false;
+      return !String(valor).trim();
+    })
+    .map(definition => definition.attribute_display_name)
+);
 
 const saveAttributes = async attributes => {
   try {
@@ -165,6 +185,16 @@ onMounted(() => {
           >
             {{ t('STAYDESK.FIELDS_TITLE') }}
           </h2>
+          <p
+            v-if="faltandoParaResolver.length"
+            class="mt-3 rounded-lg bg-n-amber-3 px-3 py-2 text-xs text-n-amber-11"
+          >
+            {{
+              t('STAYDESK.TICKET_FIELDS.MISSING', {
+                fields: faltandoParaResolver.join(', '),
+              })
+            }}
+          </p>
           <div class="flex flex-col gap-2 pt-3">
             <CustomAttribute
               v-for="definition in customFields"
@@ -172,7 +202,7 @@ onMounted(() => {
               :attribute-key="definition.attribute_key"
               :attribute-type="definition.attribute_display_type"
               :values="definition.attribute_values"
-              :label="definition.attribute_display_name"
+              :label="rotuloDoCampo(definition)"
               :description="definition.attribute_description"
               :value="customAttributes[definition.attribute_key]"
               show-actions

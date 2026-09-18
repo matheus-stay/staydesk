@@ -20,25 +20,14 @@ os quatro últimos caracteres, então token perdido se revoga e se cria outro.
 
 ### Escopos
 
-Cada grupo tem `leitura` (GET e HEAD) e `escrita` (o resto), no formato
-`grupo:acao`. O grupo de um endpoint é o do prefixo mais específico que casa com
-o caminho do controller, então `conta` funciona como guarda-chuva sem engolir os
-outros.
-
-| Grupo | Cobre |
-|---|---|
-| `conversas` | conversas e mensagens |
-| `contatos` | contatos |
-| `relatorios` | relatórios do produto, `staydesk/kpis`, eventos, SLAs aplicados, carga e aceitação |
-| `operacao` | o resto de `staydesk/`: filas, status, SLA, calendários, visualizações, papéis, tokens |
-| `cadastros` | times, caixas, agentes, etiquetas, atributos, respostas prontas, macros, automações |
-| `conta` | o que sobra da conta e o perfil |
-
-O catálogo é o arquivo `custom/config/api_scopes.json`: acrescentar um grupo ou um
-prefixo é editar esse arquivo, sem mexer em código.
+Nove grupos, cada um com `leitura` e `escrita`: `conversas`, `contatos`,
+`relatorios`, `operacao`, `canais`, `equipe`, `automacao`, `central_de_ajuda` e
+`conta`. O que cada um cobre, e como acrescentar, está em
+[tokens-de-api.md](tokens-de-api.md).
 
 ```sh
-curl -H "api_access_token: sd_..."   "https://staydesk.staycloud.com.br/api/v1/accounts/1/staydesk/kpis"
+curl -H "api_access_token: sd_..." \
+  "https://staydesk.staycloud.com.br/api/v1/accounts/1/staydesk/kpis"
 ```
 
 ### Gerenciar tokens
@@ -87,15 +76,52 @@ Todas seguem o mesmo desenho: `GET` lista, `POST` cria, `PUT`/`PATCH` altera,
 | Papéis do agente | `staydesk/roles` e `staydesk/agent_roles/:user_id` | Permissões granulares e a quem cada papel está dado |
 | Entrar como | `staydesk/impersonations` | Acompanhar o trabalho de um agente pela conta dele |
 | Convites de atendimento | `staydesk/offers` | Convites pendentes de quem está atendendo |
+| Campos do ticket | `staydesk/ticket_fields` e `custom_attribute_definitions` | Catálogo de campos e a marcação de obrigatório para resolver |
+| Campos de uma conversa | `staydesk/conversations/:numero/ticket_fields` | Lê os valores e o que falta para resolver; `PATCH` preenche |
 
 `GET staydesk/ping` responde se a camada StayDesk está no ar, para monitoração.
 
 ## MCP
 
-O servidor fica em `custom/mcp`. São 30 ferramentas: as de leitura acima e as de
-configuração de filas, filas de carga, status, SLA, calendários, visualizações,
-papéis, tokens de API e área de trabalho, além de conversas, times, caixas e
-agentes do Chatwoot.
+O servidor fica em `custom/mcp`. São 35 ferramentas, a mesma API por baixo.
+
+| Ferramenta | O que faz |
+|---|---|
+| `staydesk_kpis` | Números da operação no período: CSAT, tempos de primeira resposta e resolução por fila, quem espera na fila e o tempo de cada agente em cada status. |
+| `staydesk_filas_listar` | Filas de encaminhamento: para qual grupo cada demanda vai, transbordo e aceite. |
+| `staydesk_filas_criar` | Cria uma fila de encaminhamento. |
+| `staydesk_filas_atualizar` | Altera uma fila de encaminhamento. |
+| `staydesk_filas_de_carga_listar` | Filas de carga: que canal e que caixa contam como chat e como ticket. |
+| `staydesk_filas_de_carga_atualizar` | Altera uma fila de carga. |
+| `staydesk_status_do_ticket_listar` | Catálogo de status do ticket da conta. |
+| `staydesk_status_do_ticket_criar` | Cria um status de ticket. |
+| `staydesk_status_do_ticket_atualizar` | Altera um status de ticket. |
+| `staydesk_status_do_agente_listar` | Status de disponibilidade do agente e a carga de cada um. |
+| `staydesk_status_do_agente_criar` | Cria um status de agente. |
+| `staydesk_status_do_agente_atualizar` | Altera um status de agente. |
+| `staydesk_carga_dos_agentes` | Quantas conversas cada agente atende agora em cada fila, contra o limite do status dele. |
+| `staydesk_politicas_de_sla_listar` | Políticas de SLA: alvos por prioridade, pausa e aviso. |
+| `staydesk_politicas_de_sla_criar` | Cria uma política de SLA. |
+| `staydesk_calendarios_listar` | Calendários de horário comercial e feriados. |
+| `staydesk_visualizacoes_listar` | Visualizações por time: o que cada grupo vê na fila. |
+| `staydesk_papeis_listar` | Papéis com permissões granulares e o catálogo de permissões disponível. |
+| `staydesk_papeis_criar` | Cria um papel de agente. |
+| `staydesk_area_de_trabalho` | Área de trabalho resolvida para quem chama: menus, colunas da lista, campos e painéis da conversa. |
+| `staydesk_aceitacao_dos_agentes` | Aceitação de chat e WhatsApp por agente: quantos convites recebeu, aceitou, recusou e deixou expirar. |
+| `staydesk_eventos_das_conversas` | Linha do tempo das conversas: mudanças de status, de responsável, de grupo e de prioridade. |
+| `staydesk_slas_aplicados` | SLA aplicado a cada conversa, com alvo, status e quando vence. |
+| `staydesk_conversas` | Conversas da conta, com os filtros da API do Chatwoot (status, inbox_id, team_id, assignee_type, page). |
+| `staydesk_campos_do_ticket_listar` | Catálogo de campos do ticket da conta, com tipo, valores da lista e quais são obrigatórios para resolver. |
+| `staydesk_campos_do_ticket_criar` | Cria um campo do ticket. `attribute_display_type` aceita text, number, currency, percent, link, date, list e checkbox; `attribute_values` são as opções quando for lista. |
+| `staydesk_campos_do_ticket_atualizar` | Altera um campo do ticket, inclusive marcar ou desmarcar como obrigatório para resolver. |
+| `staydesk_campos_da_conversa` | Campos do ticket de uma conversa, com o valor de cada um e a lista do que falta preencher para poder resolver. |
+| `staydesk_campos_da_conversa_preencher` | Preenche campos do ticket numa conversa. Manda só o que quer mudar; o resto fica como está. |
+| `staydesk_tokens_de_api_listar` | Tokens de API da conta, com os escopos de cada um e o catálogo de escopos possíveis. |
+| `staydesk_tokens_de_api_criar` | Cria um token de API com escopo próprio. O valor em claro volta uma única vez nesta resposta. |
+| `staydesk_tokens_de_api_atualizar` | Suspende ou reativa um token de API. |
+| `staydesk_times_listar` | Grupos da conta. |
+| `staydesk_caixas_listar` | Caixas de entrada da conta, com o tipo de canal de cada uma. |
+| `staydesk_agentes_listar` | Agentes da conta e o papel de cada um. |
 
 O recomendado é dar ao MCP um token de API com os escopos do que ele precisa, em
 vez do token pessoal de alguém.

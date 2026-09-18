@@ -63,7 +63,7 @@ RSpec.describe Staydesk::ApiToken do
       expect(Staydesk::ApiScope.grupo_de('api/v1/accounts/staydesk/kpis')).to eq('relatorios')
       expect(Staydesk::ApiScope.grupo_de('api/v1/accounts/staydesk/queues')).to eq('operacao')
       expect(Staydesk::ApiScope.grupo_de('api/v1/accounts/conversations/messages')).to eq('conversas')
-      expect(Staydesk::ApiScope.grupo_de('api/v1/accounts/webhooks')).to eq('conta')
+      expect(Staydesk::ApiScope.grupo_de('api/v1/accounts/webhooks')).to eq('automacao')
     end
 
     it 'closes the door on an endpoint no group covers' do

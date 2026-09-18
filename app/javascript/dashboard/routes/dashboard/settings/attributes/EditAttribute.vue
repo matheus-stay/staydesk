@@ -5,12 +5,14 @@ import { required, minLength } from '@vuelidate/validators';
 import { getRegexp, normalizeRegexPattern } from 'shared/helpers/Validators';
 import { ATTRIBUTE_TYPES } from './constants';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import StaydeskRequiredToResolve from 'staydesk/components/RequiredToResolve.vue'; // staydesk:hook campo obrigatório
 import TagInput from 'dashboard/components-next/taginput/TagInput.vue';
 
 export default {
   components: {
     NextButton,
     TagInput,
+    StaydeskRequiredToResolve, // staydesk:hook campo obrigatório
   },
   props: {
     selectedAttribute: {
@@ -33,6 +35,7 @@ export default {
       attributeType: 0,
       regexPattern: null,
       regexCue: null,
+      staydeskRequiredToResolve: false, // staydesk:hook campo obrigatório
       regexEnabled: false,
       show: true,
       attributeKey: '',
@@ -119,6 +122,8 @@ export default {
       this.attributeKey = this.selectedAttribute.attribute_key;
       this.regexPattern = regexPattern;
       this.regexCue = this.selectedAttribute.regex_cue;
+      this.staydeskRequiredToResolve =
+        this.selectedAttribute.staydesk_required_to_resolve || false; // staydesk:hook campo obrigatório
       this.regexEnabled = regexPattern != null;
       this.values = this.setAttributeListValue;
     },
@@ -139,6 +144,7 @@ export default {
           attribute_values: this.updatedAttributeListValues,
           regex_pattern: normalizeRegexPattern(this.regexPattern),
           regex_cue: this.regexCue,
+          staydesk_required_to_resolve: this.staydeskRequiredToResolve, // staydesk:hook campo obrigatório
         });
         this.alertMessage = this.$t('ATTRIBUTES_MGMT.EDIT.API.SUCCESS_MESSAGE');
         this.onClose();
@@ -258,6 +264,10 @@ export default {
           :placeholder="$t('ATTRIBUTES_MGMT.ADD.FORM.REGEX_CUE.PLACEHOLDER')"
         />
       </div>
+      <StaydeskRequiredToResolve
+        v-model="staydeskRequiredToResolve"
+        :attribute-model="selectedAttribute.attribute_model"
+      />
       <div class="flex flex-row justify-end w-full gap-2 px-0 py-2">
         <NextButton
           faded

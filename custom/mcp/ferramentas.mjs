@@ -179,6 +179,64 @@ export const FERRAMENTAS = [
       page: NUMERO,
     },
   },
+  {
+    nome: 'staydesk_campos_do_ticket_listar',
+    descricao:
+      'Catálogo de campos do ticket da conta, com tipo, valores da lista e quais são obrigatórios para resolver.',
+    metodo: 'GET',
+    rota: 'staydesk/ticket_fields',
+    argumentos: {},
+  },
+  {
+    nome: 'staydesk_campos_do_ticket_criar',
+    descricao:
+      'Cria um campo do ticket. `attribute_display_type` aceita text, number, currency, percent, link, date, list e checkbox; `attribute_values` são as opções quando for lista.',
+    metodo: 'POST',
+    rota: 'custom_attribute_definitions',
+    corpoEm: 'custom_attribute_definition',
+    argumentos: {
+      attribute_display_name: TEXTO,
+      attribute_key: TEXTO,
+      attribute_description: TEXTO,
+      attribute_display_type: TEXTO,
+      attribute_values: LISTA,
+      attribute_model: { ...TEXTO, enum: ['conversation_attribute', 'contact_attribute'] },
+      staydesk_required_to_resolve: BOOLEANO,
+    },
+  },
+  {
+    nome: 'staydesk_campos_do_ticket_atualizar',
+    descricao: 'Altera um campo do ticket, inclusive marcar ou desmarcar como obrigatório para resolver.',
+    metodo: 'PATCH',
+    rota: 'custom_attribute_definitions/{id}',
+    corpoEm: 'custom_attribute_definition',
+    argumentos: {
+      id: NUMERO,
+      attribute_display_name: TEXTO,
+      attribute_description: TEXTO,
+      attribute_values: LISTA,
+      staydesk_required_to_resolve: BOOLEANO,
+    },
+  },
+  {
+    nome: 'staydesk_campos_da_conversa',
+    descricao:
+      'Campos do ticket de uma conversa, com o valor de cada um e a lista do que falta preencher para poder resolver.',
+    metodo: 'GET',
+    rota: 'staydesk/conversations/{id}/ticket_fields',
+    argumentos: { id: { ...NUMERO, description: 'número da conversa' } },
+  },
+  {
+    nome: 'staydesk_campos_da_conversa_preencher',
+    descricao:
+      'Preenche campos do ticket numa conversa. Manda só o que quer mudar; o resto fica como está.',
+    metodo: 'PATCH',
+    rota: 'staydesk/conversations/{id}/ticket_fields',
+    argumentos: {
+      id: { ...NUMERO, description: 'número da conversa' },
+      custom_attributes: { ...OBJETO, description: 'chave do campo para o valor' },
+    },
+  },
   listar('tokens_de_api', 'staydesk/api_tokens', 'Tokens de API da conta, com os escopos de cada um e o catálogo de escopos possíveis.'),
   criar('tokens_de_api', 'staydesk/api_tokens', 'api_token', 'Cria um token de API com escopo próprio. O valor em claro volta uma única vez nesta resposta.', {
     name: TEXTO,

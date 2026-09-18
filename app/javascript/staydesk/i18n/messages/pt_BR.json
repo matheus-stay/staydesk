@@ -523,12 +523,15 @@
         "INACTIVE": "suspenso"
       },
       "SCOPES": {
-        "conversas": "Conversas",
-        "contatos": "Contatos",
+        "conversas": "Conversas, busca e ações em massa",
+        "contatos": "Contatos e empresas",
         "relatorios": "Relatórios e números",
-        "operacao": "Configuração da operação",
-        "cadastros": "Times, caixas, agentes e etiquetas",
-        "conta": "Resto da conta"
+        "operacao": "Configuração da operação e SLA",
+        "canais": "Caixas de entrada e canais",
+        "equipe": "Agentes, times e papéis",
+        "automacao": "Automações, macros, etiquetas, campos e integrações",
+        "central_de_ajuda": "Central de ajuda",
+        "conta": "Conta, perfil e o que sobra"
       },
       "ACTIONS": {
         "leitura": "ler",
@@ -537,6 +540,11 @@
       "API": {
         "SAVE_ERROR": "Não foi possível criar o token"
       }
+    },
+    "TICKET_FIELDS": {
+      "REQUIRED": "Obrigatório para resolver",
+      "REQUIRED_HINT": "O agente não consegue resolver a conversa enquanto este campo estiver vazio. Automação, bot e resolução automática não travam.",
+      "MISSING": "Falta preencher para resolver: {fields}"
     }
   },
   "AUTOMATION": {

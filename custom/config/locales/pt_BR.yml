@@ -9,3 +9,7 @@ pt_BR:
       description: "Integre o StayDesk com o Slack para manter seu time em sincronia. Essa integração permite que você receba notificações de novas conversas e as responda diretamente na interface do Slack."
     webhooks:
       description: 'Eventos webhook fornecem atualizações sobre atividades em tempo real na sua conta StayDesk. Você pode se inscrever em seus eventos preferidos, e o StayDesk enviará as chamadas HTTP com as atualizações.'
+  # Nossos textos de negócio: mensagem que o agente lê quando a regra barra.
+  staydesk:
+    ticket_fields:
+      required_to_resolve: 'Preencha antes de resolver: %{fields}'

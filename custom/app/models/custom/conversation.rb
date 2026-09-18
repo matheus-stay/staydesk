@@ -1,6 +1,7 @@
 # Entra em Conversation pelo gancho prepend_mod_with('Conversation').
 module Custom::Conversation
   def self.prepended(base)
+    base.validate :staydesk_required_ticket_fields
     base.after_create_commit :staydesk_route_to_queue
     base.after_update_commit :staydesk_offer_to_assignee
     base.after_update_commit :staydesk_record_events
@@ -19,6 +20,20 @@ module Custom::Conversation
   end
 
   private
+
+  # Campo marcado como obrigatório precisa estar preenchido para resolver, como no
+  # Zendesk. Vale para quem atende: automação, bot e resolução automática não
+  # travam, senão a conversa fica presa sem ninguém para preencher.
+  def staydesk_required_ticket_fields
+    return unless status_changed? && resolved?
+    return unless Current.user.is_a?(User)
+
+    faltando = Staydesk::TicketFieldService.new(account).faltando(self)
+    return if faltando.empty?
+
+    errors.add(:status, I18n.t('staydesk.ticket_fields.required_to_resolve',
+                               fields: faltando.map(&:attribute_display_name).join(', ')))
+  end
 
   # Chat e WhatsApp são oferecidos: o agente precisa aceitar (SPEC-16).
   def staydesk_offer_to_assignee

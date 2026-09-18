@@ -1,19 +1,30 @@
 {
-  "_comentario": "Escopos dos tokens de API. Cada grupo cobre os controllers cujos caminhos começam por um dos prefixos; ganha o prefixo mais específico. Todo grupo tem leitura (GET, HEAD) e escrita (o resto). O que nenhum grupo cobrir não passa: token sem escopo não entra.",
+  "_comentario": "Escopos dos tokens de API. Cada grupo cobre os controllers cujos caminhos começam por um dos prefixos; ganha o prefixo mais específico, então 'conta' é guarda-chuva sem engolir os outros. Todo grupo tem leitura (GET, HEAD) e escrita (o resto). O que nenhum grupo cobrir não passa — é por isso que as APIs de plataforma, de widget e públicas não estão aqui: token de conta não fala com elas.",
   "grupos": [
     {
       "chave": "conversas",
-      "prefixos": ["api/v1/accounts/conversations", "api/v1/accounts/conversations/messages"]
+      "prefixos": [
+        "api/v1/accounts/conversations",
+        "api/v1/accounts/bulk_actions",
+        "api/v1/accounts/search"
+      ]
     },
     {
       "chave": "contatos",
-      "prefixos": ["api/v1/accounts/contacts"]
+      "prefixos": [
+        "api/v1/accounts/contacts",
+        "api/v1/accounts/contact_inboxes",
+        "api/v1/accounts/companies"
+      ]
     },
     {
       "chave": "relatorios",
       "prefixos": [
-        "api/v1/accounts/reports",
         "api/v2/accounts/reports",
+        "api/v2/accounts/live_reports",
+        "api/v2/accounts/summary_reports",
+        "api/v2/accounts/year_in_reviews",
+        "api/v1/accounts/csat_survey_responses",
         "api/v1/accounts/staydesk/kpis",
         "api/v1/accounts/staydesk/events",
         "api/v1/accounts/staydesk/applied_slas",
@@ -24,24 +35,71 @@
     },
     {
       "chave": "operacao",
-      "prefixos": ["api/v1/accounts/staydesk"]
+      "prefixos": ["api/v1/accounts/staydesk", "api/v1/accounts/sla_policies"]
     },
     {
-      "chave": "cadastros",
+      "chave": "canais",
       "prefixos": [
-        "api/v1/accounts/teams",
         "api/v1/accounts/inboxes",
+        "api/v1/accounts/inbox_members",
+        "api/v1/accounts/channels",
+        "api/v1/accounts/inbox_csat_templates",
+        "api/v1/accounts/whatsapp",
+        "api/v1/accounts/instagram",
+        "api/v1/accounts/tiktok",
+        "api/v1/accounts/twitter",
+        "api/v1/accounts/google",
+        "api/v1/accounts/microsoft",
+        "api/v1/accounts/notion",
+        "api/v1/accounts/callbacks"
+      ]
+    },
+    {
+      "chave": "equipe",
+      "prefixos": [
         "api/v1/accounts/agents",
+        "api/v1/accounts/assignable_agents",
+        "api/v1/accounts/teams",
+        "api/v1/accounts/team_members",
+        "api/v1/accounts/agent_bots",
+        "api/v1/accounts/custom_roles",
+        "api/v1/accounts/assignment_policies",
+        "api/v1/accounts/agent_capacity_policies"
+      ]
+    },
+    {
+      "chave": "automacao",
+      "prefixos": [
+        "api/v1/accounts/automation_rules",
+        "api/v1/accounts/macros",
+        "api/v1/accounts/canned_responses",
+        "api/v1/accounts/campaigns",
         "api/v1/accounts/labels",
         "api/v1/accounts/custom_attribute_definitions",
-        "api/v1/accounts/canned_responses",
-        "api/v1/accounts/macros",
-        "api/v1/accounts/automation_rules"
+        "api/v1/accounts/actions",
+        "api/v1/accounts/dashboard_apps",
+        "api/v1/accounts/integrations",
+        "api/v1/accounts/webhooks",
+        "api/v1/integrations/webhooks"
+      ]
+    },
+    {
+      "chave": "central_de_ajuda",
+      "prefixos": [
+        "api/v1/accounts/portals",
+        "api/v1/accounts/articles",
+        "api/v1/accounts/categories"
       ]
     },
     {
       "chave": "conta",
-      "prefixos": ["api/v1/accounts", "api/v1/profiles"]
+      "prefixos": [
+        "api/v1/accounts",
+        "api/v2/accounts",
+        "api/v1/profiles",
+        "api/v1/profile",
+        "api/v1/notification_subscriptions"
+      ]
     }
   ]
 }

@@ -523,12 +523,15 @@
         "INACTIVE": "suspended"
       },
       "SCOPES": {
-        "conversas": "Conversations",
-        "contatos": "Contacts",
+        "conversas": "Conversations, search and bulk actions",
+        "contatos": "Contacts and companies",
         "relatorios": "Reports and numbers",
-        "operacao": "Operation setup",
-        "cadastros": "Teams, inboxes, agents and labels",
-        "conta": "Rest of the account"
+        "operacao": "Operation setup and SLA",
+        "canais": "Inboxes and channels",
+        "equipe": "Agents, teams and roles",
+        "automacao": "Automations, macros, labels, fields and integrations",
+        "central_de_ajuda": "Help center",
+        "conta": "Account, profile and the rest"
       },
       "ACTIONS": {
         "leitura": "read",
@@ -537,6 +540,11 @@
       "API": {
         "SAVE_ERROR": "Could not create the token"
       }
+    },
+    "TICKET_FIELDS": {
+      "REQUIRED": "Required to resolve",
+      "REQUIRED_HINT": "The agent cannot resolve the conversation while this field is empty. Automation, bots and auto-resolution are not blocked.",
+      "MISSING": "Fill these to resolve: {fields}"
     }
   },
   "AUTOMATION": {

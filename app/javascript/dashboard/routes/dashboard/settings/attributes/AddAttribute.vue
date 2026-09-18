@@ -8,12 +8,14 @@ import { normalizeRegexPattern } from 'shared/helpers/Validators';
 import { ATTRIBUTE_MODELS, ATTRIBUTE_TYPES } from './constants';
 
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import StaydeskRequiredToResolve from 'staydesk/components/RequiredToResolve.vue'; // staydesk:hook campo obrigatório
 import TagInput from 'dashboard/components-next/taginput/TagInput.vue';
 
 export default {
   components: {
     NextButton,
     TagInput,
+    StaydeskRequiredToResolve, // staydesk:hook campo obrigatório
   },
   props: {
     onClose: {
@@ -42,6 +44,7 @@ export default {
       attributeKey: '',
       regexPattern: null,
       regexCue: null,
+      staydeskRequiredToResolve: false, // staydesk:hook campo obrigatório
       regexEnabled: false,
       values: [],
       show: true,
@@ -145,6 +148,7 @@ export default {
           attribute_values: this.attributeListValues,
           regex_pattern: normalizeRegexPattern(this.regexPattern),
           regex_cue: this.regexCue,
+          staydesk_required_to_resolve: this.staydeskRequiredToResolve, // staydesk:hook campo obrigatório
         });
         this.alertMessage = this.$t('ATTRIBUTES_MGMT.ADD.API.SUCCESS_MESSAGE');
         this.onClose();
@@ -272,6 +276,10 @@ export default {
             :label="$t('ATTRIBUTES_MGMT.ADD.FORM.REGEX_CUE.LABEL')"
             type="text"
             :placeholder="$t('ATTRIBUTES_MGMT.ADD.FORM.REGEX_CUE.PLACEHOLDER')"
+          />
+          <StaydeskRequiredToResolve
+            v-model="staydeskRequiredToResolve"
+            :attribute-model="attributeModel"
           />
           <div class="flex flex-row justify-end w-full gap-2 px-0 py-2">
             <NextButton
