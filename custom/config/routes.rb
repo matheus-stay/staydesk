@@ -72,4 +72,26 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  # Fachada com os caminhos e formatos da API do Zendesk que o dashboard consome
+  # (SPEC-17): a URL base é /staydesk/zendesk e o resto é igual ao Zendesk.
+  scope '/staydesk/zendesk/api/v2', module: 'staydesk/zendesk', as: 'staydesk_zendesk', defaults: { format: 'json' } do
+    get 'incremental/tickets/cursor', to: 'tickets#incremental'
+    get 'incremental/ticket_metric_events', to: 'metric_events#incremental'
+    get 'satisfaction_ratings', to: 'satisfaction_ratings#index'
+    get 'users/search', to: 'users#search'
+    get 'users/:id/tickets/requested', to: 'tickets#requested'
+    get 'users', to: 'users#index'
+    get 'groups', to: 'groups#index'
+    get 'ticket_fields/:id', to: 'ticket_fields#show'
+    get 'ticket_fields', to: 'ticket_fields#index'
+    get 'agent_availabilities/agent_statuses', to: 'agent_availabilities#statuses'
+    get 'agent_availabilities', to: 'agent_availabilities#index'
+    get 'tickets/:id/comments', to: 'tickets#comments'
+    put 'tickets/:id/tags', to: 'tickets#set_tags'
+    post 'tickets/:id/tags', to: 'tickets#add_tags'
+    get 'tickets/:id', to: 'tickets#show'
+    put 'tickets/:id', to: 'tickets#update'
+    post 'uploads', to: 'uploads#create'
+  end
 end

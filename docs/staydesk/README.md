@@ -15,6 +15,7 @@ O produto tem dois espaços, com nome próprio:
 
 | Documento | O que cobre |
 |---|---|
+| [api-zendesk.md](api-zendesk.md) | A API compatível com o Zendesk que o dashboard consome: caminhos, formatos e de-para |
 | [hub-e-central.md](hub-e-central.md) | Os dois espaços, a navegação e a área de trabalho do agente |
 | [filas-e-distribuicao.md](filas-e-distribuicao.md) | Filas por canal com grupos principais e secundários, canais de trabalho, regras de capacidade, aceite e varredura |
 | [campos-do-ticket.md](campos-do-ticket.md) | Campos personalizados da conversa e a regra de obrigatório para resolver |
