@@ -7,10 +7,9 @@ RSpec.describe 'convite de atendimento com status ao atribuir' do
   let(:n1) { create(:team, account: account, name: 'suporte n1') }
   let(:chat) { create(:inbox, account: account) }
   let(:ana) { create(:user, account: account, role: :agent) }
-  let!(:novo) { Staydesk::TicketStatus.create!(account: account, name: 'Novo', base_status: 'open', default_for_base: true) }
-  let!(:em_andamento) { Staydesk::TicketStatus.create!(account: account, name: 'Em andamento', base_status: 'open', apply_on_assign: true) }
-
   before do
+    Staydesk::TicketStatus.create!(account: account, name: 'Novo', base_status: 'open', default_for_base: true)
+    Staydesk::TicketStatus.create!(account: account, name: 'Em andamento', base_status: 'open', apply_on_assign: true)
     create(:team_member, team: n1, user: ana)
     Staydesk::Queue.create!(account: account, name: 'Chat', team: n1, position: 0, accept_required: true, accept_timeout_seconds: 30)
     Staydesk::Queue.create!(account: account, name: 'Tickets', team: create(:team, account: account, name: 'n2'), position: 1)
