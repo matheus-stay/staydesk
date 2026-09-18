@@ -21,6 +21,7 @@ const props = defineProps({
   activeSort: { type: String, default: '' },
   collapsible: { type: Boolean, default: false },
   staydeskNoScroll: { type: Boolean, default: false }, // staydesk:hook lista inteira
+  to: { type: Object, default: null }, // staydesk:hook home da seção
   showTreeLine: { type: Boolean, default: false },
   endTreeLine: { type: Boolean, default: false },
 });
@@ -135,6 +136,7 @@ watch([hasActiveChild, storageKey], expandSubGroupOnActiveChild, {
         :label
         :icon
         :collapsible
+        :to="to"
         :is-expanded="isSubGroupExpanded"
         :show-tree-line="showTreeLine"
         :end-tree-line="endTreeLine"

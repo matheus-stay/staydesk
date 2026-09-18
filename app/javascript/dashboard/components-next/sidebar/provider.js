@@ -5,7 +5,7 @@ import { useUISettings } from 'dashboard/composables/useUISettings';
 
 const SidebarControl = Symbol('SidebarControl');
 
-const DEFAULT_WIDTH = 200;
+const DEFAULT_WIDTH = 264; // staydesk:hook barra mais larga, os títulos da Central não cabem em 200
 const MIN_WIDTH = 56;
 const COLLAPSED_THRESHOLD = 160;
 const MAX_WIDTH = 320;

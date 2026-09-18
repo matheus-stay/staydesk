@@ -6,6 +6,7 @@ import SettingsLayout from 'dashboard/routes/dashboard/settings/SettingsLayout.v
 import BaseSettingsHeader from 'dashboard/routes/dashboard/settings/components/BaseSettingsHeader.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import { useStaydeskSidebar } from '../composables/useStaydeskSidebar';
+import { useCentralStore } from '../store/central';
 import KpisAPI from '../api/kpis';
 import { emDuracao } from '../helpers/duracao';
 
@@ -13,13 +14,13 @@ import { emDuracao } from '../helpers/duracao';
 // Zendesk: as seções na frente, para quem configura achar sem caçar no menu.
 const { t } = useI18n();
 const router = useRouter();
-const { settingsItems, organizarCentral } = useStaydeskSidebar();
+const { settingsItems } = useStaydeskSidebar();
+const central = useCentralStore();
 
-const secoes = computed(() =>
-  organizarCentral([...settingsItems.value]).filter(item => item.children)
-);
+// O mesmo mapa que a barra montou, com as telas do produto dentro.
+const secoes = computed(() => central.secoes);
 const atalhos = computed(() =>
-  organizarCentral([...settingsItems.value]).filter(
+  settingsItems.value.filter(
     item => item.to && item.name !== 'StaydeskCentralHome'
   )
 );
@@ -223,12 +224,18 @@ onMounted(buscar);
             :key="secao.name"
             class="rounded-xl border border-n-weak p-4"
           >
-            <h3
-              class="mb-3 flex items-center gap-2 text-sm font-medium text-n-slate-12"
+            <button
+              type="button"
+              class="mb-3 flex items-center gap-2 text-sm font-medium text-n-slate-12 hover:text-n-brand"
+              @click="abrir(secao.to)"
             >
               <Icon :icon="secao.icon" class="flex-shrink-0" />
               {{ secao.label }}
-            </h3>
+              <Icon
+                icon="i-lucide-arrow-right"
+                class="size-3.5 text-n-slate-10"
+              />
+            </button>
             <ul class="grid list-none gap-1 m-0">
               <li v-for="item in secao.children" :key="item.name">
                 <button

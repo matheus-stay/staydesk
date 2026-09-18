@@ -3,6 +3,8 @@ import ConversationView from 'dashboard/routes/dashboard/conversation/Conversati
 import SettingsWrapper from 'dashboard/routes/dashboard/settings/SettingsWrapper.vue';
 import CentralHome from './pages/CentralHome.vue';
 import ApiDocs from './pages/ApiDocs.vue';
+import CentralSection from './pages/CentralSection.vue';
+import HubHome from './pages/HubHome.vue';
 import WideSettingsWrapper from './layouts/WideSettingsWrapper.vue';
 import ApiTokensSettings from './pages/ApiTokensSettings.vue';
 import TeamViewsSettings from './pages/TeamViewsSettings.vue';
@@ -41,6 +43,12 @@ const CONVERSATION_PERMISSIONS = [
 // com a barra lateral) por withStaydeskRoutes, chamada em dashboard/routes/index.js.
 const routes = [
   {
+    path: frontendURL('accounts/:accountId/staydesk/hub'),
+    name: 'staydesk_hub_home',
+    meta: { permissions: CONVERSATION_PERMISSIONS },
+    component: HubHome,
+  },
+  {
     path: frontendURL('accounts/:accountId/staydesk/views/:id'),
     name: 'staydesk_view_conversations',
     meta: { permissions: CONVERSATION_PERMISSIONS },
@@ -68,6 +76,18 @@ const routes = [
         name: 'staydesk_central_home',
         component: CentralHome,
         meta: { permissions: CONFIGURA },
+      },
+    ],
+  },
+  {
+    path: frontendURL('accounts/:accountId/settings/staydesk/central/:secao'),
+    component: WideSettingsWrapper,
+    children: [
+      {
+        path: '',
+        name: 'staydesk_central_section',
+        component: CentralSection,
+        meta: { permissions: CONVERSATION_PERMISSIONS },
       },
     ],
   },

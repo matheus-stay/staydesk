@@ -493,6 +493,46 @@
         "NOW": "Agora",
         "CONNECTED": "conectado",
         "AWAY": "fora"
+      },
+      "SECTION_NOT_FOUND": "Esta seção não existe ou você não tem acesso a ela.",
+      "SECTION_HINTS": {
+        "CentralAtendimento": "Como o trabalho chega e como o agente o vê: quem recebe cada demanda, em qual balde ela conta e o que aparece na tela de quem atende.",
+        "CentralPrazos": "Os estados do ticket e do agente, e os prazos: o catálogo de status, a disponibilidade e o limite de cada um, as políticas de SLA e o horário comercial.",
+        "CentralPessoas": "Quem trabalha na conta e o que cada um pode: agentes, grupos, papéis com permissão granular e as chaves de integração.",
+        "CentralCanais": "Por onde o cliente chega: as caixas de entrada de cada canal e os modelos de mensagem.",
+        "CentralRegras": "O que roda sozinho e o que o agente reaproveita: automações, macros, respostas prontas, robôs, etiquetas e os campos do ticket.",
+        "CentralConta": "A conta em si: dados gerais, a documentação da API, integrações, auditoria, segurança e cobrança.",
+        "CentralOutros": "Telas do produto que ainda não têm seção própria."
+      },
+      "ITEM_HINTS": {
+        "StaydeskQueuesSettings": "Para qual grupo cada demanda vai, por canal e por caixa, com transbordo e aceite.",
+        "StaydeskLoadQueuesSettings": "Em qual balde a conversa conta para o limite do agente: chat, ticket, ou o que a operação definir.",
+        "StaydeskTeamViewsSettings": "As filas que cada grupo vê no Hub, com filtro, colunas e ordem.",
+        "StaydeskWorkspaceSettings": "O que aparece para quem atende: menus, colunas, campos do painel e aplicativos, por time e por papel.",
+        "StaydeskTicketStatusesSettings": "O catálogo de status por cima dos quatro do Chatwoot, com o padrão de cada base e o que assume ao atribuir.",
+        "StaydeskAgentStatusesSettings": "Disponibilidade e limite de conversas simultâneas por fila, e a carga de cada agente agora.",
+        "StaydeskSlaSettings": "Alvos de resposta e resolução por prioridade, com pausa, aviso e horário comercial.",
+        "StaydeskCalendarsSettings": "Horário comercial por dia da semana e feriados, para o prazo parar fora do expediente.",
+        "StaydeskAgentRolesSettings": "Papéis com permissão granular, concedidos e revogados na hora, e o entrar como outro agente.",
+        "StaydeskApiTokensSettings": "Chaves de integração com escopo próprio de leitura e escrita.",
+        "StaydeskApiDocs": "Todos os endpoints, com parâmetros, exemplos e o painel para testar.",
+        "StaydeskReports": "Os relatórios do produto: conversas, agentes, caixas, etiquetas e satisfação.",
+        "Settings Account Settings": "Nome, idioma e o id da conta.",
+        "Settings Agents": "Quem tem acesso à conta e o papel de cada um no Chatwoot.",
+        "Settings Teams": "Os grupos de atendimento e quem está em cada um.",
+        "Settings Custom Roles": "Papéis personalizados do produto.",
+        "Settings Inboxes": "As caixas de entrada de cada canal e quem as atende.",
+        "Settings Templates": "Modelos de mensagem dos canais que exigem aprovação.",
+        "Settings Automation": "Regras que rodam quando algo acontece: atribuir, etiquetar, mudar prioridade, avisar.",
+        "Settings Macros": "Sequências de ações que o agente aplica com um clique.",
+        "Settings Canned Responses": "Respostas prontas, chamadas com uma barra no editor.",
+        "Settings Agent Bots": "Robôs ligados às caixas, como o bot de pré-atendimento.",
+        "Settings Labels": "Etiquetas para classificar conversas e contatos.",
+        "Settings Custom Attributes": "Os campos do ticket e do contato, inclusive a marcação de obrigatório para resolver.",
+        "Settings Integrations": "Slack, webhooks, aplicativos no painel e outras integrações.",
+        "Settings Audit Logs": "Quem fez o quê na conta.",
+        "Settings Security": "Políticas de senha e de sessão.",
+        "Settings Billing": "Plano e cobrança."
       }
     },
     "API_TOKENS": {
@@ -616,6 +656,22 @@
         "INVALID_JSON": "O corpo não é um JSON válido.",
         "TOOK": "em {ms} ms"
       }
+    },
+    "HUB": {
+      "HOME": "Início",
+      "GOOD_MORNING": "Bom dia",
+      "GOOD_AFTERNOON": "Boa tarde",
+      "GOOD_EVENING": "Boa noite",
+      "SUBTITLE": "O que está com você e o que está esperando nas suas filas.",
+      "MY_STATUS": "Meu status",
+      "WITH_ME": "Comigo agora",
+      "WITH_ME_HINT": "conversas abertas atribuídas a você",
+      "IN_MY_VIEWS": "Nas minhas visualizações",
+      "IN_MY_VIEWS_HINT": "somando as filas que você vê",
+      "MY_VIEWS": "Minhas visualizações",
+      "RESUME": "Retomar",
+      "LOADING": "Carregando…",
+      "NOTHING_WITH_ME": "Nada com você agora. Escolha uma visualização ao lado."
     }
   },
   "AUTOMATION": {

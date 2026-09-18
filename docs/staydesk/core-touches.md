@@ -30,6 +30,10 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/dashboard/routes/dashboard/conversation/contact/ContactInfo.vue` | gancho | UX | O nome do cliente abre o perfil; a edição fica no lápis |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Botão de compactar a barra lateral |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Rodapé da barra (compactar e Central) fora da parte que rola |
+| `app/javascript/dashboard/components-next/sidebar/SidebarGroup.vue` | gancho | UX | Passa `to` ao subgrupo (1 linha) |
+| `app/javascript/dashboard/components-next/sidebar/SidebarSubGroup.vue` | gancho | UX | Prop `to` e repasse ao separador (2 linhas) |
+| `app/javascript/dashboard/components-next/sidebar/SidebarGroupSeparator.vue` | legado | UX | Com `to`, o nome da seção vira link e só a seta recolhe; troca de bloco no template, além de uma linha |
+| `app/javascript/dashboard/components-next/sidebar/provider.js` | gancho | UX | Largura padrão da barra sobe para 264 (1 linha) |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | gancho | UX | O grupo "Mais" some quando não tem item (1 linha) |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Volta para o atendimento no topo da barra, dentro da central |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | gancho | UX | Os itens da Central passam pelo organizador por seções |

@@ -493,7 +493,18 @@
         "NOW": "Now",
         "CONNECTED": "connected",
         "AWAY": "away"
-      }
+      },
+      "SECTION_NOT_FOUND": "This section does not exist or you cannot access it.",
+      "SECTION_HINTS": {
+        "CentralAtendimento": "How work arrives and how the agent sees it: who receives each request, which bucket it counts in, and what shows on the screen of whoever handles it.",
+        "CentralPrazos": "Ticket and agent states, and deadlines: the status catalog, availability and limits, SLA policies and business hours.",
+        "CentralPessoas": "Who works in the account and what each one can do: agents, groups, roles with granular permissions and integration keys.",
+        "CentralCanais": "Where the customer comes in: the inboxes of each channel and message templates.",
+        "CentralRegras": "What runs on its own and what the agent reuses: automations, macros, canned responses, bots, labels and ticket fields.",
+        "CentralConta": "The account itself: general data, API documentation, integrations, audit, security and billing.",
+        "CentralOutros": "Product screens without a section of their own yet."
+      },
+      "ITEM_HINTS": {}
     },
     "API_TOKENS": {
       "SETTINGS_TITLE": "API tokens",
@@ -616,6 +627,22 @@
         "INVALID_JSON": "The body is not valid JSON.",
         "TOOK": "in {ms} ms"
       }
+    },
+    "HUB": {
+      "HOME": "Home",
+      "GOOD_MORNING": "Good morning",
+      "GOOD_AFTERNOON": "Good afternoon",
+      "GOOD_EVENING": "Good evening",
+      "SUBTITLE": "What is with you and what is waiting in your queues.",
+      "MY_STATUS": "My status",
+      "WITH_ME": "With me now",
+      "WITH_ME_HINT": "open conversations assigned to you",
+      "IN_MY_VIEWS": "In my views",
+      "IN_MY_VIEWS_HINT": "adding up the queues you see",
+      "MY_VIEWS": "My views",
+      "RESUME": "Pick up",
+      "LOADING": "Loading…",
+      "NOTHING_WITH_ME": "Nothing with you right now. Pick a view on the side."
     }
   },
   "AUTOMATION": {

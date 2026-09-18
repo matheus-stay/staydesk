@@ -9,6 +9,11 @@ O espaço de atendimento. O agente entra por ele e vive nas **visualizações**:
 lista da esquerda são as filas que o grupo dele trabalha, e cada uma abre uma
 tabela com SLA, status, assunto, contato, caixa, espera e responsável.
 
+A porta de entrada é a **home do Hub**: uma saudação, o status atual com troca
+rápida, quantas conversas estão com a pessoa agora e quantas esperam nas filas
+que ela vê, a lista das visualizações com contagem e as conversas abertas com
+ela para retomar de onde parou. Sem número de gestão: isso é da Central.
+
 - As conversas abertas viram **abas no topo**, com o número do ticket e um aviso
   quando há resposta não enviada. O "x" fecha a aba sem mexer na conversa.
 - Ao abrir uma conversa, a barra lateral **encolhe sozinha** para os ícones e
@@ -35,8 +40,18 @@ dentro a barra lateral vira o menu da Central, agrupado por assunto:
 | Regras e automação | Automações, macros, respostas prontas, robôs, etiquetas, campos |
 | Conta | Conta, integrações, dados, auditoria, segurança, faturamento |
 
+Cada seção é um **dropdown**: o nome abre a home da seção, que apresenta o que
+ela cobre e cada tela dela com uma linha explicando para que serve; a seta
+recolhe ou expande a lista. O que a barra deixa recolhido fica guardado por
+conta, no navegador.
+
 O que sobrar de novo no produto cai numa seção "Outros", para nenhuma tela sumir
-quando o upstream acrescentar uma.
+quando o upstream acrescentar uma. O SLA do Chatwoot, que é Enterprise, fica de
+fora de propósito: o motor de SLA do StayDesk mora em Status e prazos.
+
+A barra lateral nasce com 264 pixels de largura, para os títulos da Central
+caberem, e compacta para os ícones pelo botão do rodapé, que fica fixo fora da
+parte que rola.
 
 De dentro da Central, "Voltar ao Hub" fica no topo da barra. O link para a
 Central não aparece quando já se está nela.

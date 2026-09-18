@@ -4,7 +4,6 @@ import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useAccount } from 'dashboard/composables/useAccount';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
-import { useTeamViews } from '../composables/useTeamViews';
 import { estaNaCentral } from '../helpers/central';
 
 // Dentro da central de administração a barra é o menu da central, então o
@@ -17,15 +16,10 @@ defineProps({
 const { t } = useI18n();
 const route = useRoute();
 const { accountScopedRoute } = useAccount();
-const { views } = useTeamViews();
 
 const naCentral = computed(() => estaNaCentral(route.path));
-const destino = computed(() => {
-  const primeira = views.value?.[0];
-  return primeira
-    ? accountScopedRoute('staydesk_view_conversations', { id: primeira.id })
-    : accountScopedRoute('home');
-});
+// Volta na home do Hub, que é por onde se começa a atender.
+const destino = computed(() => accountScopedRoute('staydesk_hub_home'));
 const label = computed(() => t('STAYDESK.SIDEBAR.BACK_TO_WORK'));
 </script>
 

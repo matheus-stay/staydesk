@@ -7,6 +7,7 @@ import { AREA } from '../routes';
 import { estaNaCentral } from '../helpers/central';
 import { useTeamViews } from './useTeamViews';
 import { useWorkspace } from './useWorkspace';
+import { useCentralStore } from '../store/central';
 
 const colorDot = color =>
   h('span', {
@@ -23,6 +24,7 @@ export const useStaydeskSidebar = () => {
   const workspace = useWorkspace();
   const route = useRoute();
   const { checkPermissions } = usePolicy();
+  const central = useCentralStore();
 
   // Dentro da central de administração a barra é a navegação da central, como no
   // Zendesk: quem está configurando precisa do menu de configuração, não do de
@@ -44,6 +46,13 @@ export const useStaydeskSidebar = () => {
   const viewsItems = computed(() => {
     if (!views.value.length) return [];
     return [
+      {
+        name: 'StaydeskHubHome',
+        label: t('STAYDESK.HUB.HOME'),
+        icon: 'i-lucide-house',
+        activeOn: ['staydesk_hub_home'],
+        to: accountScopedRoute('staydesk_hub_home'),
+      },
       {
         name: 'StaydeskTeamViews',
         label: t('STAYDESK.TEAM_VIEWS.SIDEBAR'),
@@ -110,7 +119,6 @@ export const useStaydeskSidebar = () => {
         'StaydeskAgentStatusesSettings',
         'StaydeskSlaSettings',
         'StaydeskCalendarsSettings',
-        'Settings Sla',
       ],
     },
     {
@@ -163,8 +171,13 @@ export const useStaydeskSidebar = () => {
   // Fora de seção, no topo: a home e os relatórios.
   const SOLTOS = ['StaydeskCentralHome', 'StaydeskReports'];
 
+  // Telas do produto que não fazem sentido na Central: o SLA do Chatwoot é
+  // Enterprise, e o nosso motor de SLA já mora em Status e prazos.
+  const FORA_DA_CENTRAL = ['Settings Sla'];
+
   const organizarCentral = itens => {
-    const porNome = new Map(itens.map(item => [item.name, item]));
+    const aceitos = itens.filter(item => !FORA_DA_CENTRAL.includes(item.name));
+    const porNome = new Map(aceitos.map(item => [item.name, item]));
     const usados = new Set();
     const pega = nome => {
       const item = porNome.get(nome);
@@ -173,26 +186,41 @@ export const useStaydeskSidebar = () => {
     };
 
     const topo = SOLTOS.map(pega).filter(Boolean);
+    // Cada seção é um dropdown com home própria: o nome abre a home, a seta
+    // recolhe. A chave da rota é o nome da seção sem o prefixo.
     const secoes = SECOES.map(secao => ({
       name: secao.name,
+      chave: secao.name.replace(/^Central/, '').toLowerCase(),
       label: secao.label(),
       icon: secao.icon,
+      collapsible: true,
+      to: accountScopedRoute('staydesk_central_section', {
+        secao: secao.name.replace(/^Central/, '').toLowerCase(),
+      }),
       children: secao.itens.map(pega).filter(Boolean),
     })).filter(secao => secao.children.length);
 
-    const sobrou = itens.filter(item => !usados.has(item.name));
+    const sobrou = aceitos.filter(item => !usados.has(item.name));
     const outros = sobrou.length
       ? [
           {
             name: 'CentralOutros',
+            chave: 'outros',
             label: t('STAYDESK.CENTRAL.SECTIONS.OTHER'),
             icon: 'i-lucide-ellipsis',
+            collapsible: true,
+            to: accountScopedRoute('staydesk_central_section', {
+              secao: 'outros',
+            }),
             children: sobrou,
           },
         ]
       : [];
 
-    return [...topo, ...secoes, ...outros];
+    const resultado = [...topo, ...secoes, ...outros];
+    // As páginas da Central leem o mesmo mapa que a barra montou.
+    central.registrar(resultado.filter(item => item.children));
+    return resultado;
   };
 
   const centralHomeEntry = () => ({
@@ -300,7 +328,10 @@ export const useStaydeskSidebar = () => {
   const filterConversationMenu = items => {
     const permitidos = workspace.config.value?.conversation_menu;
     if (!Array.isArray(permitidos)) return items;
-    return items.filter(item => permitidos.includes(item.name));
+    // A home do Hub é do Hub: fica, seja qual for o menu da área de trabalho.
+    return items.filter(
+      item => item.name === 'StaydeskHubHome' || permitidos.includes(item.name)
+    );
   };
 
   return {

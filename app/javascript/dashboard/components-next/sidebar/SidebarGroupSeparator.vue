@@ -35,6 +35,11 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  // staydesk:hook home da seção: com destino, o nome navega e só a seta recolhe
+  to: {
+    type: Object,
+    default: null,
+  },
 });
 
 const emit = defineEmits(['toggle', 'update-sort']);
@@ -67,7 +72,23 @@ const TREE_ELBOW =
       ]"
       @click.stop="collapsible ? emit('toggle') : undefined"
     >
-      <div class="inline-flex min-w-0 items-center gap-2">
+      <!-- staydesk:hook home da seção: com destino, o nome navega e só a seta recolhe -->
+      <router-link
+        v-if="to"
+        :to="to"
+        class="inline-flex min-w-0 items-center gap-2 text-n-slate-11 hover:text-n-slate-12"
+        active-class="text-n-slate-12"
+        @click.stop
+      >
+        <Icon v-if="icon" :icon="icon" class="size-4 flex-shrink-0" />
+        <span
+          class="flex-grow truncate text-start text-sm font-medium leading-5"
+        >
+          {{ label }}
+        </span>
+      </router-link>
+      <div v-else class="inline-flex min-w-0 items-center gap-2">
+        <!-- staydesk:hook -->
         <Icon v-if="icon" :icon="icon" class="size-4 flex-shrink-0" />
         <span
           class="flex-grow truncate text-start text-sm font-medium leading-5"
