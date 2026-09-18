@@ -487,6 +487,56 @@
         "CONNECTED": "connected",
         "AWAY": "away"
       }
+    },
+    "API_TOKENS": {
+      "SETTINGS_TITLE": "API tokens",
+      "SETTINGS_DESCRIPTION": "Keys to integrate with StayDesk. Each token carries only the scopes you pick, read and write, and acts on behalf of an agent: the scope narrows, never widens what that person can do.",
+      "NEW": "New token",
+      "EMPTY": "No token created yet.",
+      "CREATED_TITLE": "Token created",
+      "CREATED_HINT": "Copy it now: this value is not shown again. If you lose it, revoke and create another.",
+      "COPY": "Copy",
+      "COPIED": "Token copied",
+      "DISMISS": "Close",
+      "SUSPEND": "Suspend",
+      "RESUME": "Resume",
+      "REVOKE": "Revoke",
+      "REVOKE_CONFIRM": "Revoke the token \"{name}\"? Anything using it stops working right away.",
+      "FORM": {
+        "NAME": "Name",
+        "DESCRIPTION": "What it is for (optional)",
+        "SCOPES": "What this token reaches",
+        "SCOPES_PLACEHOLDER": "Pick the scopes",
+        "SCOPES_HINT": "Any endpoint outside the picked scopes answers 403. With no scope, the token reaches nothing.",
+        "ACTS_AS": "Acts on behalf of",
+        "ACTS_AS_HINT": "That person's permissions still apply on top of the scope.",
+        "EXPIRES_AT": "Expires on (optional)",
+        "CREATE": "Create token"
+      },
+      "TABLE": {
+        "NAME": "Token",
+        "SCOPES": "Scopes",
+        "ACTS_AS": "Acts as",
+        "LAST_USED": "Last used",
+        "HINT": "ends in {hint}",
+        "NEVER": "never used",
+        "INACTIVE": "suspended"
+      },
+      "SCOPES": {
+        "conversas": "Conversations",
+        "contatos": "Contacts",
+        "relatorios": "Reports and numbers",
+        "operacao": "Operation setup",
+        "cadastros": "Teams, inboxes, agents and labels",
+        "conta": "Rest of the account"
+      },
+      "ACTIONS": {
+        "leitura": "read",
+        "escrita": "write"
+      },
+      "API": {
+        "SAVE_ERROR": "Could not create the token"
+      }
     }
   },
   "AUTOMATION": {

@@ -487,6 +487,56 @@
         "CONNECTED": "conectado",
         "AWAY": "fora"
       }
+    },
+    "API_TOKENS": {
+      "SETTINGS_TITLE": "Tokens de API",
+      "SETTINGS_DESCRIPTION": "Chaves para integrar com o StayDesk. Cada token carrega só os escopos que você marcar, de leitura e de escrita, e age em nome de um agente: o escopo estreita, nunca amplia o que essa pessoa pode.",
+      "NEW": "Novo token",
+      "EMPTY": "Nenhum token criado ainda.",
+      "CREATED_TITLE": "Token criado",
+      "CREATED_HINT": "Copie agora: este valor não aparece de novo. Se perder, revogue e crie outro.",
+      "COPY": "Copiar",
+      "COPIED": "Token copiado",
+      "DISMISS": "Fechar",
+      "SUSPEND": "Suspender",
+      "RESUME": "Reativar",
+      "REVOKE": "Revogar",
+      "REVOKE_CONFIRM": "Revogar o token \"{name}\"? Quem estiver usando para de funcionar na hora.",
+      "FORM": {
+        "NAME": "Nome",
+        "DESCRIPTION": "Para que serve (opcional)",
+        "SCOPES": "O que este token alcança",
+        "SCOPES_PLACEHOLDER": "Escolha os escopos",
+        "SCOPES_HINT": "Endpoint fora dos escopos marcados responde 403. Sem escopo, o token não entra em lugar nenhum.",
+        "ACTS_AS": "Age em nome de",
+        "ACTS_AS_HINT": "As permissões dessa pessoa continuam valendo por cima do escopo.",
+        "EXPIRES_AT": "Vence em (opcional)",
+        "CREATE": "Criar token"
+      },
+      "TABLE": {
+        "NAME": "Token",
+        "SCOPES": "Escopos",
+        "ACTS_AS": "Age como",
+        "LAST_USED": "Último uso",
+        "HINT": "termina em {hint}",
+        "NEVER": "nunca usado",
+        "INACTIVE": "suspenso"
+      },
+      "SCOPES": {
+        "conversas": "Conversas",
+        "contatos": "Contatos",
+        "relatorios": "Relatórios e números",
+        "operacao": "Configuração da operação",
+        "cadastros": "Times, caixas, agentes e etiquetas",
+        "conta": "Resto da conta"
+      },
+      "ACTIONS": {
+        "leitura": "ler",
+        "escrita": "escrever"
+      },
+      "API": {
+        "SAVE_ERROR": "Não foi possível criar o token"
+      }
     }
   },
   "AUTOMATION": {

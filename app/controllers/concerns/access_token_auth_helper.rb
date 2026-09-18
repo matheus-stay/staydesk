@@ -38,3 +38,5 @@ module AccessTokenAuthHelper
     BOT_ACCESSIBLE_ENDPOINTS.fetch(params[:controller], []).include?(params[:action])
   end
 end
+
+AccessTokenAuthHelper.prepend_mod_with('AccessTokenAuthHelper') # staydesk:hook token de api

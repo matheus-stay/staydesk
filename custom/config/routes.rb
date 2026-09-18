@@ -38,6 +38,7 @@ Rails.application.routes.draw do
             resources :agent_loads, only: [:index]
             resources :load_queues, only: [:index, :create, :update, :destroy]
             resources :kpis, only: [:index]
+            resources :api_tokens, only: [:index, :create, :update, :destroy]
             resources :offer_stats, only: [:index]
             resources :ticket_statuses, only: [:index, :create, :update, :destroy] do
               collection do

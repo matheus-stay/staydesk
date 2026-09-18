@@ -1,0 +1,47 @@
+{
+  "_comentario": "Escopos dos tokens de API. Cada grupo cobre os controllers cujos caminhos começam por um dos prefixos; ganha o prefixo mais específico. Todo grupo tem leitura (GET, HEAD) e escrita (o resto). O que nenhum grupo cobrir não passa: token sem escopo não entra.",
+  "grupos": [
+    {
+      "chave": "conversas",
+      "prefixos": ["api/v1/accounts/conversations", "api/v1/accounts/conversations/messages"]
+    },
+    {
+      "chave": "contatos",
+      "prefixos": ["api/v1/accounts/contacts"]
+    },
+    {
+      "chave": "relatorios",
+      "prefixos": [
+        "api/v1/accounts/reports",
+        "api/v2/accounts/reports",
+        "api/v1/accounts/staydesk/kpis",
+        "api/v1/accounts/staydesk/events",
+        "api/v1/accounts/staydesk/applied_slas",
+        "api/v1/accounts/staydesk/offer_stats",
+        "api/v1/accounts/staydesk/agent_loads",
+        "api/v1/accounts/staydesk/agent_status_periods"
+      ]
+    },
+    {
+      "chave": "operacao",
+      "prefixos": ["api/v1/accounts/staydesk"]
+    },
+    {
+      "chave": "cadastros",
+      "prefixos": [
+        "api/v1/accounts/teams",
+        "api/v1/accounts/inboxes",
+        "api/v1/accounts/agents",
+        "api/v1/accounts/labels",
+        "api/v1/accounts/custom_attribute_definitions",
+        "api/v1/accounts/canned_responses",
+        "api/v1/accounts/macros",
+        "api/v1/accounts/automation_rules"
+      ]
+    },
+    {
+      "chave": "conta",
+      "prefixos": ["api/v1/accounts", "api/v1/profiles"]
+    }
+  ]
+}

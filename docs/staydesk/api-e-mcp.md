@@ -6,9 +6,51 @@ mesmos endpoints, então tela, dashboard e agente de IA leem a mesma conta.
 
 ## Autenticação
 
-Cabeçalho `api_access_token` com o token do usuário. O token sai do perfil da
-pessoa no produto. O que o token pode fazer é o que o papel dela permite: a API
-passa pelas mesmas policies da tela, e o MCP não contorna nenhuma.
+Cabeçalho `api_access_token`. Vale o token pessoal do usuário, que carrega tudo
+que a pessoa pode, ou um **token de API com escopo próprio**, criado em
+Central › Tokens de API, que é o recomendado para integração.
+
+O token de API age em nome de um agente e só alcança os escopos marcados: o
+escopo estreita, nunca amplia o que essa pessoa pode. Endpoint fora do escopo
+responde `403` dizendo qual escopo falta; endpoint que nenhum grupo cobre também
+não passa, porque a regra é permissão explícita, não lista de bloqueio.
+
+O valor aparece uma única vez, na criação. O banco guarda só o resumo (SHA-256) e
+os quatro últimos caracteres, então token perdido se revoga e se cria outro.
+
+### Escopos
+
+Cada grupo tem `leitura` (GET e HEAD) e `escrita` (o resto), no formato
+`grupo:acao`. O grupo de um endpoint é o do prefixo mais específico que casa com
+o caminho do controller, então `conta` funciona como guarda-chuva sem engolir os
+outros.
+
+| Grupo | Cobre |
+|---|---|
+| `conversas` | conversas e mensagens |
+| `contatos` | contatos |
+| `relatorios` | relatórios do produto, `staydesk/kpis`, eventos, SLAs aplicados, carga e aceitação |
+| `operacao` | o resto de `staydesk/`: filas, status, SLA, calendários, visualizações, papéis, tokens |
+| `cadastros` | times, caixas, agentes, etiquetas, atributos, respostas prontas, macros, automações |
+| `conta` | o que sobra da conta e o perfil |
+
+O catálogo é o arquivo `custom/config/api_scopes.json`: acrescentar um grupo ou um
+prefixo é editar esse arquivo, sem mexer em código.
+
+```sh
+curl -H "api_access_token: sd_..."   "https://staydesk.staycloud.com.br/api/v1/accounts/1/staydesk/kpis"
+```
+
+### Gerenciar tokens
+
+| Endpoint | O que faz |
+|---|---|
+| `GET staydesk/api_tokens` | lista os tokens da conta, com escopos, dono, último uso e o catálogo de escopos |
+| `POST staydesk/api_tokens` | cria e devolve o valor em claro uma única vez |
+| `PATCH staydesk/api_tokens/:id` | suspende, reativa ou troca os escopos |
+| `DELETE staydesk/api_tokens/:id` | revoga de vez |
+
+Criar e revogar exige a permissão da área de papéis, ou ser administrador.
 
 ```sh
 curl -H "api_access_token: SEU_TOKEN" \
@@ -50,10 +92,13 @@ Todas seguem o mesmo desenho: `GET` lista, `POST` cria, `PUT`/`PATCH` altera,
 
 ## MCP
 
-O servidor fica em `custom/mcp`. São 27 ferramentas: as de leitura acima e as de
+O servidor fica em `custom/mcp`. São 30 ferramentas: as de leitura acima e as de
 configuração de filas, filas de carga, status, SLA, calendários, visualizações,
-papéis e área de trabalho, além de conversas, times, caixas e agentes do
-Chatwoot.
+papéis, tokens de API e área de trabalho, além de conversas, times, caixas e
+agentes do Chatwoot.
+
+O recomendado é dar ao MCP um token de API com os escopos do que ele precisa, em
+vez do token pessoal de alguém.
 
 ```sh
 pnpm --dir custom/mcp install --ignore-workspace

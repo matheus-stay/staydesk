@@ -120,6 +120,7 @@ export const useStaydeskSidebar = () => {
         'Settings Agents',
         'Settings Teams',
         'StaydeskAgentRolesSettings',
+        'StaydeskApiTokensSettings',
         'Settings Custom Roles',
       ],
     },
@@ -218,6 +219,14 @@ export const useStaydeskSidebar = () => {
       icon: 'i-lucide-layout-dashboard',
       activeOn: ['staydesk_workspace_settings'],
       to: accountScopedRoute('staydesk_workspace_settings'),
+    },
+    {
+      name: 'StaydeskApiTokensSettings',
+      permissions: AREA.ROLES,
+      label: t('STAYDESK.API_TOKENS.SETTINGS_TITLE'),
+      icon: 'i-lucide-key-round',
+      activeOn: ['staydesk_api_tokens_settings'],
+      to: accountScopedRoute('staydesk_api_tokens_settings'),
     },
     {
       name: 'StaydeskAgentRolesSettings',

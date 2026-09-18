@@ -5,6 +5,7 @@ module Current
   thread_mattr_accessor :executed_by
   thread_mattr_accessor :contact
   thread_mattr_accessor :inbox
+  thread_mattr_accessor :staydesk_api_token # staydesk:hook token de api
 
   def self.reset
     Current.user = nil
@@ -13,5 +14,6 @@ module Current
     Current.executed_by = nil
     Current.contact = nil
     Current.inbox = nil
+    Current.staydesk_api_token = nil # staydesk:hook token de api
   end
 end

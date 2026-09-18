@@ -1,0 +1,11 @@
+json.id resource.id
+json.name resource.name
+json.description resource.description
+json.scopes resource.scopes
+json.user_id resource.user_id
+json.user_name resource.user&.name
+json.token_hint resource.token_hint
+json.expires_at resource.expires_at
+json.last_used_at resource.last_used_at
+json.active resource.active
+json.created_at resource.created_at
