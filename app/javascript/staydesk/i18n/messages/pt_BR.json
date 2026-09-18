@@ -631,9 +631,9 @@
     },
     "LOAD_QUEUES": {
       "SETTINGS_TITLE": "Filas de carga",
-      "SETTINGS_DESCRIPTION": "Quantas conversas simultâneas o agente aguenta é contado por fila, e é a caixa que diz de qual fila a conversa é. O limite de cada uma fica no status do agente. Não confunda com as filas de encaminhamento, que decidem o grupo dono do trabalho.",
+      "SETTINGS_DESCRIPTION": "Quantas conversas simultâneas o agente aguenta é contado por fila, e é a caixa que diz de qual fila a conversa é. O limite de cada uma fica no status do agente. Não confunda com as filas de encaminhamento, que decidem para quais grupos o trabalho vai.",
       "NEW": "Nova fila de carga",
-      "CATCH_ALL": "o que ninguém reivindicou",
+      "CATCH_ALL": "o que as outras filas não pegam",
       "NOTHING": "nada, por enquanto",
       "FOOTNOTE": "Sem nenhuma fila configurada, vale o padrão do produto: chat pega tudo e e-mail é ticket.",
       "FORM": {
@@ -646,14 +646,22 @@
         "INBOXES_PLACEHOLDER": "Nenhuma caixa",
         "INBOXES_HINT": "A caixa vence o canal, para o mesmo tipo de canal servir a coisas diferentes.",
         "CATCH_ALL": "Pega o que sobrar",
-        "CATCH_ALL_HINT": "Fica com as caixas que nenhuma outra fila reivindicou."
+        "CATCH_ALL_HINT": "Fica com as caixas que nenhuma outra fila de carga pegou."
       },
       "TABLE": {
         "NAME": "Fila",
         "TAKES": "Pega"
       },
       "API": {
-        "SAVE_ERROR": "Não foi possível salvar a fila de carga"
+        "SAVE_ERROR": "Não foi possível salvar a fila de carga",
+        "SAVE_SUCCESS": "Fila de carga salva",
+        "DELETE_SUCCESS": "Fila de carga excluída",
+        "DELETE_ERROR": "Não foi possível excluir a fila de carga"
+      },
+      "EDIT": "Editar",
+      "DELETE": {
+        "BUTTON": "Excluir",
+        "CONFIRM": "Excluir a fila de carga \"{name}\"? O limite dela some dos status dos agentes e as caixas dela passam para a fila que pega o que sobrar."
       }
     },
     "API_DOCS": {

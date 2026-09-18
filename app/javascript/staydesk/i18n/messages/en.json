@@ -602,9 +602,9 @@
     },
     "LOAD_QUEUES": {
       "SETTINGS_TITLE": "Load queues",
-      "SETTINGS_DESCRIPTION": "How many conversations at once an agent handles is counted per queue, and the inbox says which queue a conversation belongs to. The limit of each one lives in the agent status. Not to be confused with routing queues, which decide the group that owns the work.",
+      "SETTINGS_DESCRIPTION": "How many conversations at once an agent handles is counted per queue, and the inbox says which queue a conversation belongs to. The limit of each one lives in the agent status. Not to be confused with routing queues, which decide which groups the work goes to.",
       "NEW": "New load queue",
-      "CATCH_ALL": "whatever nobody claimed",
+      "CATCH_ALL": "whatever the other queues do not take",
       "NOTHING": "nothing yet",
       "FOOTNOTE": "With no queue configured, the product default applies: chat takes everything and email is a ticket.",
       "FORM": {
@@ -617,14 +617,22 @@
         "INBOXES_PLACEHOLDER": "No inbox",
         "INBOXES_HINT": "The inbox beats the channel, so one channel type can serve different things.",
         "CATCH_ALL": "Takes the rest",
-        "CATCH_ALL_HINT": "Keeps the inboxes no other queue claimed."
+        "CATCH_ALL_HINT": "Keeps the inboxes no other load queue took."
       },
       "TABLE": {
         "NAME": "Queue",
         "TAKES": "Takes"
       },
       "API": {
-        "SAVE_ERROR": "Could not save the load queue"
+        "SAVE_ERROR": "Could not save the load queue",
+        "SAVE_SUCCESS": "Load queue saved",
+        "DELETE_SUCCESS": "Load queue deleted",
+        "DELETE_ERROR": "Could not delete the load queue"
+      },
+      "EDIT": "Edit",
+      "DELETE": {
+        "BUTTON": "Delete",
+        "CONFIRM": "Delete the load queue \"{name}\"? Its limit disappears from the agent statuses and its inboxes move to the queue that takes the rest."
       }
     },
     "API_DOCS": {

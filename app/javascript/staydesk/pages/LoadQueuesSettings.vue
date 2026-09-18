@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAlert } from 'dashboard/composables';
 import { useMapGetter, useStore } from 'dashboard/composables/store';
@@ -8,6 +8,7 @@ import BaseSettingsHeader from 'dashboard/routes/dashboard/settings/components/B
 import Button from 'dashboard/components-next/button/Button.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import Switch from 'dashboard/components-next/switch/Switch.vue';
+import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
 import LoadQueuesAPI from '../api/loadQueues';
 import { canaisDaConta, nomeDoCanal } from '../helpers/canais';
@@ -15,13 +16,17 @@ import { fromSaveButton } from '../helpers/form';
 
 // Central › Filas de carga: quantas conversas simultâneas o agente aguenta é
 // contado por fila, e é a caixa que diz de qual fila a conversa é. Não confundir
-// com as filas de encaminhamento, que decidem o grupo dono do trabalho.
+// com as filas de encaminhamento, que decidem para quais grupos o trabalho vai.
 const { t } = useI18n();
 const store = useStore();
 const inboxes = useMapGetter('inboxes/getInboxes');
 
 const filas = ref([]);
+const isLoading = ref(false);
+const isSaving = ref(false);
 const editando = ref(null);
+const excluindo = ref(null);
+const deleteDialog = useTemplateRef('deleteDialog');
 const vazio = () => ({
   key: '',
   name: '',
@@ -37,8 +42,13 @@ const caixaOptions = computed(() =>
 );
 
 const buscar = async () => {
-  const { data } = await LoadQueuesAPI.list();
-  filas.value = data.load_queues;
+  isLoading.value = true;
+  try {
+    const { data } = await LoadQueuesAPI.list();
+    filas.value = data.load_queues;
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const editar = fila => {
@@ -64,19 +74,36 @@ const salvar = async evento => {
     inbox_ids: form.value.inboxIds,
     catch_all: form.value.catchAll,
   };
+  isSaving.value = true;
   try {
     if (editando.value === 'nova') await LoadQueuesAPI.create(payload);
     else await LoadQueuesAPI.update(editando.value.id, payload);
     editando.value = null;
     await buscar();
+    useAlert(t('STAYDESK.LOAD_QUEUES.API.SAVE_SUCCESS'));
   } catch {
     useAlert(t('STAYDESK.LOAD_QUEUES.API.SAVE_ERROR'));
+  } finally {
+    isSaving.value = false;
   }
 };
 
-const excluir = async fila => {
-  await LoadQueuesAPI.delete(fila.id);
-  await buscar();
+const pedirExclusao = fila => {
+  excluindo.value = fila;
+  deleteDialog.value.open();
+};
+
+const excluir = async () => {
+  try {
+    await LoadQueuesAPI.delete(excluindo.value.id);
+    await buscar();
+    useAlert(t('STAYDESK.LOAD_QUEUES.API.DELETE_SUCCESS'));
+  } catch {
+    useAlert(t('STAYDESK.LOAD_QUEUES.API.DELETE_ERROR'));
+  } finally {
+    deleteDialog.value.close();
+    excluindo.value = null;
+  }
 };
 
 const oQuePega = fila => {
@@ -96,7 +123,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <SettingsLayout>
+  <SettingsLayout :is-loading="isLoading">
     <template #header>
       <BaseSettingsHeader
         :title="t('STAYDESK.LOAD_QUEUES.SETTINGS_TITLE')"
@@ -113,8 +140,12 @@ onMounted(() => {
         </template>
       </BaseSettingsHeader>
     </template>
-    <template #body>
-      <form v-if="editando" class="mb-8 grid gap-4" @submit.prevent="salvar">
+    <template #preBody>
+      <form
+        v-if="editando"
+        class="mb-6 grid gap-4 rounded-xl border border-n-weak bg-n-solid-1 p-6"
+        @submit.prevent="salvar"
+      >
         <div class="grid gap-4 md:grid-cols-2">
           <Input
             v-model="form.name"
@@ -165,12 +196,20 @@ onMounted(() => {
           <Button sm faded slate type="button" @click="editando = null">
             {{ t('STAYDESK.TEAM_VIEWS.FORM.CANCEL') }}
           </Button>
-          <Button sm solid blue type="submit" data-staydesk-save>
+          <Button
+            sm
+            solid
+            blue
+            type="submit"
+            data-staydesk-save
+            :is-loading="isSaving"
+          >
             {{ t('STAYDESK.TEAM_VIEWS.FORM.SAVE') }}
           </Button>
         </div>
       </form>
-
+    </template>
+    <template #body>
       <div class="overflow-x-auto">
         <table class="w-full min-w-[32rem] border-collapse text-sm">
           <thead>
@@ -193,20 +232,20 @@ onMounted(() => {
               <td class="py-3 pr-4 text-n-slate-11">{{ oQuePega(fila) }}</td>
               <td class="whitespace-nowrap py-3 text-right">
                 <Button
-                  sm
-                  faded
+                  v-tooltip.top="t('STAYDESK.LOAD_QUEUES.EDIT')"
+                  icon="i-woot-settings"
                   slate
-                  :label="t('STAYDESK.TEAM_VIEWS.FORM.EDIT')"
+                  sm
                   @click="editar(fila)"
                 />
                 <Button
                   v-if="fila.id"
+                  v-tooltip.top="t('STAYDESK.LOAD_QUEUES.DELETE.BUTTON')"
+                  icon="i-woot-bin"
+                  slate
                   sm
-                  faded
-                  ruby
-                  class="ml-2"
-                  :label="t('STAYDESK.TEAM_VIEWS.FORM.DELETE')"
-                  @click="excluir(fila)"
+                  class="hover:enabled:bg-n-ruby-2 hover:enabled:text-n-ruby-11"
+                  @click="pedirExclusao(fila)"
                 />
               </td>
             </tr>
@@ -218,4 +257,15 @@ onMounted(() => {
       </p>
     </template>
   </SettingsLayout>
+  <Dialog
+    ref="deleteDialog"
+    type="alert"
+    :title="t('STAYDESK.LOAD_QUEUES.DELETE.BUTTON')"
+    :description="
+      t('STAYDESK.LOAD_QUEUES.DELETE.CONFIRM', { name: excluindo?.name || '' })
+    "
+    :confirm-button-label="t('STAYDESK.LOAD_QUEUES.DELETE.BUTTON')"
+    :cancel-button-label="t('STAYDESK.TEAM_VIEWS.FORM.CANCEL')"
+    @confirm="excluir"
+  />
 </template>
