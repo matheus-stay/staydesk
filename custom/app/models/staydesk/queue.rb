@@ -19,6 +19,10 @@
 #  inbox_ids              :bigint   default([]), not null, is an Array  (canais específicos que entram)
 #  load_queue_keys        :string   default([]), not null, is an Array  (canais de trabalho que entram: chat, ticket…)
 #  priority_mode          :string   default("chegada"), not null   (chegada | sla)
+#  accept_required        :boolean  (o agente precisa aceitar antes de a conversa virar dele)
+#  accept_timeout_seconds :integer  (tempo para aceitar)
+#  reoffer_same_agent     :boolean  (sem mais ninguém, oferece de novo ao mesmo agente)
+#  reoffer_after_seconds  :integer  (espera antes de oferecer de novo; 0 = na hora)
 #
 # Fila de encaminhamento (SPEC-15), no modelo do Zendesk: a conversa que chega é
 # comparada com as filas em ordem e a primeira que casar entrega aos grupos
@@ -41,6 +45,7 @@ class Staydesk::Queue < ApplicationRecord
   validates :name, presence: true, uniqueness: { scope: :account_id }
   validates :fallback_after_minutes, numericality: { greater_than: 0 }, allow_nil: true
   validates :priority_mode, inclusion: { in: PRIORITY_MODES }
+  validates :reoffer_after_seconds, numericality: { greater_than_or_equal_to: 0 }
   validate :conditions_shape
   validate :grupos_da_conta
   validate :secundario_nao_e_principal

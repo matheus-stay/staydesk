@@ -41,6 +41,7 @@ class Api::V1::Accounts::Staydesk::QueuesController < Api::V1::Accounts::Staydes
     payload = params.require(:queue).permit(
       :name, :description, :team_id,
       :priority_mode, :fallback_after_minutes, :accept_required, :accept_timeout_seconds,
+      :reoffer_same_agent, :reoffer_after_seconds,
       :position, :active, conditions: [{}], team_ids: [], fallback_team_ids: [], channel_types: [], inbox_ids: [],
                           load_queue_keys: []
     )

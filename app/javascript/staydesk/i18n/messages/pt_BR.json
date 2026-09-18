@@ -444,7 +444,7 @@
         "ACCEPT": "Aceite do agente",
         "ACCEPT_REQUIRED": "O agente precisa aceitar antes de a conversa virar dele",
         "ACCEPT_TIMEOUT": "Tempo para aceitar (segundos)",
-        "ACCEPT_HINT": "Sem aceite dentro do tempo, a conversa volta para a fila e é oferecida a outro agente disponível. Use em chat e WhatsApp; ticket normalmente não precisa.",
+        "ACCEPT_HINT": "O convite chega antes de a conversa virar do agente: ela fica na fila, sem responsável, com a vaga dele reservada até ele aceitar. Sem resposta no tempo, ou recusando, vai para o próximo disponível — e isso entra na aceitação dele.",
         "INTAKE": "O que entra nesta fila",
         "INTAKE_HINT": "Escolha um tipo inteiro (todo WhatsApp) ou um canal específico (o número StayCloud WPP), como na fila do Zendesk. Vazio, a fila pega o que as filas acima não pegaram. A ordem manda: a primeira que casar leva.",
         "CHANNELS": "Canais",
@@ -458,7 +458,10 @@
         "TEAM_PLACEHOLDER": "Escolha pelo menos um grupo",
         "GROUPS": "Grupos",
         "GROUPS_HINT": "O trabalho vai primeiro para os grupos principais. A conversa entra no primeiro da lista e, quando alguém pega, fica no grupo desse agente. Quem recebe chat ou ticket dentro do grupo continua sendo decidido pelo status do agente.",
-        "SECONDARY_ENABLE": "Ativar grupos secundários"
+        "SECONDARY_ENABLE": "Ativar grupos secundários",
+        "REOFFER_SAME": "Sem mais ninguém disponível, oferecer de novo ao mesmo agente",
+        "REOFFER_AFTER": "Esperar quantos segundos antes de oferecer de novo (0 = na hora)",
+        "REOFFER_HINT": "Desligado, a conversa fica na fila até alguém ficar disponível."
       },
       "DELETE": {
         "BUTTON": "Excluir",

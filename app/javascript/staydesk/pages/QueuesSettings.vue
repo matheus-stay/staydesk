@@ -57,6 +57,8 @@ const emptyForm = () => ({
   canais: [],
   acceptRequired: false,
   acceptTimeoutSeconds: 30,
+  reofferSameAgent: true,
+  reofferAfterSeconds: 0,
   active: true,
 });
 const form = ref(emptyForm());
@@ -172,6 +174,8 @@ const startEdit = queue => {
         ),
         acceptRequired: queue.accept_required || false,
         acceptTimeoutSeconds: queue.accept_timeout_seconds ?? 30,
+        reofferSameAgent: queue.reoffer_same_agent !== false,
+        reofferAfterSeconds: queue.reoffer_after_seconds ?? 0,
         active: queue.active,
       }
     : emptyForm();
@@ -199,6 +203,8 @@ const save = async () => {
       ...separarCanais(form.value.canais),
       accept_required: form.value.acceptRequired,
       accept_timeout_seconds: Number(form.value.acceptTimeoutSeconds) || 30,
+      reoffer_same_agent: form.value.reofferSameAgent,
+      reoffer_after_seconds: Number(form.value.reofferAfterSeconds) || 0,
       active: form.value.active,
       conditions: rows.value.length ? rowsToQuery(rows.value).payload : [],
     };
@@ -399,6 +405,28 @@ const aoEnviar = event => {
           <p class="text-xs text-n-slate-11">
             {{ t('STAYDESK.QUEUES.FORM.ACCEPT_HINT') }}
           </p>
+          <template v-if="form.acceptRequired">
+            <label class="flex items-center gap-2 text-sm text-n-slate-12">
+              <Switch v-model="form.reofferSameAgent" />
+              {{ t('STAYDESK.QUEUES.FORM.REOFFER_SAME') }}
+            </label>
+            <label
+              v-if="form.reofferSameAgent"
+              class="grid max-w-xs gap-1 text-sm text-n-slate-12"
+            >
+              <span>{{ t('STAYDESK.QUEUES.FORM.REOFFER_AFTER') }}</span>
+              <input
+                v-model="form.reofferAfterSeconds"
+                type="number"
+                min="0"
+                step="5"
+                class="h-9 w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
+              />
+            </label>
+            <p class="text-xs text-n-slate-11">
+              {{ t('STAYDESK.QUEUES.FORM.REOFFER_HINT') }}
+            </p>
+          </template>
         </fieldset>
         <fieldset class="grid gap-3">
           <legend class="text-sm text-n-slate-12">

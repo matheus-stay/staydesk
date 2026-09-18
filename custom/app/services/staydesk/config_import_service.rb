@@ -146,7 +146,9 @@ class Staydesk::ConfigImportService
       fallback_after_minutes: dados['espera_minutos'],
       priority_mode: dados['prioridade'] || 'chegada',
       accept_required: dados.fetch('exige_aceite', false),
-      accept_timeout_seconds: dados['segundos_para_aceitar'] || 30
+      accept_timeout_seconds: dados['segundos_para_aceitar'] || 30,
+      reoffer_same_agent: dados.fetch('reoferecer_ao_mesmo', true),
+      reoffer_after_seconds: dados['reoferecer_depois_segundos'] || 0
     }
   end
 

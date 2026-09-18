@@ -79,3 +79,5 @@ class AutoAssignment::AgentAssignmentService
     format(::Redis::Alfred::ROUND_ROBIN_AGENTS, inbox_id: conversation.inbox_id)
   end
 end
+
+AutoAssignment::AgentAssignmentService.prepend_mod_with('AutoAssignment::AgentAssignmentService') # staydesk: convite antes da atribuição

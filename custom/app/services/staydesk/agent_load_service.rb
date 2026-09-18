@@ -40,13 +40,18 @@ class Staydesk::AgentLoadService
     limits.filter_map { |user_id, limit| user_id if loads.fetch(user_id, 0) >= limit }
   end
 
-  # Conversas em atendimento agora, por agente, nas caixas daquela fila.
+  # Conversas em atendimento agora, por agente, nas caixas daquela fila. O
+  # convite pendente conta como vaga reservada: a conversa ainda não é do
+  # agente, mas ele está decidindo sobre ela.
   def load_by_user(queue, user_ids)
     return {} if user_ids.blank?
 
-    @account.conversations.open
-            .where(assignee_id: user_ids, inbox_id: inbox_ids_for(queue))
-            .group(:assignee_id).count
+    caixas = inbox_ids_for(queue)
+    em_atendimento = @account.conversations.open.where(assignee_id: user_ids, inbox_id: caixas).group(:assignee_id).count
+    reservadas = Staydesk::Offer.pendentes.joins(:conversation)
+                                .where(user_id: user_ids, conversations: { inbox_id: caixas })
+                                .group(:user_id).count
+    em_atendimento.merge(reservadas) { |_id, abertas, convites| abertas + convites }
   end
 
   # Painel de carga: status atual, regra, carga e teto de cada agente, por fila.

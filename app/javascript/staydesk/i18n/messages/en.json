@@ -444,7 +444,7 @@
         "ACCEPT": "Agent acceptance",
         "ACCEPT_REQUIRED": "The agent must accept before the conversation becomes theirs",
         "ACCEPT_TIMEOUT": "Time to accept (seconds)",
-        "ACCEPT_HINT": "Without an answer in time, the conversation goes back to the queue and is offered to another available agent. Use it for chat and WhatsApp; tickets usually do not need it.",
+        "ACCEPT_HINT": "The invite arrives before the conversation belongs to the agent: it stays in the queue, unassigned, with their seat reserved until they accept. No answer in time, or a decline, sends it to the next available agent — and counts against their acceptance.",
         "INTAKE": "What comes into this queue",
         "INTAKE_HINT": "Pick a whole type (every WhatsApp) or a specific channel (the StayCloud WPP number), as in the Zendesk queue. Empty, the queue takes what the queues above did not. Order rules: the first match wins.",
         "CHANNELS": "Channels",
@@ -458,7 +458,10 @@
         "TEAM_PLACEHOLDER": "Pick at least one group",
         "GROUPS": "Groups",
         "GROUPS_HINT": "Work goes to the primary groups first. The conversation lands in the first group of the list and, once someone takes it, stays with that agent's group. Who gets chat or tickets inside the group is still decided by the agent status.",
-        "SECONDARY_ENABLE": "Enable secondary groups"
+        "SECONDARY_ENABLE": "Enable secondary groups",
+        "REOFFER_SAME": "With nobody else available, offer it again to the same agent",
+        "REOFFER_AFTER": "Wait how many seconds before offering again (0 = right away)",
+        "REOFFER_HINT": "Off, the conversation waits in the queue until someone becomes available."
       },
       "DELETE": {
         "BUTTON": "Delete",

@@ -18,8 +18,10 @@ class Staydesk::Queues::SweepJob < ApplicationJob
 
   private
 
+  # Conversa com convite pendente já está com alguém decidindo: fica de fora.
   def esperando(account_id)
     escopo = Conversation.where(assignee_id: nil, status: :open)
+                         .where.not(id: Staydesk::Offer.pendentes.select(:conversation_id))
     escopo = escopo.where(account_id: account_id) if account_id.present?
     escopo.order(:created_at).limit(LIMITE).to_a
   end

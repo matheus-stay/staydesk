@@ -16,5 +16,7 @@ json.inbox_ids resource.inbox_ids
 json.conditions resource.conditions
 json.accept_required resource.accept_required
 json.accept_timeout_seconds resource.accept_timeout_seconds
+json.reoffer_same_agent resource.reoffer_same_agent
+json.reoffer_after_seconds resource.reoffer_after_seconds
 json.position resource.position
 json.active resource.active

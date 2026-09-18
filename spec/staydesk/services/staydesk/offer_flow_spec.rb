@@ -19,12 +19,14 @@ RSpec.describe 'convite de atendimento com status ao atribuir' do
     Staydesk::TicketStatusService.new(conversation.reload).current&.name
   end
 
-  it 'creates the offer on assignment and only moves the status when the agent accepts' do
+  it 'creates the offer on distribution and only moves the status when the agent accepts' do
+    allow(OnlineStatusTracker).to receive(:get_available_users).and_return({ ana.id.to_s => 'online' })
     conversation = create(:conversation, account: account, inbox: chat, team: n1)
-    conversation.update!(assignee: ana)
+    AutoAssignment::AgentAssignmentService.new(conversation: conversation, allowed_agent_ids: [ana.id]).perform
 
     convite = Staydesk::Offer.pendentes.find_by(conversation: conversation)
     expect(convite).to be_present
+    expect(conversation.reload.assignee).to be_nil
     expect(status_de(conversation)).not_to eq('Em andamento')
 
     Staydesk::OfferService.new(conversation.reload).accept!(convite)

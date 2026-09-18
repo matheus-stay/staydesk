@@ -1,7 +1,11 @@
 # Entra em Conversation pelo gancho prepend_mod_with('Conversation').
 module Custom::Conversation
   def self.prepended(base)
+    base.attr_accessor :staydesk_convidar
     base.validate :staydesk_required_ticket_fields
+    # Os after_commit rodam em ordem inversa: o convite guardado na criação sai
+    # depois de a conversa passar pela fila.
+    base.after_create_commit :staydesk_lancar_convite!
     base.after_create_commit :staydesk_route_to_queue
     # Um despacho só: os after_commit rodam em ordem inversa e alguns deles
     # salvam a conversa de novo, o que zera `saved_changes` para os seguintes
@@ -18,6 +22,17 @@ module Custom::Conversation
     return super if team.blank? || team.allow_auto_assign.blank?
 
     Staydesk::QueueOverflow.new(self).eligible_user_ids(disponiveis)
+  end
+
+  # Fila com aceite (SPEC-16): a distribuição guarda em `staydesk_convidar` o
+  # agente escolhido em vez de atribuir; aqui o convite é criado, já com a
+  # conversa gravada. Atribuição manual não passa por convite.
+  def staydesk_lancar_convite!
+    agente = staydesk_convidar
+    return if agente.blank? || !persisted?
+
+    self.staydesk_convidar = nil
+    Staydesk::OfferService.new(self).offer!(agente)
   end
 
   private
@@ -38,18 +53,11 @@ module Custom::Conversation
 
   def staydesk_after_update
     mudancas = saved_changes.to_h
-    staydesk_offer_to_assignee(mudancas)
     staydesk_follow_assignee_team(mudancas)
     staydesk_status_on_assign(mudancas)
     staydesk_record_events(mudancas)
     staydesk_align_ticket_status(mudancas)
-  end
-
-  # Chat e WhatsApp são oferecidos: o agente precisa aceitar (SPEC-16).
-  def staydesk_offer_to_assignee(mudancas)
-    return unless mudancas.key?('assignee_id') && assignee_id.present?
-
-    Staydesk::OfferService.new(self).offer!(assignee)
+    staydesk_lancar_convite!
   end
 
   # A conversa nova passa pelas filas antes de a distribuição escolher o agente
@@ -76,12 +84,11 @@ module Custom::Conversation
     (fila.team_ids + fila.fallback_team_ids).find { |id| TeamMember.exists?(team_id: id, user_id: assignee_id) }
   end
 
-  # Atribuiu a alguém: o caso entra em andamento sozinho, como na operação. Se a
-  # fila exige aceite, isso espera o agente aceitar (Staydesk::OfferService).
+  # Atribuiu a alguém: o caso entra em andamento sozinho, como na operação. Na
+  # fila com aceite a atribuição só acontece no aceite, então é aí que muda.
   def staydesk_status_on_assign(mudancas)
     return unless mudancas.key?('assignee_id')
     return unless Staydesk::TicketStatus.active.exists?(account_id: account_id, apply_on_assign: true)
-    return if assignee_id.present? && Staydesk::Offer.pendentes.exists?(conversation_id: id, user_id: assignee_id)
 
     Staydesk::TicketStatusService.new(self).follow_assignment!
   end

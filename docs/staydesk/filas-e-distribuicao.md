@@ -120,13 +120,23 @@ agente e cada fila, se a distribuição entrega e, se não, qual condição falt
 
 ## Aceite
 
-Chat e WhatsApp são **oferecidos**: a conversa é atribuída, o agente recebe o
-convite na tela e tem o tempo da fila para aceitar. Sem resposta, a conversa
-volta para a fila e é oferecida a outro agente disponível, sem o que recusou.
-Ticket normalmente não passa por aceite.
+Chat, WhatsApp e ticket podem ser **oferecidos**, por fila: a distribuição
+escolhe o agente do mesmo jeito (rodízio entre quem está no grupo, no status
+certo, com vaga e conectado), mas em vez de atribuir, **convida**. A conversa
+fica na fila, sem responsável, com a vaga do agente reservada; o convite aparece
+na tela dele com relógio, som e aviso do navegador; **aceitar é o que atribui**
+(e é aí que o status vai para "em andamento"). Recusar ou deixar vencer manda
+para o próximo disponível, sem quem não pegou.
+
+Regras da fila, todas configuráveis: `exige aceite`, `tempo para aceitar`, e o
+que fazer quando não há mais ninguém — `oferecer de novo ao mesmo agente` (na
+hora ou depois de N segundos) ou deixar na fila. Atribuição manual não passa por
+convite.
 
 A aceitação vira número: Central › Status dos agentes mostra, por agente, quantos
-convites recebeu, aceitou, recusou, deixou expirar e em quanto tempo respondeu.
+convites recebeu, aceitou, recusou, deixou vencer e em quanto tempo respondeu.
+A taxa é aceitos sobre oferecidos; cada convite vencido ou recusado conta contra
+o agente, inclusive quando a mesma conversa volta para ele.
 
 ## Varredura da fila
 

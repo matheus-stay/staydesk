@@ -183,7 +183,7 @@
           "caminho": "staydesk/agent_loads",
           "titulo": "Ler a carga dos agentes agora",
           "resumo": "Quantas conversas cada agente atende neste momento em cada canal de trabalho, contra o teto dele.",
-          "detalhes": "É a foto do momento, não do período: quem está com quantas conversas, e qual o teto de cada um. O teto sai da regra de capacidade do agente (`rule`) e do status em que ele está: nulo é sem limite; zero é que o status atual não recebe aquele canal.",
+          "detalhes": "É a foto do momento, não do período: quem está com quantas conversas, e qual o teto de cada um. O teto sai da regra de capacidade do agente (`rule`) e do status em que ele está: nulo é sem limite; zero é que o status atual não recebe aquele canal. Convite pendente conta na carga: a vaga já está reservada para quem está decidindo.",
           "escopo": "relatorios:leitura",
           "respostas": [
             {
@@ -273,7 +273,7 @@
           "caminho": "staydesk/offer_stats",
           "titulo": "Ler a aceitação de chat e WhatsApp",
           "resumo": "Por agente: quantos convites recebeu, aceitou, recusou, deixou expirar, a taxa e o tempo médio para responder.",
-          "detalhes": "Chat e WhatsApp são oferecidos: a conversa é atribuída e o agente tem o tempo da fila para aceitar. Este endpoint mede isso. `acceptance_rate` é aceitos sobre oferecidos, em percentual; `average_answer_seconds` é o tempo médio entre o convite e o aceite. É o KPI de aceitação da operação.",
+          "detalhes": "Chat e WhatsApp são oferecidos: a conversa é atribuída e o agente tem o tempo da fila para aceitar. Este endpoint mede isso. `acceptance_rate` é aceitos sobre oferecidos (aceitos + recusados + vencidos), em percentual; cada convite que o agente deixa vencer ou recusa conta contra ele, inclusive quando a mesma conversa volta para ele; `average_answer_seconds` é o tempo médio entre o convite e o aceite. É o KPI de aceitação da operação.",
           "escopo": "relatorios:leitura",
           "respostas": [
             {
@@ -887,6 +887,18 @@
               "exemplo": 30
             },
             {
+              "nome": "reoffer_same_agent",
+              "tipo": "booleano",
+              "descricao": "Convite não aceito e ninguém mais disponível: oferece de novo ao mesmo agente (padrão) ou deixa na fila.",
+              "exemplo": true
+            },
+            {
+              "nome": "reoffer_after_seconds",
+              "tipo": "inteiro",
+              "descricao": "Quantos segundos esperar antes de oferecer de novo ao mesmo agente. 0 é na hora.",
+              "exemplo": 0
+            },
+            {
               "nome": "conditions",
               "tipo": "lista de objeto",
               "descricao": "Condições avançadas no formato do filtro do produto, para o que o canal não resolve: etiqueta, prioridade, campo do ticket.",
@@ -1079,6 +1091,18 @@
               "tipo": "inteiro",
               "descricao": "Segundos até a conversa voltar para a fila sem resposta do agente.",
               "exemplo": 30
+            },
+            {
+              "nome": "reoffer_same_agent",
+              "tipo": "booleano",
+              "descricao": "Convite não aceito e ninguém mais disponível: oferece de novo ao mesmo agente (padrão) ou deixa na fila.",
+              "exemplo": true
+            },
+            {
+              "nome": "reoffer_after_seconds",
+              "tipo": "inteiro",
+              "descricao": "Quantos segundos esperar antes de oferecer de novo ao mesmo agente. 0 é na hora.",
+              "exemplo": 0
             },
             {
               "nome": "conditions",
@@ -1712,7 +1736,7 @@
           "caminho": "staydesk/offers",
           "titulo": "Listar convites pendentes",
           "resumo": "Os convites pendentes de quem chama, do mais antigo ao mais novo. Lista vazia quando não há convite.",
-          "detalhes": "Cada convite traz a conversa, o canal, o nome do contato e o tempo restante — sem o assunto, de propósito: o agente aceita pelo cliente, não pelo tema. É o que a tela do agente consulta para mostrar o cartão de aceite.\n\nQuando a distribuição entrega várias conversas de uma vez (até a capacidade do agente), cada uma vira um convite; o agente aceita um a um e cada aceite abre a conversa numa aba.",
+          "detalhes": "Cada convite traz a conversa, o canal, o nome do contato e o tempo restante — sem o assunto, de propósito: o agente aceita pelo cliente, não pelo tema. É o que a tela do agente consulta para mostrar o cartão de aceite.\n\nO convite vem **antes** da atribuição: a conversa fica na fila, sem responsável, e a vaga do agente fica reservada até ele responder; aceitar é o que atribui. Quando a distribuição entrega várias conversas de uma vez (até a capacidade do agente), cada uma vira um convite; o agente aceita um a um e cada aceite abre a conversa numa aba.",
           "escopo": "operacao:leitura",
           "respostas": [
             {

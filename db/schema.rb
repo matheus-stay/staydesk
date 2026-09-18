@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_18_800000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_18_900000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1641,6 +1641,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_18_800000) do
     t.string "priority_mode", default: "chegada", null: false
     t.bigint "team_ids", default: [], null: false, array: true
     t.string "load_queue_keys", default: [], null: false, array: true
+    t.boolean "reoffer_same_agent", default: true, null: false
+    t.integer "reoffer_after_seconds", default: 0, null: false
     t.index ["account_id", "name"], name: "index_staydesk_queues_on_account_id_and_name", unique: true
     t.index ["account_id", "position"], name: "index_staydesk_queues_on_account_id_and_position"
     t.index ["account_id"], name: "index_staydesk_queues_on_account_id"
