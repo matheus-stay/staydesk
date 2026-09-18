@@ -5,4 +5,7 @@ json.limits resource.limits
 json.is_default resource.is_default
 json.user_ids resource.user_ids
 json.user_names resource.users.order(:name).pluck(:name)
+json.missed_offers_limit resource.missed_offers_limit
+json.missed_offers_to_status_id resource.missed_offers_to_status_id
+json.missed_offers_to_status_name resource.missed_offers_to_status&.name
 json.position resource.position

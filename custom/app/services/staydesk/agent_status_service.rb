@@ -52,6 +52,16 @@ class Staydesk::AgentStatusService
     nil
   end
 
+  # Tira o agente do que ele está: para um status (ausente) ou, sem destino,
+  # para fora (sem status, offline). É o que a regra de convites perdidos usa.
+  def afastar!(destino, at: Time.current)
+    return change_to(destino, at: at) if destino.present?
+
+    fechar_periodo_aberto(at)
+    alinhar_disponibilidade('offline')
+    nil
+  end
+
   private
 
   # A distribuição e os números leem a disponibilidade do Redis, não do banco.

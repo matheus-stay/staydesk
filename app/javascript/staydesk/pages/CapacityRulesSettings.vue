@@ -9,6 +9,7 @@ import Button from 'dashboard/components-next/button/Button.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import Switch from 'dashboard/components-next/switch/Switch.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
+import Select from 'dashboard/components-next/select/Select.vue';
 import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
 import CapacityRulesAPI from '../api/capacityRules';
 import AgentStatusesAPI from '../api/agentStatuses';
@@ -23,6 +24,7 @@ const agents = useMapGetter('agents/getAgents');
 
 const regras = ref([]);
 const canais = ref([]);
+const statuses = ref([]);
 const isLoading = ref(false);
 const isSaving = ref(false);
 const editando = ref(null);
@@ -34,12 +36,19 @@ const vazio = () => ({
   limits: {},
   isDefault: false,
   userIds: [],
+  missedOffersLimit: '',
+  missedOffersToStatusId: null,
 });
 const form = ref(vazio());
 
 const agentOptions = computed(() =>
   agents.value.map(agent => ({ value: agent.id, label: agent.name }))
 );
+// Para onde cai quem perde convites: de preferência um status que não recebe.
+const statusOptions = computed(() => [
+  { value: null, label: t('STAYDESK.CAPACITY_RULES.FORM.MISSED_TO_NONE') },
+  ...statuses.value.map(status => ({ value: status.id, label: status.name })),
+]);
 
 const buscar = async () => {
   isLoading.value = true;
@@ -56,6 +65,10 @@ const buscarCanais = async () => {
   const { data } = await AgentStatusesAPI.loadQueues();
   canais.value = data.load_queues || [];
 };
+const buscarStatuses = async () => {
+  const { data } = await AgentStatusesAPI.list();
+  statuses.value = data.statuses || [];
+};
 
 const editar = regra => {
   editando.value = regra || 'nova';
@@ -66,6 +79,8 @@ const editar = regra => {
         limits: { ...(regra.limits || {}) },
         isDefault: regra.is_default,
         userIds: [...(regra.user_ids || [])],
+        missedOffersLimit: regra.missed_offers_limit ?? '',
+        missedOffersToStatusId: regra.missed_offers_to_status_id || null,
       }
     : vazio();
 };
@@ -87,6 +102,11 @@ const salvar = async evento => {
     limits,
     is_default: form.value.isDefault,
     user_ids: form.value.userIds,
+    missed_offers_limit:
+      form.value.missedOffersLimit === ''
+        ? null
+        : Number(form.value.missedOffersLimit),
+    missed_offers_to_status_id: form.value.missedOffersToStatusId || null,
   };
   isSaving.value = true;
   try {
@@ -139,6 +159,7 @@ const quem = regra => {
 onMounted(() => {
   buscar();
   buscarCanais();
+  buscarStatuses();
   store.dispatch('agents/get');
 });
 </script>
@@ -215,6 +236,33 @@ onMounted(() => {
             </span>
           </span>
         </label>
+        <fieldset class="grid gap-3">
+          <legend class="text-sm text-n-slate-12">
+            {{ t('STAYDESK.CAPACITY_RULES.FORM.MISSED_TITLE') }}
+          </legend>
+          <p class="m-0 text-xs text-n-slate-11">
+            {{ t('STAYDESK.CAPACITY_RULES.FORM.MISSED_HINT') }}
+          </p>
+          <div class="grid gap-4 md:grid-cols-2">
+            <label class="grid gap-1 text-sm text-n-slate-12">
+              <span>{{ t('STAYDESK.CAPACITY_RULES.FORM.MISSED_LIMIT') }}</span>
+              <input
+                v-model="form.missedOffersLimit"
+                type="number"
+                min="1"
+                :placeholder="t('STAYDESK.CAPACITY_RULES.FORM.MISSED_OFF')"
+                class="h-9 w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
+              />
+            </label>
+            <label class="grid gap-1 text-sm text-n-slate-12">
+              <span>{{ t('STAYDESK.CAPACITY_RULES.FORM.MISSED_TO') }}</span>
+              <Select
+                v-model="form.missedOffersToStatusId"
+                :options="statusOptions"
+              />
+            </label>
+          </div>
+        </fieldset>
         <label class="grid gap-1 text-sm text-n-slate-12">
           <span>{{ t('STAYDESK.CAPACITY_RULES.FORM.AGENTS') }}</span>
           <TagMultiSelectComboBox
@@ -280,6 +328,19 @@ onMounted(() => {
                 </p>
                 <p v-if="regra.description" class="m-0 text-xs text-n-slate-11">
                   {{ regra.description }}
+                </p>
+                <p
+                  v-if="regra.missed_offers_limit"
+                  class="m-0 text-xs text-n-slate-10"
+                >
+                  {{
+                    t('STAYDESK.CAPACITY_RULES.MISSED_SUMMARY', {
+                      count: regra.missed_offers_limit,
+                      status:
+                        regra.missed_offers_to_status_name ||
+                        t('STAYDESK.CAPACITY_RULES.FORM.MISSED_TO_NONE'),
+                    })
+                  }}
                 </p>
               </td>
               <td

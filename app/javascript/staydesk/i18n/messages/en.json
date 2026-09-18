@@ -727,7 +727,13 @@
         "IS_DEFAULT_HINT": "Applies to whoever is in no rule. Only one per account: marking this one unmarks the other.",
         "AGENTS": "Agents with this rule",
         "AGENTS_PLACEHOLDER": "Pick the agents",
-        "AGENTS_HINT": "Each agent has one rule only: joining this one leaves the others."
+        "AGENTS_HINT": "Each agent has one rule only: joining this one leaves the others.",
+        "MISSED_TITLE": "Missed invites",
+        "MISSED_HINT": "As in Zendesk: whoever lets N invites in a row expire (or declines them) is not at the screen. They drop to the chosen status, online time stops counting and their pending invites go back to the queue. Counts only since they entered the current status.",
+        "MISSED_LIMIT": "Unaccepted invites in a row",
+        "MISSED_OFF": "off",
+        "MISSED_TO": "Drops to",
+        "MISSED_TO_NONE": "No status (offline)"
       },
       "DELETE": {
         "BUTTON": "Delete",
@@ -738,7 +744,8 @@
         "SAVE_ERROR": "Could not save the rule",
         "DELETE_SUCCESS": "Rule deleted",
         "DELETE_ERROR": "Could not delete the rule"
-      }
+      },
+      "MISSED_SUMMARY": "{count} missed invites in a row → {status}"
     },
     "CHANNELS": {
       "SETTINGS_TITLE": "Channels",

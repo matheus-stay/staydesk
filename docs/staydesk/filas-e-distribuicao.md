@@ -133,6 +133,13 @@ que fazer quando não há mais ninguém — `oferecer de novo ao mesmo agente` (
 hora ou depois de N segundos) ou deixar na fila. Atribuição manual não passa por
 convite.
 
+**Convites perdidos** (regra de capacidade, como no Zendesk): quem deixa vencer
+ou recusa N convites seguidos (5 na operação) cai para o status que a regra diz
+("Ausente", que não recebe e não conta tempo online), e os convites que
+estavam com ele voltam para a fila. Conta só desde que entrou no status atual;
+ao escolher um status de novo, zera. No arquivo: `convites_perdidos_seguidos`
+e `convites_perdidos_para` na regra.
+
 A aceitação vira número: Central › Status dos agentes mostra, por agente, quantos
 convites recebeu, aceitou, recusou, deixou vencer e em quanto tempo respondeu.
 A taxa é aceitos sobre oferecidos; cada convite vencido ou recusado conta contra

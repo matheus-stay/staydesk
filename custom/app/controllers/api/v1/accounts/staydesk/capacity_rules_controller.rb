@@ -32,6 +32,7 @@ class Api::V1::Accounts::Staydesk::CapacityRulesController < Api::V1::Accounts::
   end
 
   def permitted_payload
-    params.require(:capacity_rule).permit(:name, :description, :is_default, :position, limits: {}, user_ids: [])
+    params.require(:capacity_rule).permit(:name, :description, :is_default, :position, :missed_offers_limit,
+                                          :missed_offers_to_status_id, limits: {}, user_ids: [])
   end
 end

@@ -10,6 +10,8 @@
 #  is_default  :boolean          default(FALSE), not null (a regra de quem não tem regra)
 #  user_ids    :bigint           default([]), not null, is an Array  (agentes com esta regra)
 #  position    :integer          default(0), not null
+#  missed_offers_limit        :integer (convites não aceitos seguidos até cair de status; nulo = desligado)
+#  missed_offers_to_status_id :bigint  (para qual status cai; nulo = sem status, offline)
 #
 # Regra de capacidade, como no Zendesk: quantas conversas de cada canal de
 # trabalho o agente aguenta ao mesmo tempo. Uma regra é a padrão da conta; as
@@ -19,11 +21,14 @@ class Staydesk::CapacityRule < ApplicationRecord
   self.table_name = 'staydesk_capacity_rules'
 
   belongs_to :account
+  belongs_to :missed_offers_to_status, class_name: 'Staydesk::AgentStatus', optional: true
 
   before_validation :normalize
   validates :name, presence: true, uniqueness: { scope: :account_id }
   validate :limits_must_be_whole_numbers
   validate :agents_belong_to_account
+  validates :missed_offers_limit, numericality: { greater_than: 0 }, allow_nil: true
+  validate :missed_offers_target_belongs_to_account
   after_save :unica_padrao, if: :is_default
   after_save :tirar_agentes_das_outras
 
@@ -51,6 +56,11 @@ class Staydesk::CapacityRule < ApplicationRecord
     account.users.where(id: user_ids)
   end
 
+  # A regra dos convites perdidos está ligada nesta regra?
+  def derruba_por_convites?
+    missed_offers_limit.present?
+  end
+
   private
 
   def normalize
@@ -76,6 +86,12 @@ class Staydesk::CapacityRule < ApplicationRecord
     return if account.blank? || user_ids.empty?
 
     errors.add(:user_ids, 'tem agente que não é desta conta') if (user_ids - account.users.where(id: user_ids).ids).any?
+  end
+
+  def missed_offers_target_belongs_to_account
+    return if missed_offers_to_status.blank?
+
+    errors.add(:missed_offers_to_status_id, 'precisa ser um status desta conta') if missed_offers_to_status.account_id != account_id
   end
 
   def unica_padrao

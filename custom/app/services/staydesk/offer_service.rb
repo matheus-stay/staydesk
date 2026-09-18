@@ -41,6 +41,8 @@ class Staydesk::OfferService
     convite.update!(status: status, answered_at: Time.current)
     @conversation.update!(assignee: nil) if @conversation.assignee_id == convite.user_id
 
+    # Perdeu convites demais seguidos? Sai do status antes de a fila voltar para ele.
+    Staydesk::MissedOffersService.new(@conversation.account, convite.user_id).verificar!
     redistribuir(sem: convite.user_id)
     reoferecer_ao_mesmo unless oferecida_ou_atribuida?
     convite

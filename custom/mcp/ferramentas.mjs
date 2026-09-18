@@ -96,6 +96,8 @@ export const FERRAMENTAS = [
     limits: OBJETO,
     is_default: BOOLEANO,
     user_ids: LISTA,
+    missed_offers_limit: NUMERO,
+    missed_offers_to_status_id: NUMERO,
   }),
   atualizar('regras_de_capacidade', 'staydesk/capacity_rules', 'capacity_rule', 'Altera uma regra de capacidade.', {
     name: TEXTO,
@@ -103,6 +105,8 @@ export const FERRAMENTAS = [
     limits: OBJETO,
     is_default: BOOLEANO,
     user_ids: LISTA,
+    missed_offers_limit: NUMERO,
+    missed_offers_to_status_id: NUMERO,
   }),
   listar('status_do_ticket', 'staydesk/ticket_statuses', 'Catálogo de status do ticket da conta.'),
   criar('status_do_ticket', 'staydesk/ticket_statuses', 'ticket_status', 'Cria um status de ticket.', {

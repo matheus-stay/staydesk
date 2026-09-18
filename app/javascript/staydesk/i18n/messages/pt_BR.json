@@ -751,7 +751,13 @@
         "IS_DEFAULT_HINT": "Vale para quem não está em nenhuma regra. Só uma por conta: marcar esta desmarca a outra.",
         "AGENTS": "Agentes com esta regra",
         "AGENTS_PLACEHOLDER": "Escolha os agentes",
-        "AGENTS_HINT": "Cada agente tem uma regra só: entrar nesta tira das outras."
+        "AGENTS_HINT": "Cada agente tem uma regra só: entrar nesta tira das outras.",
+        "MISSED_TITLE": "Convites perdidos",
+        "MISSED_HINT": "Como no Zendesk: quem deixa vencer ou recusa N convites seguidos não está na frente da tela. Cai para o status escolhido, para de contar tempo online e os convites que estavam com ele voltam para a fila. Conta só desde que entrou no status atual.",
+        "MISSED_LIMIT": "Convites não aceitos seguidos",
+        "MISSED_OFF": "desligado",
+        "MISSED_TO": "Cai para",
+        "MISSED_TO_NONE": "Sem status (offline)"
       },
       "DELETE": {
         "BUTTON": "Excluir",
@@ -762,7 +768,8 @@
         "SAVE_ERROR": "Não foi possível salvar a regra",
         "DELETE_SUCCESS": "Regra excluída",
         "DELETE_ERROR": "Não foi possível excluir a regra"
-      }
+      },
+      "MISSED_SUMMARY": "{count} convites perdidos seguidos → {status}"
     },
     "CHANNELS": {
       "SETTINGS_TITLE": "Canais",

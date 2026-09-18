@@ -67,10 +67,18 @@ module Staydesk::ConfigImport::Catalogo
       regra = Staydesk::CapacityRule.find_or_initialize_by(account: @account, name: dados.fetch('nome'))
       regra.update!(
         description: dados['descricao'], limits: dados['limites'] || {},
-        is_default: dados['padrao'] || false, user_ids: agentes_por_email(dados['agentes']), position: posicao
+        is_default: dados['padrao'] || false, user_ids: agentes_por_email(dados['agentes']), position: posicao,
+        missed_offers_limit: dados['convites_perdidos_seguidos'],
+        missed_offers_to_status: status_por_nome(dados['convites_perdidos_para'])
       )
       regra.name
     end
+  end
+
+  def status_por_nome(nome)
+    return if nome.blank?
+
+    Staydesk::AgentStatus.find_by!(account: @account, name: nome)
   end
 
   def agentes_por_email(emails)

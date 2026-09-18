@@ -1499,7 +1499,10 @@
                 "Ana Ribeiro",
                 "John"
               ],
-              "position": 0
+              "position": 0,
+              "missed_offers_limit": 5,
+              "missed_offers_to_status_id": 6,
+              "missed_offers_to_status_name": "Ausente"
             }
           ]
         },
@@ -1566,6 +1569,18 @@
                 2,
                 5
               ]
+            },
+            {
+              "nome": "missed_offers_limit",
+              "tipo": "inteiro",
+              "descricao": "Convites não aceitos seguidos (vencidos ou recusados) até o agente cair do status, como no Zendesk. Nulo desliga. Conta só desde que ele entrou no status atual.",
+              "exemplo": 5
+            },
+            {
+              "nome": "missed_offers_to_status_id",
+              "tipo": "inteiro",
+              "descricao": "Para qual status ele cai (um status que não recebe e não conta tempo online, como \"Ausente\"). Nulo: fica sem status, offline.",
+              "exemplo": 6
             }
           ],
           "payload": {
@@ -1599,7 +1614,10 @@
               "Ana Ribeiro",
               "John"
             ],
-            "position": 0
+            "position": 0,
+            "missed_offers_limit": 5,
+            "missed_offers_to_status_id": 6,
+            "missed_offers_to_status_name": "Ausente"
           }
         },
         {
@@ -1682,6 +1700,18 @@
                 5
               ],
               "obrigatorio": false
+            },
+            {
+              "nome": "missed_offers_limit",
+              "tipo": "inteiro",
+              "descricao": "Convites não aceitos seguidos (vencidos ou recusados) até o agente cair do status, como no Zendesk. Nulo desliga. Conta só desde que ele entrou no status atual.",
+              "exemplo": 5
+            },
+            {
+              "nome": "missed_offers_to_status_id",
+              "tipo": "inteiro",
+              "descricao": "Para qual status ele cai (um status que não recebe e não conta tempo online, como \"Ausente\"). Nulo: fica sem status, offline.",
+              "exemplo": 6
             }
           ],
           "payload": {
@@ -1708,7 +1738,10 @@
               "Ana Ribeiro",
               "John"
             ],
-            "position": 0
+            "position": 0,
+            "missed_offers_limit": 5,
+            "missed_offers_to_status_id": 6,
+            "missed_offers_to_status_name": "Ausente"
           }
         },
         {
