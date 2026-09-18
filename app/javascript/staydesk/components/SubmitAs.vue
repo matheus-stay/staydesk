@@ -1,17 +1,17 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useAlert } from 'dashboard/composables';
 import Button from 'dashboard/components-next/button/Button.vue';
-import Select from 'dashboard/components-next/select/Select.vue';
 import { useWorkspace } from '../composables/useWorkspace';
 import { useNextConversation } from '../composables/useNextConversation';
 import { useTicketStatusStore } from '../store/ticketStatus';
 
-// "Enviar como <status>", como no Zendesk: manda a resposta e muda o status numa
-// ação só. Depois, conforme a área de trabalho: fica, abre a próxima ou fecha.
+// "Enviar como <status>", como no Zendesk: um botão dividido. A parte grande
+// manda a resposta e muda o status numa ação só; a seta escolhe outro status
+// para enviar. Depois, conforme a área de trabalho: fica, abre a próxima ou fecha.
 const props = defineProps({
   conversationId: { type: [Number, String], required: true },
   send: { type: Function, required: true },
@@ -30,6 +30,19 @@ const ticketStatuses = useTicketStatusStore();
 
 const status = ref(null);
 const isSubmitting = ref(false);
+const aberto = ref(false);
+const raiz = ref(null);
+
+const escolher = valor => {
+  status.value = valor;
+  aberto.value = false;
+};
+// Clique fora fecha a lista.
+const foraDaLista = evento => {
+  if (raiz.value && !raiz.value.contains(evento.target)) aberto.value = false;
+};
+onMounted(() => document.addEventListener('click', foraDaLista));
+onBeforeUnmount(() => document.removeEventListener('click', foraDaLista));
 const enabled = computed(
   () => composer.value.submit_as !== false && role.value !== 'light'
 );
@@ -100,18 +113,51 @@ const submit = async () => {
 <template>
   <div
     v-if="enabled"
-    class="flex items-center justify-end gap-2 border-t border-n-weak px-3 py-2"
+    ref="raiz"
+    class="relative flex items-center justify-end border-t border-n-weak px-3 py-2"
   >
-    <Select v-model="status" :options="statusOptions" :disabled="disabled" />
-    <Button
-      sm
-      solid
-      blue
-      :disabled="disabled"
-      :is-loading="isSubmitting"
-      @click="submit"
+    <div class="inline-flex items-stretch">
+      <Button
+        sm
+        solid
+        blue
+        class="rounded-e-none"
+        :disabled="disabled"
+        :is-loading="isSubmitting"
+        @click="submit"
+      >
+        {{ t('STAYDESK.SUBMIT_AS.BUTTON', { status: selectedLabel }) }}
+      </Button>
+      <Button
+        sm
+        solid
+        blue
+        icon="i-lucide-chevron-down"
+        class="rounded-s-none border-s border-white/30 !px-1.5"
+        :disabled="disabled"
+        :aria-label="t('STAYDESK.SUBMIT_AS.PICK')"
+        @click="aberto = !aberto"
+      />
+    </div>
+    <ul
+      v-if="aberto"
+      role="menu"
+      class="absolute bottom-full right-3 z-20 mb-1 min-w-52 list-none rounded-lg border border-n-weak bg-n-solid-1 py-1 shadow-lg"
     >
-      {{ t('STAYDESK.SUBMIT_AS.BUTTON', { status: selectedLabel }) }}
-    </Button>
+      <li v-for="option in statusOptions" :key="option.value">
+        <button
+          type="button"
+          role="menuitem"
+          class="flex w-full items-center justify-between gap-3 px-3 py-1.5 text-left text-sm text-n-slate-12 hover:bg-n-alpha-2"
+          @click="escolher(option.value)"
+        >
+          {{ t('STAYDESK.SUBMIT_AS.BUTTON', { status: option.label }) }}
+          <span
+            v-if="option.value === selected"
+            class="i-lucide-check size-3.5 text-n-brand"
+          />
+        </button>
+      </li>
+    </ul>
   </div>
 </template>

@@ -18,8 +18,12 @@ class Staydesk::OfferService
     convite
   end
 
+  # Aceitou: agora sim o caso entra em andamento (o convite segurou isso na atribuição).
   def accept!(convite)
     convite.update!(status: 'aceita', answered_at: Time.current)
+    if Staydesk::TicketStatus.active.exists?(account_id: @conversation.account_id, apply_on_assign: true)
+      Staydesk::TicketStatusService.new(@conversation).follow_assignment!
+    end
     convite
   end
 

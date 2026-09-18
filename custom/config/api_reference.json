@@ -1711,8 +1711,8 @@
           "metodo": "GET",
           "caminho": "staydesk/offers",
           "titulo": "Listar convites pendentes",
-          "resumo": "Os convites de atendimento pendentes de quem está chamando.",
-          "detalhes": "Cada convite traz a conversa, a caixa, o contato, a última mensagem e `expires_at`. É o que a tela do agente consulta para mostrar o cartão de aceite.",
+          "resumo": "Os convites pendentes de quem chama, do mais antigo ao mais novo. Lista vazia quando não há convite.",
+          "detalhes": "Cada convite traz a conversa, a caixa, o contato, a última mensagem e `expires_at`. É o que a tela do agente consulta para mostrar o cartão de aceite.\n\nQuando a distribuição entrega várias conversas de uma vez (até a capacidade do agente), cada uma vira um convite; o agente aceita um a um e cada aceite abre a conversa numa aba.",
           "escopo": "operacao:leitura",
           "respostas": [
             {

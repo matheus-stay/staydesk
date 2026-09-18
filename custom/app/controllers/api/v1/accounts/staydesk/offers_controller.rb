@@ -2,12 +2,13 @@
 class Api::V1::Accounts::Staydesk::OffersController < Api::V1::Accounts::Staydesk::BaseController
   before_action :fetch_offer, only: [:accept, :decline]
 
-  # O convite pendente de quem está pedindo, se houver.
+  # Os convites pendentes de quem está pedindo, do mais antigo ao mais novo:
+  # quando caem vários de uma vez, o agente aceita um a um.
   def index
-    @offer = Staydesk::Offer.pendentes
-                            .where(account_id: Current.account.id, user_id: current_user.id)
-                            .where(expires_at: Time.current..)
-                            .includes(conversation: [:contact, :inbox]).order(created_at: :desc).first
+    @offers = Staydesk::Offer.pendentes
+                             .where(account_id: Current.account.id, user_id: current_user.id)
+                             .where(expires_at: Time.current..)
+                             .includes(conversation: [:contact, :inbox]).order(:created_at)
   end
 
   def accept

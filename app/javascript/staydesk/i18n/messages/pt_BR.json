@@ -200,7 +200,8 @@
     },
     "SUBMIT_AS": {
       "BUTTON": "Enviar como {status}",
-      "ERROR": "A mensagem foi enviada, mas o status não pôde ser alterado"
+      "ERROR": "A mensagem foi enviada, mas o status não pôde ser alterado",
+      "PICK": "Escolher o status para enviar"
     },
     "NEXT": {
       "BUTTON": "Avançar"

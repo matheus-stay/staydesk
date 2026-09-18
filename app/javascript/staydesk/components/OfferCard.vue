@@ -1,32 +1,31 @@
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useAccount } from 'dashboard/composables/useAccount';
 import Button from 'dashboard/components-next/button/Button.vue';
 import { useOffers } from '../composables/useOffers';
 
-// O convite aparece no canto, com o relógio correndo. Aceitar abre a conversa;
-// recusar devolve para a fila na hora.
+// Os convites aparecem no canto, um cartão por conversa, cada um com o relógio
+// correndo. Aceitar abre a conversa numa aba do espaço de trabalho (as outras
+// abas ficam); recusar devolve para a fila na hora.
 const { t } = useI18n();
 const router = useRouter();
 const { accountScopedRoute } = useAccount();
-const { offer, secondsLeft, start, accept, decline } = useOffers();
+const { offers, start, accept, decline, onArrive } = useOffers();
 
-const avisar = () => {
+const avisar = convite => {
   if (!('Notification' in window) || Notification.permission !== 'granted')
     return;
   const titulo = t('STAYDESK.OFFERS.NOTIFICATION', {
-    contact: offer.value.contact_name || '',
+    contact: convite.contact_name || '',
   });
-  const aviso = new Notification(titulo, {
-    body: offer.value.last_message || '',
-  });
+  const aviso = new Notification(titulo, { body: convite.last_message || '' });
   setTimeout(() => aviso.close(), 10000);
 };
 
-const aoAceitar = async () => {
-  const convite = await accept();
+const aoAceitar = async id => {
+  const convite = await accept(id);
   if (!convite) return;
   router.push(
     accountScopedRoute('inbox_conversation', {
@@ -35,45 +34,50 @@ const aoAceitar = async () => {
   );
 };
 
-watch(offer, novo => {
-  if (novo) avisar();
-});
-
 onMounted(() => {
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission();
   }
+  onArrive(avisar);
   start();
 });
 </script>
 
 <template>
   <div
-    v-if="offer"
-    class="fixed bottom-4 right-4 z-50 w-80 rounded-xl border border-n-weak bg-n-solid-1 p-4 shadow-lg"
+    v-if="offers.length"
+    class="fixed bottom-4 right-4 z-50 flex w-80 flex-col gap-2"
   >
-    <div class="flex items-center justify-between">
-      <p class="text-sm font-medium text-n-slate-12">
-        {{ t('STAYDESK.OFFERS.TITLE', { inbox: offer.inbox_name }) }}
-      </p>
-      <span class="text-sm font-medium text-n-amber-11">
-        {{ t('STAYDESK.OFFERS.SECONDS_LEFT', { seconds: secondsLeft }) }}
-      </span>
-    </div>
-    <p class="mt-1 text-sm text-n-slate-12">{{ offer.contact_name }}</p>
-    <p
-      v-if="offer.last_message"
-      class="mt-1 line-clamp-2 text-xs text-n-slate-11"
+    <div
+      v-for="offer in offers"
+      :key="offer.id"
+      class="rounded-xl border border-n-weak bg-n-solid-1 p-4 shadow-lg"
     >
-      {{ offer.last_message }}
-    </p>
-    <div class="mt-3 flex justify-end gap-2">
-      <Button sm faded slate @click="decline">
-        {{ t('STAYDESK.OFFERS.DECLINE') }}
-      </Button>
-      <Button sm solid blue @click="aoAceitar">
-        {{ t('STAYDESK.OFFERS.ACCEPT') }}
-      </Button>
+      <div class="flex items-center justify-between">
+        <p class="text-sm font-medium text-n-slate-12">
+          {{ t('STAYDESK.OFFERS.TITLE', { inbox: offer.inbox_name }) }}
+        </p>
+        <span class="text-sm font-medium text-n-amber-11">
+          {{
+            t('STAYDESK.OFFERS.SECONDS_LEFT', { seconds: offer.secondsLeft })
+          }}
+        </span>
+      </div>
+      <p class="mt-1 text-sm text-n-slate-12">{{ offer.contact_name }}</p>
+      <p
+        v-if="offer.last_message"
+        class="mt-1 line-clamp-2 text-xs text-n-slate-11"
+      >
+        {{ offer.last_message }}
+      </p>
+      <div class="mt-3 flex justify-end gap-2">
+        <Button sm faded slate @click="decline(offer.id)">
+          {{ t('STAYDESK.OFFERS.DECLINE') }}
+        </Button>
+        <Button sm solid blue @click="aoAceitar(offer.id)">
+          {{ t('STAYDESK.OFFERS.ACCEPT') }}
+        </Button>
+      </div>
     </div>
   </div>
 </template>

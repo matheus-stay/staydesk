@@ -200,7 +200,8 @@
     },
     "SUBMIT_AS": {
       "BUTTON": "Send as {status}",
-      "ERROR": "The message was sent, but the status could not be changed"
+      "ERROR": "The message was sent, but the status could not be changed",
+      "PICK": "Pick the status to submit as"
     },
     "NEXT": {
       "BUTTON": "Next"

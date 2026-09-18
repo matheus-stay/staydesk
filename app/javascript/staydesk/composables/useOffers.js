@@ -2,38 +2,51 @@ import { computed, onBeforeUnmount, ref } from 'vue';
 import OffersAPI from '../api/offers';
 
 const INTERVALO = 3000;
+const SOM = '/audio/dashboard/ding.mp3';
 
-// Convite de atendimento (SPEC-16): chat e WhatsApp são oferecidos ao agente e ele
-// aceita, como no Zendesk. Enquanto houver convite pendente, o relógio corre na tela.
+// Convite de atendimento (SPEC-16): chat e WhatsApp são oferecidos ao agente e
+// ele aceita, como no Zendesk. Quando caem vários de uma vez (até a capacidade
+// dele), cada um vira um cartão com o próprio relógio; convite novo toca e avisa.
 export const useOffers = () => {
-  const offer = ref(null);
-  const secondsLeft = ref(0);
+  const offers = ref([]);
   let relogio = null;
   let consulta = null;
+  let aoChegar = () => {};
 
-  const limpar = () => {
-    offer.value = null;
-    secondsLeft.value = 0;
+  const tocar = () => {
+    try {
+      new Audio(SOM).play().catch(() => {});
+    } catch {
+      // sem áudio (aba sem interação ainda): o cartão e o aviso bastam
+    }
   };
 
   const buscar = async () => {
     try {
       const { data } = await OffersAPI.get();
-      if (!data || !data.id) {
-        limpar();
-        return;
+      const lista = Array.isArray(data) ? data : [];
+      const conhecidos = new Set(offers.value.map(item => item.id));
+      const novos = lista.filter(item => !conhecidos.has(item.id));
+      offers.value = lista.map(item => ({
+        ...item,
+        secondsLeft: item.seconds_left,
+      }));
+      if (novos.length) {
+        tocar();
+        novos.forEach(item => aoChegar(item));
       }
-      offer.value = data;
-      secondsLeft.value = data.seconds_left;
     } catch {
-      limpar();
+      offers.value = [];
     }
   };
 
   const contar = () => {
-    if (!offer.value) return;
-    secondsLeft.value = Math.max(secondsLeft.value - 1, 0);
-    if (secondsLeft.value === 0) limpar();
+    offers.value = offers.value
+      .map(item => ({
+        ...item,
+        secondsLeft: Math.max(item.secondsLeft - 1, 0),
+      }))
+      .filter(item => item.secondsLeft > 0);
   };
 
   const start = () => {
@@ -50,27 +63,36 @@ export const useOffers = () => {
     relogio = null;
   };
 
-  const accept = async () => {
-    const atual = offer.value;
-    limpar();
+  const tirar = id => {
+    const atual = offers.value.find(item => item.id === id);
+    offers.value = offers.value.filter(item => item.id !== id);
+    return atual;
+  };
+
+  const accept = async id => {
+    const atual = tirar(id);
     if (atual) await OffersAPI.accept(atual.id);
     return atual;
   };
 
-  const decline = async () => {
-    const atual = offer.value;
-    limpar();
+  const decline = async id => {
+    const atual = tirar(id);
     if (atual) await OffersAPI.decline(atual.id);
+  };
+
+  // Quem monta o cartão decide o que fazer quando chega convite (aviso do navegador).
+  const onArrive = callback => {
+    aoChegar = callback;
   };
 
   onBeforeUnmount(stop);
 
   return {
-    offer: computed(() => offer.value),
-    secondsLeft: computed(() => secondsLeft.value),
+    offers: computed(() => offers.value),
     start,
     stop,
     accept,
     decline,
+    onArrive,
   };
 };

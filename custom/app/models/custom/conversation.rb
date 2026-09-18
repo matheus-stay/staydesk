@@ -3,11 +3,11 @@ module Custom::Conversation
   def self.prepended(base)
     base.validate :staydesk_required_ticket_fields
     base.after_create_commit :staydesk_route_to_queue
-    base.after_update_commit :staydesk_offer_to_assignee
-    base.after_update_commit :staydesk_record_events
-    base.after_update_commit :staydesk_align_ticket_status
-    base.after_update_commit :staydesk_status_on_assign
-    base.after_update_commit :staydesk_follow_assignee_team
+    # Um despacho só: os after_commit rodam em ordem inversa e alguns deles
+    # salvam a conversa de novo, o que zera `saved_changes` para os seguintes
+    # (o convite de aceite deixava de ser criado). A foto das mudanças é tirada
+    # uma vez e passada a todos, na ordem certa.
+    base.after_update_commit :staydesk_after_update
     base.has_one :staydesk_applied_sla, class_name: 'Staydesk::AppliedSla', dependent: :destroy
   end
 
@@ -36,9 +36,18 @@ module Custom::Conversation
                                fields: faltando.map(&:attribute_display_name).join(', ')))
   end
 
+  def staydesk_after_update
+    mudancas = saved_changes.to_h
+    staydesk_offer_to_assignee(mudancas)
+    staydesk_follow_assignee_team(mudancas)
+    staydesk_status_on_assign(mudancas)
+    staydesk_record_events(mudancas)
+    staydesk_align_ticket_status(mudancas)
+  end
+
   # Chat e WhatsApp são oferecidos: o agente precisa aceitar (SPEC-16).
-  def staydesk_offer_to_assignee
-    return unless saved_changes.key?('assignee_id') && assignee_id.present?
+  def staydesk_offer_to_assignee(mudancas)
+    return unless mudancas.key?('assignee_id') && assignee_id.present?
 
     Staydesk::OfferService.new(self).offer!(assignee)
   end
@@ -51,8 +60,8 @@ module Custom::Conversation
 
   # Como no Zendesk, a conversa fica no grupo de quem pegou: entregue a alguém de
   # outro grupo principal, ou de um secundário, ela passa para o grupo dele.
-  def staydesk_follow_assignee_team
-    return unless saved_changes.key?('assignee_id') && assignee_id.present? && team_id.present?
+  def staydesk_follow_assignee_team(mudancas)
+    return unless mudancas.key?('assignee_id') && assignee_id.present? && team_id.present?
     return if TeamMember.exists?(team_id: team_id, user_id: assignee_id)
 
     destino = staydesk_grupo_do_responsavel
@@ -67,27 +76,29 @@ module Custom::Conversation
     (fila.team_ids + fila.fallback_team_ids).find { |id| TeamMember.exists?(team_id: id, user_id: assignee_id) }
   end
 
-  # Atribuiu a alguém: o caso entra em andamento sozinho, como na operação.
-  def staydesk_status_on_assign
-    return unless saved_changes.key?('assignee_id')
+  # Atribuiu a alguém: o caso entra em andamento sozinho, como na operação. Se a
+  # fila exige aceite, isso espera o agente aceitar (Staydesk::OfferService).
+  def staydesk_status_on_assign(mudancas)
+    return unless mudancas.key?('assignee_id')
     return unless Staydesk::TicketStatus.active.exists?(account_id: account_id, apply_on_assign: true)
+    return if assignee_id.present? && Staydesk::Offer.pendentes.exists?(conversation_id: id, user_id: assignee_id)
 
     Staydesk::TicketStatusService.new(self).follow_assignment!
   end
 
   # O status base mudou (botão, automação, bot): o status personalizado acompanha.
-  def staydesk_align_ticket_status
-    return unless saved_changes.key?('status')
+  def staydesk_align_ticket_status(mudancas)
+    return unless mudancas.key?('status')
     return unless Staydesk::TicketStatus.active.exists?(account_id: account_id)
 
     Staydesk::TicketStatusService.new(self).align_with_base!
   end
 
-  def staydesk_record_events
+  def staydesk_record_events(mudancas)
     Staydesk::ConversationEvent::TRACKED.each do |attribute, kind|
-      next unless saved_changes.key?(attribute)
+      next unless mudancas.key?(attribute)
 
-      from_value, to_value = saved_changes[attribute]
+      from_value, to_value = mudancas[attribute]
       Staydesk::ConversationEvent.create!(
         account_id: account_id, conversation_id: id, kind: kind,
         from_value: from_value&.to_s, to_value: to_value&.to_s,
