@@ -54,5 +54,13 @@ Cobre times, etiquetas, campos do ticket, caixas, status do ticket, filas de
 carga, status do agente, calendário, políticas de SLA, filas, visualizações e
 área de trabalho. É idempotente: rodar de novo só atualiza o que mudou.
 
+O mesmo arquivo entra pela API, sem console, com o token de um administrador:
+
+```sh
+curl -X POST -H "api_access_token: sd_seu_token" -H "Content-Type: application/json" \
+  --data "$(jq -Rs '{yaml: .}' configuracao.yml)" \
+  "https://staydesk.staycloud.com.br/api/v1/accounts/1/staydesk/config_import"
+```
+
 Para ver as telas com dados, `rails staydesk:demo RESET=1` popula a conta, e
 `rails staydesk:demo SOMENTE=historico` só acrescenta o histórico dos clientes.

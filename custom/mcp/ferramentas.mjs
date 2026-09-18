@@ -48,6 +48,14 @@ export const FERRAMENTAS = [
       until: { ...TEXTO, description: 'fim do período em ISO 8601' },
     },
   },
+  {
+    nome: 'staydesk_configurar',
+    descricao:
+      'Aplica a configuração da operação inteira de uma vez, a partir do YAML do comando rails staydesk:configurar (times, etiquetas, campos, status, SLA, filas, visualizações e área de trabalho). Idempotente.',
+    metodo: 'POST',
+    rota: 'staydesk/config_import',
+    argumentos: { yaml: { ...TEXTO, description: 'o YAML completo, como texto' } },
+  },
   listar('filas', 'staydesk/queues', 'Filas de encaminhamento: para qual grupo cada demanda vai, transbordo e aceite.'),
   criar('filas', 'staydesk/queues', 'queue', 'Cria uma fila de encaminhamento.', {
     name: TEXTO,

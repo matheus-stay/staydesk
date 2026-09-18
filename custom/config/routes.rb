@@ -39,6 +39,7 @@ Rails.application.routes.draw do
             resources :distribution_checks, only: [:index]
             resources :load_queues, only: [:index, :create, :update, :destroy]
             resources :capacity_rules, only: [:index, :create, :update, :destroy]
+            resource :config_import, only: [:create], controller: 'config_imports'
             resources :kpis, only: [:index]
             resources :api_tokens, only: [:index, :create, :update, :destroy]
             resources :ticket_fields, only: [:index]

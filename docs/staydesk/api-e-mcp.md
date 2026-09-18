@@ -166,3 +166,11 @@ rails staydesk:configurar ACCOUNT_ID=1 FILE=configuracao.yml
 O arquivo cobre times, etiquetas, atributos, caixas, status do ticket, filas de
 carga, status do agente, calendário, políticas de SLA, filas, visualizações e
 área de trabalho. É idempotente: rodar de novo só atualiza o que mudou.
+
+O mesmo arquivo entra pela API, sem console, com o token de um administrador:
+
+```sh
+curl -X POST -H "api_access_token: sd_seu_token" -H "Content-Type: application/json" \
+  --data "$(jq -Rs '{yaml: .}' configuracao.yml)" \
+  "https://staydesk.staycloud.com.br/api/v1/accounts/1/staydesk/config_import"
+```
