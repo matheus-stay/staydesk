@@ -773,7 +773,53 @@
       },
       "AGENTS": {
         "TITLE": "Agents",
-        "HINT": "Online time only counts the statuses marked for it. Acceptance: an expired or declined invite counts against the agent."
+        "HINT": "Online time only counts the statuses marked for it. Acceptance dot: green from 90%, amber from 70%, red below."
+      },
+      "COMPARE": "Compare with the previous period",
+      "PREVIOUS": "vs. previous {days} days",
+      "HERO_TITLE": "How is the operation right now?",
+      "HERO_SUBTITLE": "Queue and connection are live; CSAT and acceptance cover the last {days} days.",
+      "TREND_TITLE": "Conversations per day",
+      "TREND_SUBTITLE": "How many came in and how many were resolved on each day of the period.",
+      "TREND_CREATED": "created",
+      "TREND_RESOLVED": "resolved",
+      "DETAIL_TITLE": "Breakdown · every metric",
+      "DETAIL_SUBTITLE": "Last {days} days.",
+      "DETAIL_SUBTITLE_COMPARED": "Last {days} days, with the change against the previous {days} days.",
+      "CARDS": {
+        "primeira_resposta": "First reply · {channel}",
+        "resposta": "Reply · {channel}",
+        "resolucao": "Resolution · {channel}",
+        "SAMPLES": "{count} conversations · {business} in business hours",
+        "NO_SAMPLES": "no conversation measured in the period",
+        "INVITES": "Invites offered",
+        "INVITES_HELPER": "{accepted} accepted · {declined} declined · {expired} expired",
+        "CSAT_ANSWERS": "CSAT answers",
+        "CSAT_HELPER": "{good} satisfied · {bad} unsatisfied"
+      },
+      "TIPS": {
+        "CSAT": "Ratings 4 and 5 over every satisfaction answer in the period.",
+        "ACCEPTANCE": "Accepted invites over offered ones. Expired and declined count against the agent, even when the same conversation comes back to them.",
+        "QUEUE": "Open conversations with no assignee right now, in any channel.",
+        "ONLINE": "Agents with a live connection now (tab open), whatever their status.",
+        "TIMES": "Average of the times recorded in the period, grouped by the inbox's work channel. The value in parentheses discounts what fell outside business hours.",
+        "ONLINE_TIME": "Among agents with any online time in the period, the average time per worked day in statuses marked as counting online time."
+      },
+      "FILTERS": {
+        "AGENT": "Agent",
+        "ALL_AGENTS": "Every agent",
+        "CHANNEL": "Work channel",
+        "ALL_CHANNELS": "Every channel",
+        "TEAM": "Group",
+        "ALL_TEAMS": "Every group"
+      },
+      "REALTIME": {
+        "TITLE": "Real time · agents",
+        "SUBTITLE": "Status, connection and load of each agent right now. Refreshes every 15 seconds; not affected by the filters.",
+        "NO_STATUS": "no status",
+        "LOAD": "{load} of {capacity}",
+        "UNLIMITED": "{load} · no limit",
+        "NONE": "does not receive"
       }
     }
   },

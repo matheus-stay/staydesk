@@ -2,14 +2,16 @@
 # em quanto tempo. É o indicador que a coordenação olha para saber quem está
 # realmente pegando o chat quando ele chega.
 class Staydesk::OfferStatsService
-  def initialize(account, since: 7.days.ago, until_time: Time.current)
+  def initialize(account, since: 7.days.ago, until_time: Time.current, conversation_ids: nil)
     @account = account
     @since = since
     @until = until_time
+    @conversation_ids = conversation_ids
   end
 
   def perform
     convites = Staydesk::Offer.where(account_id: @account.id, created_at: @since..@until)
+    convites = convites.where(conversation_id: @conversation_ids) if @conversation_ids
     por_agente = convites.group(:user_id, :status).count
     tempos = tempo_medio(convites)
 

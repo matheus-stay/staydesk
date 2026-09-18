@@ -5,11 +5,21 @@ class Api::V1::Accounts::Staydesk::KpisController < Api::V1::Accounts::Staydesk:
 
   before_action { check_authorization(Staydesk::Kpi) }
 
+  # `compare=1` traz também o período anterior de mesma duração, para o desvio.
   def index
-    @kpis = Staydesk::KpiService.new(account: Current.account, since: desde, ate: ate).perform
+    @kpis = Staydesk::KpiService.new(account: Current.account, since: desde, ate: ate, filtros: filtros).perform
+    return if params[:compare].blank?
+
+    duracao = ate - desde
+    @kpis[:anterior] = Staydesk::KpiService.new(account: Current.account, since: desde - duracao, ate: desde, filtros: filtros).resumo
   end
 
   private
+
+  # Recortes: agente, canal de trabalho (chave) e grupo.
+  def filtros
+    params.permit(:user_id, :load_queue, :team_id).to_h
+  end
 
   def desde
     valor = params[:since].present? ? Time.zone.parse(params[:since].to_s) : 7.days.ago

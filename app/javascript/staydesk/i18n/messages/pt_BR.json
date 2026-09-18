@@ -797,7 +797,53 @@
       },
       "AGENTS": {
         "TITLE": "Agentes",
-        "HINT": "Tempo online só conta os status marcados para isso. Aceitação: convite vencido ou recusado conta contra o agente."
+        "HINT": "Tempo online só conta os status marcados para isso. A bolinha da aceitação: verde de 90%, âmbar de 70%, vermelha abaixo."
+      },
+      "COMPARE": "Comparar com o período anterior",
+      "PREVIOUS": "vs. {days} dias anteriores",
+      "HERO_TITLE": "Como está a operação agora?",
+      "HERO_SUBTITLE": "Fila e conexão são de agora; CSAT e aceitação, dos últimos {days} dias.",
+      "TREND_TITLE": "Conversas por dia",
+      "TREND_SUBTITLE": "Quantas entraram e quantas foram resolvidas em cada dia do período.",
+      "TREND_CREATED": "criadas",
+      "TREND_RESOLVED": "resolvidas",
+      "DETAIL_TITLE": "Detalhamento · todas as métricas",
+      "DETAIL_SUBTITLE": "Últimos {days} dias.",
+      "DETAIL_SUBTITLE_COMPARED": "Últimos {days} dias, com o desvio contra os {days} dias anteriores.",
+      "CARDS": {
+        "primeira_resposta": "Primeira resposta · {channel}",
+        "resposta": "Resposta · {channel}",
+        "resolucao": "Resolução · {channel}",
+        "SAMPLES": "{count} conversas · {business} em horário comercial",
+        "NO_SAMPLES": "sem conversas medidas no período",
+        "INVITES": "Convites oferecidos",
+        "INVITES_HELPER": "{accepted} aceitos · {declined} recusados · {expired} vencidos",
+        "CSAT_ANSWERS": "Respostas de CSAT",
+        "CSAT_HELPER": "{good} satisfeitos · {bad} insatisfeitos"
+      },
+      "TIPS": {
+        "CSAT": "Notas 4 e 5 sobre todas as respostas de satisfação do período.",
+        "ACCEPTANCE": "Convites aceitos sobre oferecidos. Vencido e recusado contam contra o agente, inclusive quando a mesma conversa volta para ele.",
+        "QUEUE": "Conversas abertas sem responsável neste momento, em qualquer canal.",
+        "ONLINE": "Agentes com conexão viva agora (aba aberta), independentemente do status.",
+        "TIMES": "Média dos tempos registrados no período, agrupados pelo canal de trabalho da caixa. O valor entre parênteses desconta o que ficou fora do horário comercial.",
+        "ONLINE_TIME": "Entre os agentes com algum tempo online no período, a média do tempo por dia trabalhado nos status marcados como 'contabiliza tempo online'."
+      },
+      "FILTERS": {
+        "AGENT": "Agente",
+        "ALL_AGENTS": "Todos os agentes",
+        "CHANNEL": "Canal de trabalho",
+        "ALL_CHANNELS": "Todos os canais",
+        "TEAM": "Grupo",
+        "ALL_TEAMS": "Todos os grupos"
+      },
+      "REALTIME": {
+        "TITLE": "Tempo real · agentes",
+        "SUBTITLE": "Status, conexão e carga de cada agente neste momento. Atualiza a cada 15 segundos; não depende dos filtros.",
+        "NO_STATUS": "sem status",
+        "LOAD": "{load} de {capacity}",
+        "UNLIMITED": "{load} · sem limite",
+        "NONE": "não recebe"
       }
     }
   },

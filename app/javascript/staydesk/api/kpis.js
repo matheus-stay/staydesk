@@ -8,8 +8,10 @@ class KpisAPI extends ApiClient {
     super('staydesk', { accountScoped: true });
   }
 
-  show({ since, until } = {}) {
-    return axios.get(`${this.url}/kpis`, { params: { since, until } });
+  show({ since, until, compare, user_id, load_queue, team_id } = {}) {
+    return axios.get(`${this.url}/kpis`, {
+      params: { since, until, compare, user_id, load_queue, team_id },
+    });
   }
 }
 
