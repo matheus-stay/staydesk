@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { usePolicy } from 'dashboard/composables/usePolicy';
 import { useRoute } from 'vue-router';
-import { estaNaCentral } from '../helpers/central';
+import { destinoDaCentral, estaNaCentral } from '../helpers/central';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 
 // A central de administração abre numa aba própria, como no Zendesk: o espaço de
@@ -22,30 +22,10 @@ const route = useRoute();
 // para o Hub, pelo caminho de volta no topo da barra.
 const foraDaCentral = computed(() => !estaNaCentral(route.path));
 
-// O item de Configurações do produto só agrupa filhos: não tem destino próprio.
-// A central abre nas configurações da conta, que é a casa do administrador, e
-// de lá a barra de configurações leva ao resto, inclusive ao que é do StayDesk.
-const HOME = 'Settings Account Settings';
-
-// Quem não é administrador entra pela primeira área que o papel dele libera; sem
-// nenhuma, o link não existe. As áreas do produto (conta, agentes, caixas) não
-// declaram permissão porque continuam sendo só do administrador.
-const destino = computed(() => {
-  if (props.item?.to) return props.item.to;
-
-  const filhos = props.item?.children || [];
-  const liberado = filhos.find(
-    filho =>
-      filho.to && filho.permissions && checkPermissions(filho.permissions)
-  );
-  if (!checkPermissions(['administrator'])) return liberado?.to || null;
-
-  return (
-    filhos.find(filho => filho.name === HOME && filho.to)?.to ||
-    liberado?.to ||
-    null
-  );
-});
+// A Central é organizada em seções: o link abre a home dela. Quem não é
+// administrador entra se alguma tela das seções estiver liberada para o papel
+// dele; sem nenhuma, o link não existe.
+const destino = computed(() => destinoDaCentral(props.item, checkPermissions));
 
 const href = computed(() =>
   destino.value ? router.resolve(destino.value).href : '#'
