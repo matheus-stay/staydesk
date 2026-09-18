@@ -6,10 +6,14 @@ import { useMapGetter } from 'dashboard/composables/store';
 import SettingsLayout from 'dashboard/routes/dashboard/settings/SettingsLayout.vue';
 import BaseSettingsHeader from 'dashboard/routes/dashboard/settings/components/BaseSettingsHeader.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
+import Switch from 'dashboard/components-next/switch/Switch.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import Select from 'dashboard/components-next/select/Select.vue';
+import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
 import { useAgentStatusStore } from '../store/agentStatus';
+import { emDuracao } from '../helpers/duracao';
+import { fromSaveButton } from '../helpers/form';
 
 // Configurações › Status dos agentes: o catálogo que aparece no menu de disponibilidade.
 const { t } = useI18n();
@@ -25,12 +29,17 @@ const emptyForm = () => ({
   availability: 'online',
   inboxIds: [],
   active: true,
-  capacity: { chat: '', ticket: '' },
+  capacity: {},
 });
 const form = ref(emptyForm());
 
 const statuses = computed(() => store.statuses);
+// Os limites seguem as filas de carga configuradas, não uma lista fixa no código.
+const loadQueues = computed(() => store.loadQueues);
 const loads = computed(() => store.loads);
+const offerStats = computed(() =>
+  store.offerStats.filter(linha => linha.offers > 0)
+);
 const availabilityOptions = computed(() => [
   { value: 'online', label: t('STAYDESK.AGENT_STATUS.AVAILABILITY.online') },
   { value: 'busy', label: t('STAYDESK.AGENT_STATUS.AVAILABILITY.busy') },
@@ -61,11 +70,9 @@ const startEdit = status => {
     : emptyForm();
 };
 
-const toggleInbox = id => {
-  const index = form.value.inboxIds.indexOf(id);
-  if (index === -1) form.value.inboxIds.push(id);
-  else form.value.inboxIds.splice(index, 1);
-};
+const inboxOptions = computed(() =>
+  inboxes.value.map(inbox => ({ value: inbox.id, label: inbox.name }))
+);
 
 const save = async () => {
   if (!form.value.name.trim()) return;
@@ -114,14 +121,13 @@ const capacityLabel = value => {
 };
 
 const capacitySummary = status => {
-  const chat = status.capacity?.chat;
-  const ticket = status.capacity?.ticket;
-  if (chat === undefined && ticket === undefined)
-    return t('STAYDESK.AGENT_STATUS.CAPACITY.UNLIMITED');
-  return [
-    `${t('STAYDESK.AGENT_STATUS.CAPACITY.CHAT')}: ${capacityLabel(chat)}`,
-    `${t('STAYDESK.AGENT_STATUS.CAPACITY.TICKET')}: ${capacityLabel(ticket)}`,
-  ].join(' · ');
+  const definidos = loadQueues.value.filter(
+    fila => status.capacity?.[fila.key] !== undefined
+  );
+  if (!definidos.length) return t('STAYDESK.AGENT_STATUS.CAPACITY.UNLIMITED');
+  return definidos
+    .map(fila => `${fila.name}: ${capacityLabel(status.capacity[fila.key])}`)
+    .join(' · ');
 };
 
 const loadLabel = (entry, queue) =>
@@ -129,8 +135,14 @@ const loadLabel = (entry, queue) =>
 
 onMounted(() => {
   store.fetch();
+  store.fetchLoadQueues();
   store.fetchLoads();
+  store.fetchOfferStats();
 });
+// Só o botão de salvar (ou o Enter) envia: clique em botão de dentro não salva.
+const aoEnviar = event => {
+  if (fromSaveButton(event)) save();
+};
 </script>
 
 <template>
@@ -158,7 +170,7 @@ onMounted(() => {
       <form
         v-if="editing"
         class="mb-6 grid gap-4 rounded-xl border border-n-weak bg-n-solid-1 p-6"
-        @submit.prevent="save"
+        @submit.prevent="aoEnviar"
       >
         <div class="grid gap-4 md:grid-cols-3">
           <Input
@@ -182,19 +194,20 @@ onMounted(() => {
           </label>
         </div>
         <div class="grid gap-4 md:grid-cols-2">
-          <label class="grid gap-1 text-sm text-n-slate-12">
-            <span>{{ t('STAYDESK.AGENT_STATUS.FORM.CAPACITY_CHAT') }}</span>
+          <label
+            v-for="fila in loadQueues"
+            :key="fila.key"
+            class="grid gap-1 text-sm text-n-slate-12"
+          >
+            <span>
+              {{
+                t('STAYDESK.AGENT_STATUS.FORM.CAPACITY_QUEUE', {
+                  queue: fila.name,
+                })
+              }}
+            </span>
             <input
-              v-model="form.capacity.chat"
-              type="number"
-              min="0"
-              class="h-9 w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
-            />
-          </label>
-          <label class="grid gap-1 text-sm text-n-slate-12">
-            <span>{{ t('STAYDESK.AGENT_STATUS.FORM.CAPACITY_TICKET') }}</span>
-            <input
-              v-model="form.capacity.ticket"
+              v-model="form.capacity[fila.key]"
               type="number"
               min="0"
               class="h-9 w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
@@ -211,23 +224,16 @@ onMounted(() => {
           <p class="text-xs text-n-slate-11">
             {{ t('STAYDESK.AGENT_STATUS.FORM.INBOXES_HINT') }}
           </p>
-          <div class="flex flex-wrap gap-3">
-            <label
-              v-for="inbox in inboxes"
-              :key="inbox.id"
-              class="flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-sm text-n-slate-12"
-            >
-              <input
-                type="checkbox"
-                :checked="form.inboxIds.includes(inbox.id)"
-                @change="toggleInbox(inbox.id)"
-              />
-              {{ inbox.name }}
-            </label>
-          </div>
+          <TagMultiSelectComboBox
+            v-model="form.inboxIds"
+            :options="inboxOptions"
+            :placeholder="t('STAYDESK.AGENT_STATUS.FORM.INBOXES_PLACEHOLDER')"
+            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+            :empty-state="t('STAYDESK.PICKER.EMPTY')"
+          />
         </fieldset>
         <label class="flex items-center gap-2 text-sm text-n-slate-12">
-          <input v-model="form.active" type="checkbox" />
+          <Switch v-model="form.active" />
           {{ t('STAYDESK.AGENT_STATUS.FORM.ACTIVE') }}
         </label>
         <div class="flex justify-end gap-2">
@@ -239,6 +245,7 @@ onMounted(() => {
             solid
             blue
             type="submit"
+            data-staydesk-save
             :is-loading="store.uiFlags.isSaving"
           >
             {{ t('STAYDESK.TEAM_VIEWS.FORM.SAVE') }}
@@ -319,11 +326,12 @@ onMounted(() => {
               <th class="py-2 pr-4 font-medium">
                 {{ t('STAYDESK.AGENT_STATUS.LOAD.STATUS') }}
               </th>
-              <th class="py-2 pr-4 font-medium">
-                {{ t('STAYDESK.AGENT_STATUS.CAPACITY.CHAT') }}
-              </th>
-              <th class="py-2 font-medium">
-                {{ t('STAYDESK.AGENT_STATUS.CAPACITY.TICKET') }}
+              <th
+                v-for="fila in loadQueues"
+                :key="fila.key"
+                class="py-2 pr-4 font-medium"
+              >
+                {{ fila.name }}
               </th>
             </tr>
           </thead>
@@ -347,15 +355,66 @@ onMounted(() => {
                   {{ t('STAYDESK.AGENT_STATUS.LOAD.NO_STATUS') }}
                 </span>
               </td>
-              <td class="py-2 pr-4 text-n-slate-11">
-                {{ loadLabel(entry, 'chat') }}
-              </td>
-              <td class="py-2 text-n-slate-11">
-                {{ loadLabel(entry, 'ticket') }}
+              <td
+                v-for="fila in loadQueues"
+                :key="fila.key"
+                class="py-2 pr-4 text-n-slate-11"
+              >
+                {{ loadLabel(entry, fila.key) }}
               </td>
             </tr>
           </tbody>
         </table>
+      </section>
+      <section v-if="offerStats.length" class="mt-8 grid gap-3">
+        <header class="grid gap-1">
+          <h3 class="m-0 text-sm font-medium text-n-slate-12">
+            {{ t('STAYDESK.AGENT_STATUS.OFFERS.TITLE') }}
+          </h3>
+          <p class="m-0 text-xs text-n-slate-11">
+            {{ t('STAYDESK.AGENT_STATUS.OFFERS.DESCRIPTION') }}
+          </p>
+        </header>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[32rem] border-collapse text-sm">
+            <thead>
+              <tr class="text-left text-xs uppercase text-n-slate-11">
+                <th class="py-2 pr-4 font-medium">
+                  {{ t('STAYDESK.AGENT_STATUS.LOAD.AGENT') }}
+                </th>
+                <th class="py-2 pr-4 font-medium">
+                  {{ t('STAYDESK.AGENT_STATUS.OFFERS.OFFERED') }}
+                </th>
+                <th class="py-2 pr-4 font-medium">
+                  {{ t('STAYDESK.AGENT_STATUS.OFFERS.ACCEPTED') }}
+                </th>
+                <th class="py-2 pr-4 font-medium">
+                  {{ t('STAYDESK.AGENT_STATUS.OFFERS.RATE') }}
+                </th>
+                <th class="py-2 font-medium">
+                  {{ t('STAYDESK.AGENT_STATUS.OFFERS.ANSWER_TIME') }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-n-weak">
+              <tr v-for="linha in offerStats" :key="linha.user_id">
+                <td class="py-2 pr-4 text-n-slate-12">{{ linha.name }}</td>
+                <td class="py-2 pr-4 text-n-slate-11">{{ linha.offers }}</td>
+                <td class="py-2 pr-4 text-n-slate-11">{{ linha.accepted }}</td>
+                <td class="py-2 pr-4 text-n-slate-11">
+                  {{
+                    linha.acceptance_rate === null
+                      ? '—'
+                      : `${linha.acceptance_rate}%`
+                  }}
+                </td>
+                <td class="py-2 text-n-slate-11">
+                  {{ emDuracao(linha.average_answer_seconds) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
     </template>
   </SettingsLayout>

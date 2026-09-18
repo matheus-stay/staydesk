@@ -6,15 +6,17 @@
 # ticket, as demais como chat. Conta só o que está de fato em atendimento
 # (status base aberto), então o que está esperando o cliente libera vaga.
 class Staydesk::AgentLoadService
-  QUEUES = Staydesk::AgentStatus::QUEUES
-  TICKET_CHANNELS = ['Channel::Email'].freeze
-
+  # A fila de uma caixa vem da configuração da conta (Staydesk::LoadQueue).
   def self.queue_for(inbox)
-    TICKET_CHANNELS.include?(inbox.channel_type) ? 'ticket' : 'chat'
+    Staydesk::LoadQueue.for_inbox(inbox)&.key
   end
 
   def initialize(account)
     @account = account
+  end
+
+  def queues
+    @queues ||= Staydesk::LoadQueue.keys_for(@account)
   end
 
   # Dos ids recebidos, quem ainda cabe mais uma conversa desta caixa.
@@ -46,14 +48,14 @@ class Staydesk::AgentLoadService
   # Painel de carga: status atual, carga e limite de cada agente, nas duas filas.
   def summary(user_ids)
     statuses = statuses_by_user(user_ids)
-    loads = QUEUES.index_with { |queue| load_by_user(queue, user_ids) }
+    loads = queues.index_with { |queue| load_by_user(queue, user_ids) }
 
     user_ids.index_with do |user_id|
       status = statuses[user_id]
       {
         status: status,
-        load: QUEUES.index_with { |queue| loads[queue].fetch(user_id, 0) },
-        capacity: QUEUES.index_with { |queue| status&.capacity_for(queue) }
+        load: queues.index_with { |queue| loads[queue].fetch(user_id, 0) },
+        capacity: queues.index_with { |queue| status&.capacity_for(queue) }
       }
     end
   end
@@ -67,6 +69,20 @@ class Staydesk::AgentLoadService
     end.to_h
   end
 
+  def caixas_da_fila(fila)
+    return @account.inboxes.none if fila.nil?
+    return caixas_reivindicadas(fila) unless fila.catch_all
+
+    # A coringa fica com o que ninguém reivindicou, por caixa ou por canal.
+    @account.inboxes
+            .where.not(id: Staydesk::LoadQueue.claimed_inbox_ids(@account))
+            .where.not(channel_type: Staydesk::LoadQueue.claimed_channel_types(@account))
+  end
+
+  def caixas_reivindicadas(fila)
+    @account.inboxes.where(id: fila.inbox_ids).or(@account.inboxes.where(channel_type: fila.channel_types))
+  end
+
   def statuses_by_user(user_ids)
     return {} if user_ids.blank?
 
@@ -78,12 +94,13 @@ class Staydesk::AgentLoadService
     rows.to_h { |row| [row.staydesk_user_id, row.agent_status] }
   end
 
+  # As caixas de uma fila: as dos canais que ela lista; na coringa, as que
+  # nenhuma outra fila reivindicou.
   def inbox_ids_for(queue)
     @inbox_ids_for ||= {}
     @inbox_ids_for[queue] ||= begin
-      scope = @account.inboxes
-      scope = queue == 'ticket' ? scope.where(channel_type: TICKET_CHANNELS) : scope.where.not(channel_type: TICKET_CHANNELS)
-      scope.pluck(:id)
+      fila = Staydesk::LoadQueue.resolved(@account).find { |item| item.key == queue }
+      caixas_da_fila(fila).pluck(:id)
     end
   end
 end

@@ -1,0 +1,10 @@
+{
+  "name": "staydesk-mcp",
+  "private": true,
+  "description": "Servidor MCP do StayDesk: lê e configura a operação pela API da conta",
+  "type": "module",
+  "bin": { "staydesk-mcp": "./servidor.mjs" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.12.1"
+  }
+}

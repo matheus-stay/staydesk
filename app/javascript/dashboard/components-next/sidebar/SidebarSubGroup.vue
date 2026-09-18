@@ -20,6 +20,7 @@ const props = defineProps({
   sortOptions: { type: Array, default: () => [] },
   activeSort: { type: String, default: '' },
   collapsible: { type: Boolean, default: false },
+  staydeskNoScroll: { type: Boolean, default: false }, // staydesk:hook lista inteira
   showTreeLine: { type: Boolean, default: false },
   endTreeLine: { type: Boolean, default: false },
 });
@@ -63,6 +64,8 @@ const hasAccessibleItems = computed(() => {
 });
 
 const isScrollable = computed(() => {
+  if (props.staydeskNoScroll) return false; // staydesk:hook lista inteira
+
   return (
     props.isExpanded &&
     isSubGroupExpanded.value &&

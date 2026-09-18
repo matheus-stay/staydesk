@@ -36,16 +36,17 @@ RSpec.describe 'StayDesk SLA API', type: :request do
       first_id = response.parsed_body['id']
 
       post "/api/v1/accounts/#{account.id}/staydesk/sla_policies", params: { sla_policy: { name: 'Padrão', targets: { default: { resolution: 960 } } } },
-                                                                    headers: admin.create_new_auth_token, as: :json
+                                                                   headers: admin.create_new_auth_token, as: :json
       second_id = response.parsed_body['id']
 
-      put "/api/v1/accounts/#{account.id}/staydesk/sla_policies/reorder", params: { ids: [second_id, first_id] }, headers: admin.create_new_auth_token, as: :json
+      put "/api/v1/accounts/#{account.id}/staydesk/sla_policies/reorder", params: { ids: [second_id, first_id] },
+                                                                          headers: admin.create_new_auth_token, as: :json
       expect(response.parsed_body.pluck('id')).to eq([second_id, first_id])
     end
 
     it 'rejects targets outside the shape' do
       post "/api/v1/accounts/#{account.id}/staydesk/sla_policies", params: { sla_policy: { name: 'X', targets: { default: { nope: 1 } } } },
-                                                                    headers: admin.create_new_auth_token, as: :json
+                                                                   headers: admin.create_new_auth_token, as: :json
 
       expect(response).to have_http_status(:unprocessable_entity)
     end

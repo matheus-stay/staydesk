@@ -11,7 +11,16 @@ describe('useTeamViews', () => {
     setActivePinia(createPinia());
     vi.clearAllMocks();
     TeamViewsAPI.get.mockResolvedValue({
-      data: [{ id: 1, name: 'Fila', position: 0, query: { payload: [] } }],
+      data: [
+        {
+          id: 1,
+          name: 'Fila',
+          position: 0,
+          query: {
+            payload: [{ attribute_key: 'assignee_id', values: ['me'] }],
+          },
+        },
+      ],
     });
   });
 
@@ -29,10 +38,10 @@ describe('useTeamViews', () => {
     const { ensureLoaded, asFolder } = useTeamViews();
     await ensureLoaded();
 
-    expect(asFolder('staydesk-1')).toMatchObject({
-      name: 'Fila',
-      staydeskTeamView: true,
-    });
-    expect(asFolder('1')).toBeUndefined();
+    const folder = asFolder('staydesk-1', 7);
+
+    expect(folder).toMatchObject({ name: 'Fila', staydeskTeamView: true });
+    expect(folder.query.payload[0].values).toEqual([7]);
+    expect(asFolder('1', 7)).toBeUndefined();
   });
 });

@@ -29,6 +29,15 @@ class AgentStatusesAPI extends ApiClient {
     return axios.get(`${this.url}/agent_loads`);
   }
 
+  // As filas de carga configuradas na conta (chat, ticket, o que a operação definir)
+  loadQueues() {
+    return axios.get(`${this.url}/load_queues`);
+  }
+
+  offerStats() {
+    return axios.get(`${this.url}/offer_stats`);
+  }
+
   changeMine(agentStatusId) {
     return axios.post(`${this.url}/agent_status_periods`, {
       agent_status_id: agentStatusId,

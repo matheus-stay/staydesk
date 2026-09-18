@@ -24,6 +24,10 @@ import SidebarAccountSwitcher from './SidebarAccountSwitcher.vue';
 import Logo from 'next/icon/Logo.vue';
 import ComposeConversation from 'dashboard/components-next/NewConversation/ComposeConversation.vue';
 import { useStaydeskSidebar } from 'staydesk/composables/useStaydeskSidebar'; // staydesk:hook
+import StaydeskSettingsLink from 'staydesk/components/SettingsLink.vue'; // staydesk:hook settings tab
+import StaydeskSidebarToggle from 'staydesk/components/SidebarToggle.vue'; // staydesk:hook compactar
+import StaydeskBackToWorkspace from 'staydesk/components/BackToWorkspace.vue'; // staydesk:hook voltar
+import { useSidebarAutoCollapse } from 'staydesk/composables/useSidebarAutoCollapse'; // staydesk:hook compactar
 import {
   SIDEBAR_SORT_SECTIONS,
   getSidebarSortOptions,
@@ -143,7 +147,14 @@ const {
   snapToCollapsed,
   snapToExpanded,
   COLLAPSED_THRESHOLD,
+  MIN_WIDTH, // staydesk:hook compactar
 } = useSidebarResize();
+useSidebarAutoCollapse({
+  sidebarWidth,
+  setSidebarWidth,
+  COLLAPSED_THRESHOLD,
+  MIN_WIDTH,
+}); // staydesk:hook compactar
 
 // On mobile, sidebar is always expanded (flyout mode)
 const isEffectivelyCollapsed = computed(
@@ -378,7 +389,8 @@ const menuItems = computed(() => {
       name: 'Conversation',
       label: t('SIDEBAR.CONVERSATIONS'),
       icon: 'i-lucide-message-circle',
-      children: [
+      children: staydeskSidebar.filterConversationMenu([
+        // staydesk:hook conversation menu
         {
           name: 'All',
           label: t('SIDEBAR.ALL_CONVERSATIONS'),
@@ -501,7 +513,7 @@ const menuItems = computed(() => {
             }),
           })),
         },
-      ],
+      ]), // staydesk:hook conversation menu
     },
     {
       name: 'Captain',
@@ -786,7 +798,8 @@ const menuItems = computed(() => {
       name: 'Settings',
       label: t('SIDEBAR.SETTINGS'),
       icon: 'i-lucide-bolt',
-      children: [
+      children: staydeskSidebar.organizarCentral([
+        // staydesk:hook central por seções
         ...staydeskSidebar.settingsItems.value, // staydesk:hook team views settings
         {
           name: 'Settings Account Settings',
@@ -949,7 +962,7 @@ const menuItems = computed(() => {
           icon: 'i-lucide-credit-card',
           to: accountScopedRoute('billing_settings_index'),
         },
-      ],
+      ]),
     },
   ];
 });
@@ -1098,18 +1111,30 @@ const settingsMenuItem = computed(() => menuItemsByName.value.get('Settings'));
         class="flex flex-col gap-1 m-0 list-none min-w-0"
         :class="{ 'items-center': isEffectivelyCollapsed }"
       >
+        <StaydeskBackToWorkspace :is-collapsed="isEffectivelyCollapsed" />
         <SidebarGroup
           v-for="item in primaryMenuItems"
           :key="item.name"
           v-bind="item"
         />
-        <SidebarGroup v-bind="moreMenuItem" />
+        <SidebarGroup
+          v-if="moreMenuItem.children.length"
+          v-bind="moreMenuItem"
+        />
       </ul>
       <ul
         class="mt-auto flex min-w-0 flex-col gap-1 border-t border-n-weak pt-2"
         :class="{ 'items-center': isEffectivelyCollapsed }"
       >
-        <SidebarGroup v-if="settingsMenuItem" v-bind="settingsMenuItem" />
+        <StaydeskSidebarToggle
+          :is-collapsed="isEffectivelyCollapsed"
+          @toggle="onResizeHandleDoubleClick"
+        />
+        <StaydeskSettingsLink
+          v-if="settingsMenuItem"
+          :item="settingsMenuItem"
+          :is-collapsed="isEffectivelyCollapsed"
+        />
       </ul>
     </nav>
     <section

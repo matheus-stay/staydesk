@@ -7,7 +7,9 @@ RSpec.describe 'StayDesk Team Views API', type: :request do
   let(:team) { create(:team, account: account) }
   let(:query) { { 'payload' => [{ 'attribute_key' => 'status', 'filter_operator' => 'equal_to', 'values' => ['open'], 'query_operator' => nil }] } }
   let!(:team_view) { Staydesk::TeamView.create!(account: account, name: 'Fila do time', query: query, team_ids: [team.id]) }
-  let!(:hidden_view) { Staydesk::TeamView.create!(account: account, name: 'De outro time', query: query, team_ids: [create(:team, account: account).id]) }
+  let!(:hidden_view) do
+    Staydesk::TeamView.create!(account: account, name: 'De outro time', query: query, team_ids: [create(:team, account: account).id])
+  end
 
   describe 'GET /api/v1/accounts/{account.id}/staydesk/team_views' do
     it 'returns unauthorized without a user' do
@@ -33,7 +35,9 @@ RSpec.describe 'StayDesk Team Views API', type: :request do
   end
 
   describe 'POST /api/v1/accounts/{account.id}/staydesk/team_views' do
-    let(:params) { { team_view: { name: 'Pendentes', query: query, team_ids: [team.id], columns: %w[status subject], sort_by: 'waiting_since_desc' } } }
+    let(:params) do
+      { team_view: { name: 'Pendentes', query: query, team_ids: [team.id], columns: %w[status subject], sort_by: 'waiting_since_desc' } }
+    end
 
     it 'is forbidden to agents' do
       post "/api/v1/accounts/#{account.id}/staydesk/team_views", params: params, headers: agent.create_new_auth_token, as: :json

@@ -152,7 +152,10 @@ const activeFolder = computed(() => {
       view => view.id === Number(props.foldersId)
     );
     const [firstValue] = activeView;
-    return firstValue || staydeskTeamViews.asFolder(props.foldersId); // staydesk:hook team views
+    return (
+      firstValue ||
+      staydeskTeamViews.asFolder(props.foldersId, currentUser.value?.id)
+    ); // staydesk:hook team views
   }
   return undefined;
 });
@@ -182,7 +185,7 @@ const userPermissions = computed(() => {
 });
 
 const assigneeTabItems = computed(() => {
-  return filterItemsByPermission(
+  const items = filterItemsByPermission(
     ASSIGNEE_TYPE_TAB_PERMISSIONS,
     userPermissions.value,
     item => item.permissions
@@ -191,6 +194,7 @@ const assigneeTabItems = computed(() => {
     name: t(`CHAT_LIST.ASSIGNEE_TYPE_TABS.${key}`),
     count: conversationStats.value[countKey] || 0,
   }));
+  return staydeskWorkspace.filterAssigneeTabs(items); // staydesk:hook workspace tabs
 });
 
 const showAssigneeInConversationCard = computed(() => {
@@ -648,6 +652,19 @@ function onBasicFilterChange(value, type) {
 
   resetAndFetchData();
 }
+
+// staydesk:hook team views load — a visualização por time carrega depois do
+// primeiro render; quando ela chega, a lista busca as conversas dela.
+watch(
+  () => (activeFolder.value?.staydeskTeamView ? activeFolder.value.id : null),
+  (atual, anterior) => {
+    if (!atual || atual === anterior) return;
+    store.dispatch('conversationPage/reset');
+    store.dispatch('emptyAllConversations');
+    fetchSavedFilteredConversations(activeFolder.value.query);
+  },
+  { immediate: true }
+);
 
 function openLastSavedItemInFolder() {
   const lastItemOfFolder = folders.value[folders.value.length - 1];

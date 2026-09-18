@@ -1,6 +1,9 @@
 class Staydesk::AppliedSlaPolicy < ApplicationPolicy
+  include Staydesk::AreaDeConfiguracao
+  configura_a_area :sla
+
   def index?
-    @account_user.administrator?
+    configura?
   end
 
   def show?

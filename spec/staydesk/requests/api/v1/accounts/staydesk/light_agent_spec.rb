@@ -35,10 +35,12 @@ RSpec.describe 'StayDesk light agent', type: :request do
 
   it 'cannot change the status, assignee or labels' do
     headers = light.create_new_auth_token
-    post "/api/v1/accounts/#{account.id}/conversations/#{conversation.display_id}/toggle_status", params: { status: 'resolved' }, headers: headers, as: :json
+    post "/api/v1/accounts/#{account.id}/conversations/#{conversation.display_id}/toggle_status", params: { status: 'resolved' }, headers: headers,
+                                                                                                  as: :json
     expect(response).to have_http_status(:forbidden)
 
-    post "/api/v1/accounts/#{account.id}/conversations/#{conversation.display_id}/assignments", params: { assignee_id: light.id }, headers: headers, as: :json
+    post "/api/v1/accounts/#{account.id}/conversations/#{conversation.display_id}/assignments", params: { assignee_id: light.id }, headers: headers,
+                                                                                                as: :json
     expect(response).to have_http_status(:forbidden)
 
     post "/api/v1/accounts/#{account.id}/conversations/#{conversation.display_id}/labels", params: { labels: ['x'] }, headers: headers, as: :json
@@ -65,5 +67,30 @@ RSpec.describe 'StayDesk light agent', type: :request do
 
       expect(response).to have_http_status(:unauthorized)
     end
+  end
+
+  it 'does not get in the way of routes without an account in the path' do
+    patch "/api/v1/accounts/#{account.id}", params: { name: account.name, locale: 'pt_BR' },
+                                            headers: admin.create_new_auth_token, as: :json
+
+    expect(response).to have_http_status(:success)
+    expect(account.reload.locale).to eq('pt_BR')
+  end
+
+  it 'still holds the light agent back on those routes' do
+    patch "/api/v1/accounts/#{account.id}", params: { name: account.name, locale: 'pt_BR' },
+                                            headers: light.create_new_auth_token, as: :json
+
+    expect(response).to have_http_status(:forbidden)
+    expect(account.reload.locale).not_to eq('pt_BR')
+  end
+
+  it 'lets the light agent change their own profile and availability' do
+    put '/api/v1/profile', params: { profile: { display_name: 'Agente leve' } }, headers: light.create_new_auth_token, as: :json
+    expect(response).to have_http_status(:success)
+
+    post '/api/v1/profile/availability', params: { profile: { account_id: account.id, availability: 'busy' } },
+                                         headers: light.create_new_auth_token, as: :json
+    expect(response).to have_http_status(:success)
   end
 end

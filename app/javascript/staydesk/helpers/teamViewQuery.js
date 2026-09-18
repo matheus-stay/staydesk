@@ -63,3 +63,34 @@ export const payloadToRows = (payload = [], filterTypes = []) =>
 // pelo mesmo gerador que as pastas usam.
 export const rowsToQuery = rows =>
   filterQueryGenerator(useSnakeCase(JSON.parse(JSON.stringify(rows))));
+
+// "O próprio agente" nas condições de responsável: é o que faz uma visualização
+// compartilhada mostrar só o que é de quem está olhando, como no Zendesk. O valor
+// `me` é trocado no servidor pelo id de quem pede.
+export const CURRENT_AGENT_VALUE = 'me';
+const USER_ATTRIBUTES = ['assignee_id', 'created_by_id'];
+
+export const withCurrentAgentOption = (filterTypes, label) =>
+  (filterTypes || []).map(type => {
+    if (!USER_ATTRIBUTES.includes(type.attributeKey)) return type;
+    if ((type.options || []).some(option => option.id === CURRENT_AGENT_VALUE))
+      return type;
+    return {
+      ...type,
+      options: [
+        { id: CURRENT_AGENT_VALUE, name: label },
+        ...(type.options || []),
+      ],
+    };
+  });
+
+// A lista de conversas manda o filtro da visualização direto para o servidor, que
+// não conhece o marcador. Aqui ele vira o id de quem está olhando, antes de sair.
+export const resolveCurrentAgent = (payload, userId) =>
+  (payload || []).map(row => {
+    if (!USER_ATTRIBUTES.includes(row.attribute_key)) return row;
+    const values = (row.values || []).map(value =>
+      String(value) === CURRENT_AGENT_VALUE ? userId : value
+    );
+    return { ...row, values };
+  });

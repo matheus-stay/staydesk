@@ -1,6 +1,9 @@
 class Staydesk::AgentStatusPeriodPolicy < ApplicationPolicy
+  include Staydesk::AreaDeConfiguracao
+  configura_a_area :status
+
   def index?
-    @account_user.administrator?
+    configura?
   end
 
   def create?

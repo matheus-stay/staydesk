@@ -1,6 +1,7 @@
 import { frontendURL } from 'dashboard/helper/URLHelper';
 import ConversationView from 'dashboard/routes/dashboard/conversation/ConversationView.vue';
 import SettingsWrapper from 'dashboard/routes/dashboard/settings/SettingsWrapper.vue';
+import CentralHome from './pages/CentralHome.vue';
 import TeamViewsSettings from './pages/TeamViewsSettings.vue';
 import WorkspaceSettings from './pages/WorkspaceSettings.vue';
 import AgentRolesSettings from './pages/AgentRolesSettings.vue';
@@ -8,7 +9,21 @@ import SlaSettings from './pages/SlaSettings.vue';
 import CalendarsSettings from './pages/CalendarsSettings.vue';
 import AgentStatusesSettings from './pages/AgentStatusesSettings.vue';
 import TicketStatusesSettings from './pages/TicketStatusesSettings.vue';
+import QueuesSettings from './pages/QueuesSettings.vue';
 import { teamViewFolderId } from './store/teamViews';
+
+// Quem abre cada área da central: o administrador, quem tem a permissão geral de
+// configurar, ou quem tem a permissão daquela área. O mesmo desenho vale no
+// servidor, nas policies (Staydesk::AreaDeConfiguracao), então esconder aqui não
+// é a única barreira. O catálogo de permissões fica em custom/config/permissions.json.
+export const CONFIGURA = ['administrator', 'staydesk_settings_manage'];
+export const AREA = {
+  VIEWS: [...CONFIGURA, 'staydesk_views_manage'],
+  ROLES: [...CONFIGURA, 'staydesk_roles_manage'],
+  SLA: [...CONFIGURA, 'staydesk_sla_manage'],
+  STATUSES: [...CONFIGURA, 'staydesk_statuses_manage'],
+  QUEUES: [...CONFIGURA, 'staydesk_queues_manage'],
+};
 
 const CONVERSATION_PERMISSIONS = [
   'administrator',
@@ -41,6 +56,18 @@ const routes = [
     }),
   },
   {
+    path: frontendURL('accounts/:accountId/settings/staydesk/central'),
+    component: SettingsWrapper,
+    children: [
+      {
+        path: '',
+        name: 'staydesk_central_home',
+        component: CentralHome,
+        meta: { permissions: CONFIGURA },
+      },
+    ],
+  },
+  {
     path: frontendURL('accounts/:accountId/settings/staydesk/team-views'),
     component: SettingsWrapper,
     children: [
@@ -48,7 +75,7 @@ const routes = [
         path: '',
         name: 'staydesk_team_views_settings',
         component: TeamViewsSettings,
-        meta: { permissions: ['administrator'] },
+        meta: { permissions: AREA.VIEWS },
       },
     ],
   },
@@ -60,7 +87,7 @@ const routes = [
         path: '',
         name: 'staydesk_workspace_settings',
         component: WorkspaceSettings,
-        meta: { permissions: ['administrator'] },
+        meta: { permissions: AREA.VIEWS },
       },
     ],
   },
@@ -72,7 +99,7 @@ const routes = [
         path: '',
         name: 'staydesk_agent_roles_settings',
         component: AgentRolesSettings,
-        meta: { permissions: ['administrator'] },
+        meta: { permissions: AREA.ROLES },
       },
     ],
   },
@@ -84,7 +111,7 @@ const routes = [
         path: '',
         name: 'staydesk_sla_settings',
         component: SlaSettings,
-        meta: { permissions: ['administrator'] },
+        meta: { permissions: AREA.SLA },
       },
     ],
   },
@@ -96,7 +123,7 @@ const routes = [
         path: '',
         name: 'staydesk_calendars_settings',
         component: CalendarsSettings,
-        meta: { permissions: ['administrator'] },
+        meta: { permissions: AREA.SLA },
       },
     ],
   },
@@ -108,7 +135,7 @@ const routes = [
         path: '',
         name: 'staydesk_agent_statuses_settings',
         component: AgentStatusesSettings,
-        meta: { permissions: ['administrator'] },
+        meta: { permissions: AREA.STATUSES },
       },
     ],
   },
@@ -120,7 +147,19 @@ const routes = [
         path: '',
         name: 'staydesk_ticket_statuses_settings',
         component: TicketStatusesSettings,
-        meta: { permissions: ['administrator'] },
+        meta: { permissions: AREA.STATUSES },
+      },
+    ],
+  },
+  {
+    path: frontendURL('accounts/:accountId/settings/staydesk/queues'),
+    component: SettingsWrapper,
+    children: [
+      {
+        path: '',
+        name: 'staydesk_queues_settings',
+        component: QueuesSettings,
+        meta: { permissions: AREA.QUEUES },
       },
     ],
   },

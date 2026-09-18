@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, useTemplateRef } from 'vue';
+import { computed, onMounted, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMapGetter, useStore } from 'dashboard/composables/store';
 import { useConversationFilterContext } from 'dashboard/components-next/filter/provider';
@@ -7,7 +7,10 @@ import wootConstants from 'dashboard/constants/globals';
 import Button from 'dashboard/components-next/button/Button.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import ConditionRow from 'dashboard/components-next/filter/ConditionRow.vue';
+import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
+import ReorderableMultiSelect from 'dashboard/components-next/combobox/ReorderableMultiSelect.vue';
 import Select from 'dashboard/components-next/select/Select.vue';
+import { fromSaveButton } from '../helpers/form';
 import {
   DEFAULT_COLUMNS,
   TEAM_VIEW_COLUMNS,
@@ -32,6 +35,34 @@ const store = useStore();
 const teams = useMapGetter('teams/getTeams');
 const { filterTypes, attributeFilterTypes } = useConversationFilterContext();
 
+// "O próprio agente" nas condições de responsável: é o que faz uma visualização
+// compartilhada mostrar só o que é de quem está olhando, como no Zendesk. O valor
+// `me` é resolvido no servidor pelo id de quem pede.
+const CURRENT_USER_VALUE = 'me';
+const USER_ATTRIBUTES = ['assignee_id', 'created_by_id'];
+
+const comProprioAgente = lista =>
+  (lista || []).map(tipo => {
+    if (!USER_ATTRIBUTES.includes(tipo.attributeKey)) return tipo;
+    if ((tipo.options || []).some(opcao => opcao.id === CURRENT_USER_VALUE))
+      return tipo;
+    return {
+      ...tipo,
+      options: [
+        {
+          id: CURRENT_USER_VALUE,
+          name: t('STAYDESK.TEAM_VIEWS.FORM.CURRENT_AGENT'),
+        },
+        ...(tipo.options || []),
+      ],
+    };
+  });
+
+const tiposParaCondicao = computed(() =>
+  comProprioAgente(attributeFilterTypes.value)
+);
+const tiposParaLeitura = computed(() => comProprioAgente(filterTypes.value));
+
 const form = ref({
   name: '',
   description: '',
@@ -41,12 +72,25 @@ const form = ref({
   columns: [...DEFAULT_COLUMNS],
 });
 const rows = ref([newConditionRow()]);
+const teamOptions = computed(() =>
+  teams.value.map(team => ({ value: team.id, label: team.name }))
+);
+const columnOptions = computed(() =>
+  TEAM_VIEW_COLUMNS.map(column => ({
+    value: column,
+    label: t(`STAYDESK.TEAM_VIEWS.COLUMN.${column}`),
+  }))
+);
 const conditionsRef = useTemplateRef('conditionsRef');
 
 onMounted(async () => {
   // Atributos personalizados e campanhas alimentam as opções de condição.
   await Promise.all([
     store.dispatch('attributes/get'),
+    store.dispatch('agents/get'),
+    store.dispatch('teams/get'),
+    store.dispatch('inboxes/get'),
+    store.dispatch('labels/get'),
     store.dispatch('campaigns/get'),
   ]);
   if (!props.view) return;
@@ -63,15 +107,9 @@ onMounted(async () => {
   };
   const payload = props.view.query?.payload || [];
   rows.value = payload.length
-    ? payloadToRows(payload, filterTypes.value)
+    ? payloadToRows(payload, tiposParaLeitura.value)
     : [newConditionRow()];
 });
-
-const toggle = (list, value) => {
-  const index = list.indexOf(value);
-  if (index === -1) list.push(value);
-  else list.splice(index, 1);
-};
 
 const addRow = () => rows.value.push(newConditionRow());
 
@@ -96,12 +134,16 @@ const submit = () => {
     query: rowsToQuery(rows.value),
   });
 };
+// Só o botão de salvar (ou o Enter) envia: clique em botão de dentro não salva.
+const aoEnviar = event => {
+  if (fromSaveButton(event)) submit();
+};
 </script>
 
 <template>
   <form
     class="grid gap-6 p-6 border rounded-xl border-n-weak bg-n-solid-1"
-    @submit.prevent="submit"
+    @submit.prevent="aoEnviar"
   >
     <div class="grid gap-4 md:grid-cols-2">
       <Input
@@ -137,40 +179,27 @@ const submit = () => {
       <p class="text-xs text-n-slate-11">
         {{ t('STAYDESK.TEAM_VIEWS.FORM.TEAMS_HINT') }}
       </p>
-      <div class="flex flex-wrap gap-3">
-        <label
-          v-for="team in teams"
-          :key="team.id"
-          class="flex items-center gap-2 px-3 py-1.5 text-sm border rounded-lg cursor-pointer border-n-weak text-n-slate-12"
-        >
-          <input
-            type="checkbox"
-            :checked="form.teamIds.includes(team.id)"
-            @change="toggle(form.teamIds, team.id)"
-          />
-          {{ team.name }}
-        </label>
-      </div>
+      <TagMultiSelectComboBox
+        v-model="form.teamIds"
+        :options="teamOptions"
+        :placeholder="t('STAYDESK.TEAM_VIEWS.FORM.TEAMS_PLACEHOLDER')"
+        :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+        :empty-state="t('STAYDESK.PICKER.EMPTY')"
+      />
     </fieldset>
 
     <fieldset class="grid gap-2">
       <legend class="text-sm text-n-slate-12">
         {{ t('STAYDESK.TEAM_VIEWS.FORM.COLUMNS') }}
       </legend>
-      <div class="flex flex-wrap gap-3">
-        <label
-          v-for="column in TEAM_VIEW_COLUMNS"
-          :key="column"
-          class="flex items-center gap-2 px-3 py-1.5 text-sm border rounded-lg cursor-pointer border-n-weak text-n-slate-12"
-        >
-          <input
-            type="checkbox"
-            :checked="form.columns.includes(column)"
-            @change="toggle(form.columns, column)"
-          />
-          {{ t(`STAYDESK.TEAM_VIEWS.COLUMN.${column}`) }}
-        </label>
-      </div>
+      <ReorderableMultiSelect
+        v-model="form.columns"
+        :options="columnOptions"
+        :max="TEAM_VIEW_COLUMNS.length"
+        :add-label="t('STAYDESK.TEAM_VIEWS.FORM.ADD_COLUMN')"
+        :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+        :empty-state="t('STAYDESK.PICKER.EMPTY')"
+      />
     </fieldset>
 
     <fieldset class="grid gap-3">
@@ -185,7 +214,7 @@ const submit = () => {
             v-model:attribute-key="row.attributeKey"
             v-model:filter-operator="row.filterOperator"
             v-model:values="row.values"
-            :filter-types="attributeFilterTypes"
+            :filter-types="tiposParaCondicao"
             :show-query-operator="false"
             @remove="removeRow(index)"
           />
@@ -197,7 +226,7 @@ const submit = () => {
             v-model:query-operator="rows[index - 1].queryOperator"
             v-model:values="row.values"
             show-query-operator
-            :filter-types="attributeFilterTypes"
+            :filter-types="tiposParaCondicao"
             @remove="removeRow(index)"
           />
         </template>
@@ -213,7 +242,14 @@ const submit = () => {
       <Button sm faded slate type="button" @click="emit('cancel')">
         {{ t('STAYDESK.TEAM_VIEWS.FORM.CANCEL') }}
       </Button>
-      <Button sm solid blue type="submit" :is-loading="isSaving">
+      <Button
+        sm
+        solid
+        blue
+        type="submit"
+        data-staydesk-save
+        :is-loading="isSaving"
+      >
         {{ t('STAYDESK.TEAM_VIEWS.FORM.SAVE') }}
       </Button>
     </div>

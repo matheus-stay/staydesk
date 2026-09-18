@@ -1,4 +1,7 @@
 class Staydesk::SlaPolicyPolicy < ApplicationPolicy
+  include Staydesk::AreaDeConfiguracao
+  configura_a_area :sla
+
   def index?
     true
   end
@@ -8,18 +11,18 @@ class Staydesk::SlaPolicyPolicy < ApplicationPolicy
   end
 
   def create?
-    @account_user.administrator?
+    configura?
   end
 
   def update?
-    @account_user.administrator?
+    configura?
   end
 
   def destroy?
-    @account_user.administrator?
+    configura?
   end
 
   def reorder?
-    @account_user.administrator?
+    configura?
   end
 end

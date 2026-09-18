@@ -1,9 +1,12 @@
 class Staydesk::AccountUserRolePolicy < ApplicationPolicy
+  include Staydesk::AreaDeConfiguracao
+  configura_a_area :papeis
+
   def index?
-    @account_user.administrator?
+    configura?
   end
 
   def update?
-    @account_user.administrator?
+    configura?
   end
 end

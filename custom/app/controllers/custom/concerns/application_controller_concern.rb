@@ -9,14 +9,47 @@ module Custom::Concerns::ApplicationControllerConcern
     'api/v1/accounts/notifications' => %w[update read_all destroy],
     'api/v1/accounts/notification_subscriptions' => %w[create destroy],
     'api/v1/accounts/custom_filters' => %w[create update destroy],
-    'api/v1/profile' => %w[update availability auto_offline set_active_account avatar]
+    'api/v1/profiles' => %w[update availability auto_offline set_active_account avatar]
   }.freeze
+
+  # Relatórios: quem só tem os próprios números não pode pedir os dos outros.
+  REPORT_CONTROLLERS = %r{\Aapi/v2/accounts/reports}
 
   included do
     before_action :staydesk_guard_light_agent
+    before_action :staydesk_guard_own_reports
   end
 
   private
+
+  # Papel com `staydesk_report_own` e sem `report_manage` só enxerga a si mesmo:
+  # o pedido precisa vir filtrado pelo próprio usuário.
+  def staydesk_guard_own_reports
+    return unless REPORT_CONTROLLERS.match?(controller_path)
+    return unless staydesk_report_limited_to_self?
+    return if staydesk_report_about_self?
+
+    render json: { error: 'This role only sees its own numbers' }, status: :forbidden
+  end
+
+  # Verdadeiro quando o papel dá `staydesk_report_own` e não dá `report_manage`.
+  def staydesk_report_limited_to_self?
+    return false unless respond_to?(:current_user, true) && current_user.is_a?(User)
+
+    account_user = staydesk_request_account_user
+    return false if account_user.nil? || account_user.administrator?
+
+    permissoes = account_user.staydesk_permissions
+    permissoes.include?('staydesk_report_own') && permissoes.exclude?('report_manage')
+  end
+
+  def staydesk_report_about_self?
+    escopo = params[:type].to_s
+    alvo = params[:id].presence || params[:user_id].presence
+    return false if escopo.present? && escopo != 'agent'
+
+    alvo.to_s == current_user.id.to_s
+  end
 
   def staydesk_guard_light_agent
     return if request.get? || request.head?
@@ -29,8 +62,19 @@ module Custom::Concerns::ApplicationControllerConcern
   def staydesk_light_account_user?
     return false unless respond_to?(:current_user, true) && current_user.is_a?(User)
 
-    account_id = params[:account_id] || current_user.account_id
-    account_id.present? && current_user.account_users.find_by(account_id: account_id)&.staydesk_light?
+    staydesk_request_account_user&.staydesk_light?
+  end
+
+  # A conta em jogo na requisição: a do escopo da rota, a da própria rota de conta
+  # (/api/v1/accounts/:id) ou, fora de rota de conta, a única conta do usuário.
+  # Sem conta identificada, a guarda não opina: o usuário não é tratado como leve.
+  def staydesk_request_account_user
+    account_id = params[:account_id].presence
+    account_id ||= params[:id].presence if controller_path == 'api/v1/accounts'
+    return current_user.account_users.find_by(account_id: account_id) if account_id.present?
+
+    account_users = current_user.account_users.limit(2).to_a
+    account_users.size == 1 ? account_users.first : nil
   end
 
   def staydesk_light_message_allowed?

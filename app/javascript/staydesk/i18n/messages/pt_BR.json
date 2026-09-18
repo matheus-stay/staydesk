@@ -19,7 +19,10 @@
         "CONDITIONS": "Condições",
         "ADD_CONDITION": "Adicionar condição",
         "SAVE": "Salvar",
-        "CANCEL": "Cancelar"
+        "CANCEL": "Cancelar",
+        "CURRENT_AGENT": "O próprio agente",
+        "TEAMS_PLACEHOLDER": "Todos os times",
+        "ADD_COLUMN": "Adicionar coluna"
       },
       "COLUMN": {
         "sla": "SLA",
@@ -104,7 +107,8 @@
         "PRIORITY": "Prioridade",
         "CONDITIONS": "Vale quando",
         "CONDITIONS_HINT": "Sem condição, vale para toda conversa. As políticas são avaliadas em ordem; a primeira que bate vence.",
-        "ACTIVE": "Ativa"
+        "ACTIVE": "Ativa",
+        "NO_PAUSE": "O relógio nunca pausa"
       },
       "API": {
         "SAVE_SUCCESS": "Política salva",
@@ -172,7 +176,27 @@
       },
       "STANDARD_FIELDS": "Responsável, time e prioridade",
       "YES": "Sim",
-      "NO": "Não"
+      "NO": "Não",
+      "ADD_MENU_ITEM": "Adicionar item do menu",
+      "ADD_PANEL": "Adicionar seção",
+      "ADD_FIELD": "Adicionar campo",
+      "APPS_PLACEHOLDER": "Todos os aplicativos",
+      "SIDE_APPS_HINT": "Marque aqui os que devem aparecer ao lado da conversa, no painel direito, em vez de em aba.",
+      "SIDE_APPS_PLACEHOLDER": "Nenhum ao lado da conversa",
+      "MACROS_PLACEHOLDER": "Escolha as macros",
+      "CONVERSATION_MENU_HINT": "Dentro de Conversas, o que aparece. Deixando só as visualizações, o agente entra pela fila do time dele, como no Zendesk.",
+      "ADD_CONVERSATION_ITEM": "Adicionar item",
+      "CONVERSATION_MENU_ITEMS": {
+        "All": "Todas as conversas",
+        "Mentions": "Menções",
+        "Participating": "Participantes",
+        "Unattended": "Não atendidas",
+        "Folders": "Filtros salvos",
+        "StaydeskTeamViews": "Visualizações",
+        "Teams": "Times",
+        "Channels": "Canais"
+      },
+      "HIDE_LIST_WHEN_OPEN": "Esconder a lista quando um atendimento estiver aberto (dados à esquerda, conversa no meio, aplicativos à direita)"
     },
     "SUBMIT_AS": {
       "BUTTON": "Enviar como {status}",
@@ -184,7 +208,7 @@
     "FIELDS_TITLE": "Campos do ticket",
     "AGENT_ROLES": {
       "SETTINGS_TITLE": "Papéis dos agentes",
-      "SETTINGS_DESCRIPTION": "Agente leve lê as conversas dos seus times e caixas de entrada e só escreve nota interna. Administrador é sempre completo.",
+      "SETTINGS_DESCRIPTION": "Papéis com permissões granulares, concedidas ou revogadas a qualquer momento, e acesso \"entrar como\" para acompanhar quem atende. O agente leve lê as conversas dos seus times e caixas e só escreve nota interna; administrador é sempre completo.",
       "KIND": {
         "full": "Agente completo",
         "light": "Agente leve"
@@ -192,6 +216,38 @@
       "API": {
         "SAVE_SUCCESS": "Papel salvo",
         "SAVE_ERROR": "Não foi possível salvar o papel"
+      },
+      "ROLES": {
+        "TITLE": "Papéis",
+        "NEW": "Novo papel",
+        "NAME": "Nome",
+        "DESCRIPTION": "Descrição (opcional)",
+        "PERMISSIONS": "O que este papel libera",
+        "NO_PERMISSIONS": "Nenhuma permissão extra",
+        "NONE": "Sem papel",
+        "EDIT": "Editar",
+        "DELETE": "Excluir",
+        "DELETE_CONFIRM": "Excluir o papel \"{name}\"? Quem estiver com ele volta a ter só o que o tipo de agente dá.",
+        "PERMISSIONS_PLACEHOLDER": "Nenhuma permissão extra"
+      },
+      "PERMISSIONS": {
+        "report_manage": "Ver os relatórios de todo o time",
+        "staydesk_report_own": "Ver apenas os próprios números",
+        "staydesk_settings_manage": "Alterar as configurações da conta",
+        "staydesk_light": "Agente leve: só lê e escreve nota interna",
+        "staydesk_queues_manage": "Configurar filas e transbordo",
+        "staydesk_sla_manage": "Configurar políticas de SLA e calendários",
+        "staydesk_statuses_manage": "Configurar status do ticket e do agente",
+        "staydesk_views_manage": "Configurar visualizações e área de trabalho",
+        "staydesk_roles_manage": "Configurar papéis e entrar como outro agente"
+      },
+      "AGENTS_TITLE": "Agentes",
+      "IMPERSONATION": {
+        "BUTTON": "Entrar como",
+        "ERROR": "Não foi possível abrir a sessão do agente",
+        "TRAIL": "Acessos recentes",
+        "TRAIL_HINT": "Toda vez que alguém entra como outra pessoa fica registrado aqui.",
+        "TRAIL_LINE": "{actor} entrou como {target} em {when}"
       }
     },
     "CALENDARS": {
@@ -250,7 +306,9 @@
         "ACTIVE": "Ativo",
         "CAPACITY_CHAT": "Chats simultâneos",
         "CAPACITY_TICKET": "Tickets simultâneos",
-        "CAPACITY_HINT": "Quantas conversas a distribuição automática entrega ao mesmo tempo neste status. Em branco é sem limite; zero tira o agente daquela fila. Conversas de caixas de e-mail contam como ticket, as demais como chat, e só conta o que está em atendimento."
+        "CAPACITY_HINT": "Quantas conversas a distribuição automática entrega ao mesmo tempo neste status. Em branco é sem limite; zero tira o agente daquela fila. Conversas de caixas de e-mail contam como ticket, as demais como chat, e só conta o que está em atendimento.",
+        "INBOXES_PLACEHOLDER": "Todas as caixas",
+        "CAPACITY_QUEUE": "Limite de {queue}"
       },
       "API": {
         "SAVE_SUCCESS": "Status salvo",
@@ -277,6 +335,22 @@
         "NO_STATUS": "Sem status personalizado",
         "REFRESH": "Atualizar",
         "EMPTY": "Ninguém em atendimento agora."
+      },
+      "ACCEPTANCE": {
+        "TITLE": "Aceitação dos convites",
+        "DESCRIPTION": "Chat e WhatsApp são oferecidos e o agente precisa aceitar. Aqui estão os últimos sete dias.",
+        "OFFERS": "Convites",
+        "RATE": "Aceitação",
+        "ANSWER_TIME": "Tempo para aceitar",
+        "SUMMARY": "{offers} recebidos · {declined} recusados · {expired} vencidos"
+      },
+      "OFFERS": {
+        "TITLE": "Aceitação de chat e WhatsApp",
+        "DESCRIPTION": "Convites oferecidos a cada agente e o que ele fez com eles. Ticket não passa por aceite.",
+        "OFFERED": "Oferecidos",
+        "ACCEPTED": "Aceitos",
+        "RATE": "Aceitação",
+        "ANSWER_TIME": "Tempo para responder"
       }
     },
     "TICKET_STATUS": {
@@ -295,7 +369,8 @@
         "BASE_STATUS_HINT": "Quando o status base mudar por outro caminho (automação, bot, resolução automática), a conversa recebe o status padrão daquela base.",
         "COLOR": "Cor",
         "DEFAULT_FOR_BASE": "Padrão para esse status base",
-        "ACTIVE": "Ativo (aparece para os agentes)"
+        "ACTIVE": "Ativo (aparece para os agentes)",
+        "APPLY_ON_ASSIGN": "Assume este status quando alguém pega o caso"
       },
       "PICKER": {
         "LABEL": "Status",
@@ -312,6 +387,105 @@
         "SAVE_ERROR": "Não foi possível salvar o status",
         "DELETE_SUCCESS": "Status excluído",
         "DELETE_ERROR": "Não foi possível excluir o status"
+      }
+    },
+    "QUEUES": {
+      "SETTINGS_TITLE": "Filas",
+      "SETTINGS_DESCRIPTION": "A conversa que chega passa pelas filas na ordem e a primeira que casar entrega ao time dela. Quem, dentro do time, vai atender continua sendo decidido pelo status e pela carga do agente.",
+      "EMPTY": "Nenhuma fila. Sem fila, a conversa chega sem time e a distribuição usa só a caixa de entrada.",
+      "NEW": "Nova fila",
+      "EDIT": "Editar",
+      "MOVE_UP": "Subir na ordem",
+      "MOVE_DOWN": "Descer na ordem",
+      "CATCH_ALL": "Pega tudo",
+      "FORM": {
+        "NAME": "Nome",
+        "DESCRIPTION": "Descrição (opcional)",
+        "TEAM": "Time que recebe",
+        "ACTIVE": "Ativa",
+        "CONDITIONS": "Condições",
+        "CONDITIONS_HINT": "Qualquer campo da conversa serve, inclusive os atributos que vocês criarem. Sem condição nenhuma, a fila recolhe tudo que sobrou.",
+        "FALLBACK_MINUTES": "Só depois de quantos minutos (opcional)",
+        "FALLBACK_HINT": "A conversa continua pertencendo ao grupo dono. Isto só define quem pode atender, e o status de cada agente é que decide se ele recebe daquele canal.",
+        "FALLBACK_TEAMS": "Grupos que ajudam nesta fila",
+        "MODE": "Como esses grupos ajudam",
+        "MODE_OPTIONS": {
+          "quando_faltar": "Só quando o grupo dono está sem ninguém disponível",
+          "sempre": "Sempre, trabalham esta fila junto com o dono"
+        },
+        "FALLBACK_PLACEHOLDER": "Nenhum grupo ajuda",
+        "ACCEPT": "Aceite do agente",
+        "ACCEPT_REQUIRED": "O agente precisa aceitar antes de a conversa virar dele",
+        "ACCEPT_TIMEOUT": "Tempo para aceitar (segundos)",
+        "ACCEPT_HINT": "Sem aceite dentro do tempo, a conversa volta para a fila e é oferecida a outro agente disponível. Use em chat e WhatsApp; ticket normalmente não precisa."
+      },
+      "DELETE": {
+        "BUTTON": "Excluir",
+        "CONFIRM": "Excluir a fila \"{name}\"? As conversas que ela entregaria passam para a próxima fila que casar."
+      },
+      "API": {
+        "SAVE_SUCCESS": "Fila salva",
+        "SAVE_ERROR": "Não foi possível salvar a fila",
+        "DELETE_SUCCESS": "Fila excluída",
+        "DELETE_ERROR": "Não foi possível excluir a fila"
+      },
+      "FALLBACK_NOW": "transborda para {team}",
+      "FALLBACK_AFTER": "→ {teams} depois de {minutes} min",
+      "HELPS_ALWAYS": "com {team}",
+      "ACCEPT_BADGE": "· exige aceite em {seconds}s",
+      "FALLBACK_ALWAYS": "→ {teams} ajudam sempre",
+      "FALLBACK_WHEN_MISSING": "→ {teams} quando faltar gente"
+    },
+    "OFFERS": {
+      "TITLE": "Novo atendimento em {inbox}",
+      "ACCEPT": "Aceitar",
+      "DECLINE": "Recusar",
+      "NOTIFICATION": "Novo atendimento de {contact}",
+      "SECONDS_LEFT": "{seconds}s"
+    },
+    "PICKER": {
+      "SEARCH": "Buscar...",
+      "EMPTY": "Nada encontrado"
+    },
+    "SIDEBAR": {
+      "COLLAPSE": "Compactar barra",
+      "EXPAND": "Expandir barra",
+      "BACK_TO_WORK": "Voltar ao Hub"
+    },
+    "CONTACT": {
+      "OPEN_PROFILE": "Abrir o perfil do cliente"
+    },
+    "CENTRAL": {
+      "HOME": "Início",
+      "TITLE": "Central",
+      "SECTIONS": {
+        "WORK": "Atendimento",
+        "SERVICE_LEVEL": "Status e prazos",
+        "PEOPLE": "Pessoas",
+        "CHANNELS": "Canais",
+        "RULES": "Regras e automação",
+        "ACCOUNT": "Conta",
+        "OTHER": "Outros"
+      },
+      "DESCRIPTION": "Onde se configura e se acompanha a operação. O Hub é onde se atende.",
+      "KPIS": {
+        "TITLE": "Como está a operação",
+        "DAYS": "{days} dias",
+        "LOADING": "Carregando os números…",
+        "CSAT": "CSAT",
+        "CSAT_HINT": "{answers} respostas no período",
+        "QUEUE": "Esperando na fila",
+        "QUEUE_HINT": "mais antiga há {wait}",
+        "ONLINE": "Online agora",
+        "ONLINE_HINT": "de {total} agentes",
+        "FIRST_REPLY": "Primeira resposta · {queue}",
+        "RESOLUTION": "resolução em {time}",
+        "AGENT": "Agente",
+        "STATUS": "Status",
+        "AVAILABLE_TIME": "Tempo disponível",
+        "NOW": "Agora",
+        "CONNECTED": "conectado",
+        "AWAY": "fora"
       }
     }
   },

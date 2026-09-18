@@ -17,7 +17,8 @@ RSpec.describe Staydesk::Sla::CheckJob do
 
     described_class.perform_now
     expect(applied.reload).to have_attributes(status: 'warning', warned_metrics: ['first_response'])
-    expect(Rails.configuration.dispatcher).to have_received(:dispatch).with('staydesk_sla.warning', anything, hash_including(metric: 'first_response')).once
+    expect(Rails.configuration.dispatcher).to have_received(:dispatch).with('staydesk_sla.warning', anything,
+                                                                            hash_including(metric: 'first_response')).once
 
     described_class.perform_now
     expect(Rails.configuration.dispatcher).to have_received(:dispatch).with('staydesk_sla.warning', anything, anything).once
@@ -25,7 +26,8 @@ RSpec.describe Staydesk::Sla::CheckJob do
     applied.update!(first_response_due_at: 1.minute.ago)
     described_class.perform_now
     expect(applied.reload).to have_attributes(status: 'breached', breached_metrics: ['first_response'])
-    expect(Staydesk::ConversationEvent.where(conversation: conversation).pluck(:kind)).to contain_exactly('staydesk_sla_warning', 'staydesk_sla_breached')
+    expect(Staydesk::ConversationEvent.where(conversation: conversation).pluck(:kind)).to contain_exactly('staydesk_sla_warning',
+                                                                                                          'staydesk_sla_breached')
     expect(conversation.reload.custom_attributes['sla_status']).to eq('breached')
   end
 

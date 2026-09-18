@@ -1,5 +1,8 @@
 class Staydesk::ConversationEventPolicy < ApplicationPolicy
+  include Staydesk::AreaDeConfiguracao
+  configura_a_area :relatorios
+
   def index?
-    @account_user.administrator?
+    configura?
   end
 end

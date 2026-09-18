@@ -14,7 +14,7 @@ RSpec.describe 'StayDesk Agent Statuses API', type: :request do
     status_id = response.parsed_body['id']
 
     post "/api/v1/accounts/#{account.id}/staydesk/agent_status_periods", params: { agent_status_id: status_id },
-                                                                          headers: agent.create_new_auth_token, as: :json
+                                                                         headers: agent.create_new_auth_token, as: :json
     expect(response).to have_http_status(:success)
     expect(response.parsed_body).to include('current_status_id' => status_id, 'availability' => 'online')
 
@@ -25,7 +25,7 @@ RSpec.describe 'StayDesk Agent Statuses API', type: :request do
 
   it 'forbids agents from managing the catalog and exposes periods to administrators' do
     post "/api/v1/accounts/#{account.id}/staydesk/agent_statuses", params: { agent_status: { name: 'X' } },
-                                                                    headers: agent.create_new_auth_token, as: :json
+                                                                   headers: agent.create_new_auth_token, as: :json
     expect(response).to have_http_status(:unauthorized)
 
     status = Staydesk::AgentStatus.create!(account: account, name: 'Ausente', availability: 'busy')

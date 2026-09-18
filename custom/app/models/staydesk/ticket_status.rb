@@ -39,6 +39,11 @@ class Staydesk::TicketStatus < ApplicationRecord
     scope.find_by(default_for_base: true) || scope.first
   end
 
+  # O status que a conversa assume quando ganha responsável ("em andamento").
+  def self.on_assign(account)
+    active.where(account: account, apply_on_assign: true).ordered.first
+  end
+
   private
 
   # Uma definição de atributo de lista com os nomes ativos, para o resto do Chatwoot enxergar.

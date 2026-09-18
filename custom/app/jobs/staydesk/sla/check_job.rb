@@ -51,6 +51,6 @@ class Staydesk::Sla::CheckJob < ApplicationJob
       kind: event_name.tr('.', '_'), from_value: applied.sla_policy.name, to_value: metric, created_at: Time.current
     )
     Rails.configuration.dispatcher.dispatch(event_name, Time.zone.now, conversation: conversation, metric: metric,
-                                                                             applied_sla: applied)
+                                                                       applied_sla: applied)
   end
 end

@@ -6,8 +6,11 @@ import { useMapGetter, useStore } from 'dashboard/composables/store';
 import SettingsLayout from 'dashboard/routes/dashboard/settings/SettingsLayout.vue';
 import BaseSettingsHeader from 'dashboard/routes/dashboard/settings/components/BaseSettingsHeader.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
+import Switch from 'dashboard/components-next/switch/Switch.vue';
 import wootConstants from 'dashboard/constants/globals';
 import Select from 'dashboard/components-next/select/Select.vue';
+import ReorderableMultiSelect from 'dashboard/components-next/combobox/ReorderableMultiSelect.vue';
+import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
 import WorkspaceAPI from '../api/workspace';
 import { TEAM_VIEW_COLUMNS } from '../helpers/teamViewQuery';
 
@@ -85,13 +88,16 @@ const isSaving = ref(false);
 
 const emptyForm = () => ({
   menu: [],
+  conversationMenu: [],
   layout: '',
   columns: [],
   sortBy: '',
+  hideWhenOpen: false,
   standardFields: false,
   fields: [],
   panels: [],
   apps: [],
+  sideApps: [],
   macrosMode: '',
   macroIds: [],
   submitAs: '',
@@ -99,21 +105,73 @@ const emptyForm = () => ({
 });
 const form = ref(emptyForm());
 
+const CONVERSATION_MENU_NAMES = [
+  'All',
+  'Mentions',
+  'Participating',
+  'Unattended',
+  'Folders',
+  'StaydeskTeamViews',
+  'Teams',
+  'Channels',
+];
+const conversationMenuOptions = computed(() =>
+  CONVERSATION_MENU_NAMES.map(name => ({
+    value: name,
+    label: t(`STAYDESK.WORKSPACE.CONVERSATION_MENU_ITEMS.${name}`),
+  }))
+);
+const menuOptions = computed(() =>
+  MENU_NAMES.map(name => ({
+    value: name,
+    label: t(`STAYDESK.WORKSPACE.MENU_ITEMS.${name}`),
+  }))
+);
+const columnOptions = computed(() =>
+  TEAM_VIEW_COLUMNS.map(column => ({
+    value: column,
+    label: t(`STAYDESK.TEAM_VIEWS.COLUMN.${column}`),
+  }))
+);
+const panelOptions = computed(() =>
+  PANEL_NAMES.map(name => ({
+    value: name,
+    label: t(`STAYDESK.WORKSPACE.PANEL_ITEMS.${name}`),
+  }))
+);
 const customAttributes = computed(
   () => attributesByModel.value('conversation_attribute') || []
+);
+const appOptions = computed(() =>
+  dashboardApps.value.map(app => ({ value: app.id, label: app.title }))
+);
+const macroOptions = computed(() =>
+  macros.value.map(macro => ({ value: macro.id, label: macro.name }))
+);
+const sideAppOptions = computed(() =>
+  dashboardApps.value.map(app => ({ value: app.id, label: app.title }))
+);
+const fieldOptions = computed(() =>
+  customAttributes.value.map(attribute => ({
+    value: attribute.attribute_key,
+    label: attribute.attribute_display_name,
+  }))
 );
 
 const fromConfig = config => {
   const fields = config.conversation?.fields || [];
   return {
     menu: config.menu || [],
+    conversationMenu: config.conversation_menu || [],
     layout: config.list?.layout || '',
     columns: config.list?.columns || [],
+    hideWhenOpen: config.list?.hide_when_open === true,
     sortBy: config.list?.sort_by || '',
     standardFields: fields.some(field => STANDARD_FIELDS.includes(field)),
     fields: fields.filter(field => !STANDARD_FIELDS.includes(field)),
     panels: config.conversation?.panels || [],
     apps: config.conversation?.apps || [],
+    sideApps: config.conversation?.side_apps || [],
     macrosMode: config.macros?.mode || '',
     macroIds: config.macros?.ids || [],
     submitAs:
@@ -127,10 +185,13 @@ const fromConfig = config => {
 const toConfig = () => {
   const config = {};
   if (form.value.menu.length) config.menu = form.value.menu;
+  if (form.value.conversationMenu.length)
+    config.conversation_menu = form.value.conversationMenu;
   const list = {};
   if (form.value.layout) list.layout = form.value.layout;
   if (form.value.columns.length) list.columns = form.value.columns;
   if (form.value.sortBy) list.sort_by = form.value.sortBy;
+  if (form.value.hideWhenOpen) list.hide_when_open = true;
   if (Object.keys(list).length) config.list = list;
   const conversation = {};
   const fields = [
@@ -140,6 +201,7 @@ const toConfig = () => {
   if (fields.length) conversation.fields = fields;
   if (form.value.panels.length) conversation.panels = form.value.panels;
   if (form.value.apps.length) conversation.apps = form.value.apps;
+  if (form.value.sideApps.length) conversation.side_apps = form.value.sideApps;
   if (Object.keys(conversation).length) config.conversation = conversation;
   if (form.value.macrosMode) {
     config.macros = { mode: form.value.macrosMode, ids: form.value.macroIds };
@@ -172,16 +234,6 @@ const save = async () => {
     isSaving.value = false;
   }
 };
-
-const toggle = (list, value) => {
-  const index = list.indexOf(value);
-  if (index === -1) list.push(value);
-  else list.splice(index, 1);
-};
-
-const orderedPanels = computed(() =>
-  PANEL_NAMES.filter(name => form.value.panels.includes(name))
-);
 
 onMounted(async () => {
   await Promise.all([
@@ -223,20 +275,25 @@ watch(selectedTeam, load);
           <legend class="text-sm font-medium text-n-slate-12">
             {{ t('STAYDESK.WORKSPACE.MENU') }}
           </legend>
-          <div class="flex flex-wrap gap-3">
-            <label
-              v-for="name in MENU_NAMES"
-              :key="name"
-              class="flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-sm text-n-slate-12"
-            >
-              <input
-                type="checkbox"
-                :checked="form.menu.includes(name)"
-                @change="toggle(form.menu, name)"
-              />
-              {{ t(`STAYDESK.WORKSPACE.MENU_ITEMS.${name}`) }}
-            </label>
-          </div>
+          <ReorderableMultiSelect
+            v-model="form.menu"
+            :options="menuOptions"
+            :max="MENU_NAMES.length"
+            :add-label="t('STAYDESK.WORKSPACE.ADD_MENU_ITEM')"
+            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+            :empty-state="t('STAYDESK.PICKER.EMPTY')"
+          />
+          <p class="text-xs text-n-slate-11">
+            {{ t('STAYDESK.WORKSPACE.CONVERSATION_MENU_HINT') }}
+          </p>
+          <ReorderableMultiSelect
+            v-model="form.conversationMenu"
+            :options="conversationMenuOptions"
+            :max="CONVERSATION_MENU_NAMES.length"
+            :add-label="t('STAYDESK.WORKSPACE.ADD_CONVERSATION_ITEM')"
+            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+            :empty-state="t('STAYDESK.PICKER.EMPTY')"
+          />
         </fieldset>
 
         <fieldset class="grid gap-3">
@@ -256,20 +313,18 @@ watch(selectedTeam, load);
           <span class="text-sm text-n-slate-12">{{
             t('STAYDESK.WORKSPACE.COLUMNS')
           }}</span>
-          <div class="flex flex-wrap gap-3">
-            <label
-              v-for="column in TEAM_VIEW_COLUMNS"
-              :key="column"
-              class="flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-sm text-n-slate-12"
-            >
-              <input
-                type="checkbox"
-                :checked="form.columns.includes(column)"
-                @change="toggle(form.columns, column)"
-              />
-              {{ t(`STAYDESK.TEAM_VIEWS.COLUMN.${column}`) }}
-            </label>
-          </div>
+          <label class="flex items-center gap-3 text-sm text-n-slate-12">
+            <Switch v-model="form.hideWhenOpen" />
+            {{ t('STAYDESK.WORKSPACE.HIDE_LIST_WHEN_OPEN') }}
+          </label>
+          <ReorderableMultiSelect
+            v-model="form.columns"
+            :options="columnOptions"
+            :max="TEAM_VIEW_COLUMNS.length"
+            :add-label="t('STAYDESK.TEAM_VIEWS.FORM.ADD_COLUMN')"
+            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+            :empty-state="t('STAYDESK.PICKER.EMPTY')"
+          />
         </fieldset>
 
         <fieldset class="grid gap-2">
@@ -283,21 +338,17 @@ watch(selectedTeam, load);
             <label
               class="flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-sm text-n-slate-12"
             >
-              <input v-model="form.standardFields" type="checkbox" />
+              <Switch v-model="form.standardFields" />
               {{ t('STAYDESK.WORKSPACE.STANDARD_FIELDS') }}
             </label>
-            <label
-              v-for="attribute in customAttributes"
-              :key="attribute.attribute_key"
-              class="flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-sm text-n-slate-12"
-            >
-              <input
-                type="checkbox"
-                :checked="form.fields.includes(attribute.attribute_key)"
-                @change="toggle(form.fields, attribute.attribute_key)"
-              />
-              {{ attribute.attribute_display_name }}
-            </label>
+            <ReorderableMultiSelect
+              v-model="form.fields"
+              :options="fieldOptions"
+              :max="Math.max(fieldOptions.length, 1)"
+              :add-label="t('STAYDESK.WORKSPACE.ADD_FIELD')"
+              :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+              :empty-state="t('STAYDESK.PICKER.EMPTY')"
+            />
           </div>
         </fieldset>
 
@@ -305,40 +356,37 @@ watch(selectedTeam, load);
           <legend class="text-sm font-medium text-n-slate-12">
             {{ t('STAYDESK.WORKSPACE.PANELS') }}
           </legend>
-          <div class="flex flex-wrap gap-3">
-            <label
-              v-for="name in PANEL_NAMES"
-              :key="name"
-              class="flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-sm text-n-slate-12"
-            >
-              <input
-                type="checkbox"
-                :checked="orderedPanels.includes(name)"
-                @change="toggle(form.panels, name)"
-              />
-              {{ t(`STAYDESK.WORKSPACE.PANEL_ITEMS.${name}`) }}
-            </label>
-          </div>
+          <ReorderableMultiSelect
+            v-model="form.panels"
+            :options="panelOptions"
+            :max="PANEL_NAMES.length"
+            :add-label="t('STAYDESK.WORKSPACE.ADD_PANEL')"
+            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+            :empty-state="t('STAYDESK.PICKER.EMPTY')"
+          />
         </fieldset>
 
         <fieldset v-if="dashboardApps.length" class="grid gap-2">
           <legend class="text-sm font-medium text-n-slate-12">
             {{ t('STAYDESK.WORKSPACE.APPS') }}
           </legend>
-          <div class="flex flex-wrap gap-3">
-            <label
-              v-for="app in dashboardApps"
-              :key="app.id"
-              class="flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-sm text-n-slate-12"
-            >
-              <input
-                type="checkbox"
-                :checked="form.apps.includes(app.id)"
-                @change="toggle(form.apps, app.id)"
-              />
-              {{ app.title }}
-            </label>
-          </div>
+          <TagMultiSelectComboBox
+            v-model="form.apps"
+            :options="appOptions"
+            :placeholder="t('STAYDESK.WORKSPACE.APPS_PLACEHOLDER')"
+            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+            :empty-state="t('STAYDESK.PICKER.EMPTY')"
+          />
+          <p class="text-xs text-n-slate-11">
+            {{ t('STAYDESK.WORKSPACE.SIDE_APPS_HINT') }}
+          </p>
+          <TagMultiSelectComboBox
+            v-model="form.sideApps"
+            :options="sideAppOptions"
+            :placeholder="t('STAYDESK.WORKSPACE.SIDE_APPS_PLACEHOLDER')"
+            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+            :empty-state="t('STAYDESK.PICKER.EMPTY')"
+          />
         </fieldset>
 
         <fieldset class="grid gap-2">
@@ -346,20 +394,14 @@ watch(selectedTeam, load);
             {{ t('STAYDESK.WORKSPACE.MACROS') }}
           </legend>
           <Select v-model="form.macrosMode" :options="macrosOptions" />
-          <div v-if="form.macrosMode === 'list'" class="flex flex-wrap gap-3">
-            <label
-              v-for="macro in macros"
-              :key="macro.id"
-              class="flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5 text-sm text-n-slate-12"
-            >
-              <input
-                type="checkbox"
-                :checked="form.macroIds.includes(macro.id)"
-                @change="toggle(form.macroIds, macro.id)"
-              />
-              {{ macro.name }}
-            </label>
-          </div>
+          <TagMultiSelectComboBox
+            v-if="form.macrosMode === 'list'"
+            v-model="form.macroIds"
+            :options="macroOptions"
+            :placeholder="t('STAYDESK.WORKSPACE.MACROS_PLACEHOLDER')"
+            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+            :empty-state="t('STAYDESK.PICKER.EMPTY')"
+          />
         </fieldset>
 
         <fieldset class="grid gap-3">

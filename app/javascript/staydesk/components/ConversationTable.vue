@@ -4,10 +4,10 @@ import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { useMapGetter } from 'dashboard/composables/store';
 import { frontendURL, conversationUrl } from 'dashboard/helper/URLHelper';
-import { dynamicTime } from 'shared/helpers/timeHelper';
 import Button from 'dashboard/components-next/button/Button.vue';
 import SlaBadge from './SlaBadge.vue';
 import { DEFAULT_COLUMNS } from '../helpers/teamViewQuery';
+import { tempoRelativo } from '../helpers/tempo';
 import { useTicketStatusStore } from '../store/ticketStatus';
 
 // A lista de conversas em tabela, como a view do Zendesk: colunas configuradas
@@ -21,7 +21,7 @@ const props = defineProps({
 
 const emit = defineEmits(['loadMore']);
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const currentChat = useMapGetter('getSelectedChat');
@@ -42,7 +42,7 @@ const subject = conversation =>
   conversation.last_non_activity_message?.content ||
   '';
 
-const seconds = value => (value ? dynamicTime(value) : '');
+const seconds = value => tempoRelativo(value, locale.value);
 
 const cell = (conversation, column) => {
   switch (column) {

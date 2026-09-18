@@ -117,6 +117,10 @@ export default {
     },
   },
   methods: {
+    // staydesk:hook abrir perfil pelo nome (a edição continua no lápis)
+    staydeskOpenProfile() {
+      window.open(this.contactProfileLink, '_blank', 'noopener');
+    },
     toggleEditModal() {
       this.showEditModal = !this.showEditModal;
     },
@@ -218,8 +222,8 @@ export default {
             <h3
               v-else
               class="flex-shrink max-w-full min-w-0 my-0 text-base capitalize break-words text-n-slate-12 cursor-pointer hover:text-n-slate-12/80"
-              :title="$t('CONTACT_PANEL.CLICK_TO_EDIT')"
-              @click="startEditingName"
+              :title="$t('STAYDESK.CONTACT.OPEN_PROFILE')"
+              @click="staydeskOpenProfile"
             >
               {{ contact.name }}
             </h3>

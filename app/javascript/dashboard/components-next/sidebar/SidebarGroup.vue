@@ -367,6 +367,7 @@ watch(
             :icon="child.icon"
             :children="child.children"
             :collapsible="child.collapsible"
+            :staydesk-no-scroll="child.staydeskNoScroll"
             :show-tree-line="child.showTreeLine"
             :end-tree-line="child.showTreeLine && isLastVisibleChild(child)"
             :is-expanded="isExpanded"

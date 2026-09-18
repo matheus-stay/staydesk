@@ -64,3 +64,15 @@ docker compose -f docker-compose.local.yaml exec rails bundle exec rails runner 
 ```bash
 git fetch upstream && git checkout develop && git merge upstream/develop
 ```
+
+## Dados fictícios para ver as telas
+
+```bash
+docker compose exec rails bundle exec rails staydesk:demo RESET=1
+```
+
+Popula a conta (`ACCOUNT_ID=1` por padrão) com o que as telas do StayDesk precisam para fazer sentido: quatro agentes com times, quatro caixas (dois chats e dois e-mails), etiquetas, catálogo de status do ticket, catálogo de status do agente com carga por fila, calendário e duas políticas de SLA, três visualizações por time, área de trabalho em tabela, vinte contatos e 45 conversas espalhadas por fila, status, responsável e prioridade, com mensagens.
+
+- `RESET=1` apaga as conversas e os contatos fictícios antes; sem ele, as conversas são somadas às existentes.
+- Não roda em produção (use `FORCE=1` por sua conta e risco).
+- Agentes criados: `ana@`, `bruno@`, `carla@`, `diego@staydesk.test`, senha `Staydesk#2026`. Entrar como um deles mostra a área de trabalho do time, diferente da visão do administrador.

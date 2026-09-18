@@ -10,8 +10,17 @@ module Custom::AccountUser
     staydesk_role&.kind == 'light'
   end
 
-  # O front recebe isto no payload do usuário e esconde o que o leve não pode fazer.
+  # Permissões granulares do papel StayDesk (SPEC-12).
+  def staydesk_permissions
+    staydesk_role&.permissions || []
+  end
+
+  def staydesk_can?(permission)
+    administrator? || staydesk_permissions.include?(permission.to_s)
+  end
+
+  # O front recebe isto no payload do usuário: é o que mostra ou esconde menu e rota.
   def permissions
-    staydesk_light? ? super + [LIGHT_PERMISSION] : super
+    (super + staydesk_permissions).uniq
   end
 end

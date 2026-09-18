@@ -3,14 +3,23 @@
 # depois a sobreposição do papel. Listas vazias herdam; listas presentes valem.
 class Staydesk::WorkspaceResolver
   PRODUCT_DEFAULT = {
-    'menu' => %w[Inbox Conversation Calls Contacts Reports Captain Companies Campaigns Portals],
-    'list' => { 'layout' => 'cards', 'columns' => Staydesk::TeamView::DEFAULT_COLUMNS, 'sort_by' => 'last_activity_at_desc', 'page_size' => 25 },
-    'conversation' => { 'fields' => %w[assignee team priority labels], 'panels' => [], 'apps' => nil },
+    # Campanhas e central de ajuda ficam de fora por decisão de produto (2026-09-17);
+    # para trazer de volta, basta listá-las no padrão da conta ou do time.
+    'menu' => %w[Inbox Conversation Calls Contacts Reports Captain Companies],
+    'conversation_menu' => %w[All Mentions Participating Unattended Folders StaydeskTeamViews Teams Channels],
+    'list' => { 'layout' => 'cards', 'columns' => Staydesk::TeamView::DEFAULT_COLUMNS, 'sort_by' => 'last_activity_at_desc',
+                'page_size' => 25, 'tabs' => %w[me unassigned all], 'hide_when_open' => false },
+    # O painel da direita nasce com o histórico do contato; o painel da esquerda
+    # (campos do ticket) já cobre agente, time, prioridade e etiquetas.
+    'conversation' => { 'fields' => %w[assignee team priority labels],
+                        'panels' => %w[previous_conversation contact_attributes contact_notes shared_files
+                                       conversation_info conversation_participants macros],
+                        'apps' => nil, 'side_apps' => [] },
     'macros' => { 'mode' => 'all', 'ids' => [] },
     'composer' => { 'submit_as' => true, 'after_send' => 'stay' }
   }.freeze
 
-  SECTIONS = %w[menu list conversation macros composer].freeze
+  SECTIONS = %w[menu conversation_menu list conversation macros composer].freeze
 
   def initialize(user:, account:)
     @user = user
@@ -64,7 +73,7 @@ class Staydesk::WorkspaceResolver
       if current.is_a?(Hash) && incoming.is_a?(Hash)
         deep_merge(current, incoming, &block)
       elsif block
-        block.call(key, current, incoming)
+        yield(key, current, incoming)
       else
         incoming
       end

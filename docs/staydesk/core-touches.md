@@ -19,9 +19,20 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/entrypoints/widget.js` | montagem | SPEC-00 | Textos StayDesk do widget |
 | `app/javascript/entrypoints/survey.js` | montagem | SPEC-00 | Textos StayDesk da pesquisa de satisfação |
 | `app/javascript/dashboard/routes/index.js` | montagem | SPEC-00 | Rotas da camada, injetadas como filhas da rota da conta por `withStaydeskRoutes` |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | gancho | SPEC-03 | Central de administração abre em aba própria (2 linhas) |
+| `tailwind.config.js` | gancho | UX | A camada StayDesk entra no scan do Tailwind (2 linhas) |
+| `app/javascript/dashboard/routes/dashboard/conversation/contact/ContactInfo.vue` | gancho | UX | O nome do cliente abre o perfil; a edição fica no lápis |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Botão de compactar a barra lateral |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | gancho | UX | O grupo "Mais" some quando não tem item (1 linha) |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Volta para o atendimento no topo da barra, dentro da central |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | gancho | UX | Os itens da Central passam pelo organizador por seções |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | gancho | SPEC-03 | Itens dentro de Conversas conforme a área de trabalho (2 linhas) |
+| `app/javascript/dashboard/routes/dashboard/conversation/ContactPanel.vue` | gancho | SPEC-17 | Aplicativo ao lado da conversa como seção do painel direito (5 linhas) |
+| `app/javascript/dashboard/App.vue` | gancho | SPEC-16 | Cartão de convite de atendimento no canto da tela (3 linhas) |
 | `app/javascript/dashboard/routes/dashboard/conversation/Macros/List.vue` | gancho | SPEC-04 | `v-show` por macro conforme a área de trabalho |
 | `app/javascript/dashboard/components-next/sidebar/SidebarProfileMenuStatus.vue` | gancho | SPEC-09 | Lista de status e troca de status pelo catálogo da conta (4 linhas) |
 | `app/javascript/dashboard/routes/dashboard/settings/automation/constants.js` | gancho | SPEC-08 | Eventos de SLA na lista de eventos e nas condições por evento das automações |
+| `app/models/macro.rb` | gancho | SPEC-15 | Macro aceita as ações da camada StayDesk (definir campo e status do ticket) |
 | `app/javascript/dashboard/components/widgets/conversation/MoreActions.vue` | gancho | SPEC-10 | Seletor de status personalizado no lugar do botão Resolver quando a conta tem catálogo (3 linhas) |
 
 ## Views sobrepostas (o original não muda)
@@ -79,7 +90,7 @@ for reduzido a classe-só (passa a `classe`) ou quando a mudança for movida par
 | `app/javascript/dashboard/components-next/sidebar/specs/SidebarSubGroup.spec.js` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components-next/tabbar/TabBar.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/Accordion/AccordionItem.vue` | legado | UX | Edição no lugar do ramo de UX |
-| `app/javascript/dashboard/components/ChatList.vue` | legado | UX | Edição no lugar do ramo de UX; leva 4 linhas `staydesk:hook` da SPEC-03 (view por time como pasta ativa) e 5 da SPEC-04 (lista em tabela) |
+| `app/javascript/dashboard/components/ChatList.vue` | legado | UX | Edição no lugar do ramo de UX; leva 4 linhas `staydesk:hook` da SPEC-03 (view por time como pasta ativa), 5 da SPEC-04 (lista em tabela) e 1 da SPEC-03 (abas da lista conforme a área de trabalho) |
 | `app/javascript/dashboard/components/ChatListHeader.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/ConversationList.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/ui/Tabs/TabsItem.vue` | legado | UX | Edição no lugar do ramo de UX |

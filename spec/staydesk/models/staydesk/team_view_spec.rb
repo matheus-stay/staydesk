@@ -38,4 +38,27 @@ RSpec.describe Staydesk::TeamView do
       expect(described_class.visible_to(agent, account)).to contain_exactly(for_everyone)
     end
   end
+
+  describe 'marcador do usuário atual' do
+    let(:agent) { create(:user, account: account, role: :agent) }
+
+    it 'swaps me for the id of whoever is asking' do
+      view = described_class.create!(
+        account: account, name: 'Minhas',
+        query: { 'payload' => [{ 'attribute_key' => 'assignee_id', 'filter_operator' => 'equal_to', 'values' => ['me'] }] }
+      )
+
+      expect(view.payload(agent).first['values']).to eq([agent.id])
+      expect(view.payload.first['values']).to eq(['me'])
+    end
+
+    it 'leaves other filters alone' do
+      view = described_class.create!(
+        account: account, name: 'Abertas',
+        query: { 'payload' => [{ 'attribute_key' => 'status', 'filter_operator' => 'equal_to', 'values' => ['open'] }] }
+      )
+
+      expect(view.payload(agent).first['values']).to eq(['open'])
+    end
+  end
 end

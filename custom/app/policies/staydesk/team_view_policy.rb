@@ -1,4 +1,7 @@
 class Staydesk::TeamViewPolicy < ApplicationPolicy
+  include Staydesk::AreaDeConfiguracao
+  configura_a_area :visualizacoes
+
   def index?
     true
   end
@@ -16,14 +19,14 @@ class Staydesk::TeamViewPolicy < ApplicationPolicy
   end
 
   def create?
-    @account_user.administrator?
+    configura?
   end
 
   def update?
-    @account_user.administrator?
+    configura?
   end
 
   def destroy?
-    @account_user.administrator?
+    configura?
   end
 end

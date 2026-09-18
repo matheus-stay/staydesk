@@ -22,7 +22,8 @@ RSpec.describe Staydesk::WorkspaceResolver do
                                     config: { 'menu' => %w[Conversation Contacts], 'list' => { 'layout' => 'table' },
                                               'roles' => { 'administrator' => { 'menu' => %w[Conversation Contacts Reports] } } })
     Staydesk::TeamWorkspace.create!(account: account, team: n1, config: { 'list' => { 'columns' => %w[status subject] } })
-    Staydesk::TeamWorkspace.create!(account: account, team: financeiro, config: { 'list' => { 'columns' => %w[subject contact] }, 'menu' => ['Reports'] })
+    Staydesk::TeamWorkspace.create!(account: account, team: financeiro,
+                                    config: { 'list' => { 'columns' => %w[subject contact] }, 'menu' => ['Reports'] })
     create(:team_member, team: n1, user: agent)
     create(:team_member, team: financeiro, user: agent)
     create(:team_member, team: n1, user: admin)

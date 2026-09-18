@@ -35,6 +35,8 @@ const tailwindConfig = {
     './app/javascript/dashboard/composables/**/*.js',
     './app/javascript/dashboard/components-next/**/*.js',
     './app/javascript/dashboard/routes/dashboard/**/**/*.js',
+    './app/javascript/staydesk/**/*.vue', // staydesk:hook camada staydesk
+    './app/javascript/staydesk/**/*.js', // staydesk:hook camada staydesk
     './app/views/**/*.erb',
   ],
   theme: {

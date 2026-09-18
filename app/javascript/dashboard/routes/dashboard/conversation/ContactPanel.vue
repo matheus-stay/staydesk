@@ -24,7 +24,8 @@ import ShopifyOrdersList from 'dashboard/components/widgets/conversation/Shopify
 import SidebarActionsHeader from 'dashboard/components-next/SidebarActionsHeader.vue';
 import LinearIssuesList from 'dashboard/components/widgets/conversation/linear/IssuesList.vue';
 import LinearSetupCTA from 'dashboard/components/widgets/conversation/linear/LinearSetupCTA.vue';
-import { useWorkspace } from 'staydesk/composables/useWorkspace'; // staydesk:hook workspace panels
+import { useWorkspace } from 'staydesk/composables/useWorkspace';
+import StaydeskAppPanel from 'staydesk/components/AppPanel.vue'; // staydesk:hook side apps
 const props = defineProps({
   conversationId: {
     type: [Number, String],
@@ -324,6 +325,11 @@ onMounted(() => {
               <SharedFiles />
             </AccordionItem>
           </div>
+          <StaydeskAppPanel
+            v-else-if="staydeskWorkspace.appIdFromPanel(element.name)"
+            :app-id="staydeskWorkspace.appIdFromPanel(element.name)"
+            :position="conversationSidebarItems.indexOf(element)"
+          />
         </template>
       </Draggable>
     </div>

@@ -24,6 +24,8 @@ class Staydesk::TeamView < ApplicationRecord
   self.table_name = 'staydesk_team_views'
 
   COLUMNS = %w[sla status subject contact inbox created_at waiting_since assignee team priority labels].freeze
+  CURRENT_USER_TOKEN = 'me'.freeze
+  USER_FIELDS = %w[assignee_id created_by_id].freeze
   DEFAULT_COLUMNS = %w[sla status subject contact waiting_since assignee].freeze
 
   belongs_to :account
@@ -37,21 +39,34 @@ class Staydesk::TeamView < ApplicationRecord
   scope :ordered, -> { order(:position, :id) }
 
   def self.visible_to(user, account)
+    da_conta = where(account_id: account.id)
     team_ids = user.teams.where(account_id: account.id).ids
-    return where(team_ids: []) if team_ids.empty?
+    return da_conta.where(team_ids: []) if team_ids.empty?
 
-    where("team_ids = '{}' OR team_ids && ARRAY[:ids]::bigint[]", ids: team_ids)
+    da_conta.where("team_ids = '{}' OR team_ids && ARRAY[:ids]::bigint[]", ids: team_ids)
   end
 
   def teams
     account.teams.where(id: team_ids)
   end
 
-  def payload
-    query['payload']
+  # Marcador dinâmico, como as views do Zendesk: `me` no valor de um filtro vira
+  # o id de quem está pedindo. É o que faz a mesma view servir a todo agente.
+  def payload(user = nil)
+    linhas = query['payload'] || []
+    return linhas if user.blank?
+
+    linhas.map { |linha| resolver_marcador(linha, user) }
   end
 
   private
+
+  def resolver_marcador(linha, user)
+    return linha unless USER_FIELDS.include?(linha['attribute_key'].to_s)
+
+    valores = Array(linha['values']).map { |valor| valor.to_s == CURRENT_USER_TOKEN ? user.id : valor }
+    linha.merge('values' => valores)
+  end
 
   def query_has_payload
     return if query.is_a?(Hash) && query['payload'].is_a?(Array)

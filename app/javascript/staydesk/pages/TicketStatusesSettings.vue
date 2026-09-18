@@ -5,10 +5,12 @@ import { useAlert } from 'dashboard/composables';
 import SettingsLayout from 'dashboard/routes/dashboard/settings/SettingsLayout.vue';
 import BaseSettingsHeader from 'dashboard/routes/dashboard/settings/components/BaseSettingsHeader.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
+import Switch from 'dashboard/components-next/switch/Switch.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import Select from 'dashboard/components-next/select/Select.vue';
 import { useTicketStatusStore } from '../store/ticketStatus';
+import { fromSaveButton } from '../helpers/form';
 
 // Configurações › Status dos tickets: o catálogo que o agente escolhe na conversa.
 // Cada status mapeia para um dos quatro do Chatwoot (aberto, pendente, adiado, resolvido).
@@ -27,6 +29,7 @@ const emptyForm = () => ({
   color: DEFAULT_COLOR,
   baseStatus: 'open',
   defaultForBase: false,
+  applyOnAssign: false,
   active: true,
 });
 const form = ref(emptyForm());
@@ -47,6 +50,7 @@ const startEdit = status => {
         color: status.color || DEFAULT_COLOR,
         baseStatus: status.base_status,
         defaultForBase: status.default_for_base,
+        applyOnAssign: status.apply_on_assign,
         active: status.active,
       }
     : emptyForm();
@@ -61,6 +65,7 @@ const save = async () => {
       color: form.value.color,
       base_status: form.value.baseStatus,
       default_for_base: form.value.defaultForBase,
+      apply_on_assign: form.value.applyOnAssign,
       active: form.value.active,
     });
     useAlert(t('STAYDESK.TICKET_STATUS.API.SAVE_SUCCESS'));
@@ -102,6 +107,10 @@ const confirmDelete = async () => {
 };
 
 onMounted(() => store.fetch());
+// Só o botão de salvar (ou o Enter) envia: clique em botão de dentro não salva.
+const aoEnviar = event => {
+  if (fromSaveButton(event)) save();
+};
 </script>
 
 <template>
@@ -129,7 +138,7 @@ onMounted(() => store.fetch());
       <form
         v-if="editing"
         class="mb-6 grid gap-4 rounded-xl border border-n-weak bg-n-solid-1 p-6"
-        @submit.prevent="save"
+        @submit.prevent="aoEnviar"
       >
         <div class="grid gap-4 md:grid-cols-3">
           <Input
@@ -157,11 +166,15 @@ onMounted(() => store.fetch());
           {{ t('STAYDESK.TICKET_STATUS.FORM.BASE_STATUS_HINT') }}
         </p>
         <label class="flex items-center gap-2 text-sm text-n-slate-12">
-          <input v-model="form.defaultForBase" type="checkbox" />
+          <Switch v-model="form.defaultForBase" />
           {{ t('STAYDESK.TICKET_STATUS.FORM.DEFAULT_FOR_BASE') }}
         </label>
         <label class="flex items-center gap-2 text-sm text-n-slate-12">
-          <input v-model="form.active" type="checkbox" />
+          <Switch v-model="form.applyOnAssign" />
+          {{ t('STAYDESK.TICKET_STATUS.FORM.APPLY_ON_ASSIGN') }}
+        </label>
+        <label class="flex items-center gap-2 text-sm text-n-slate-12">
+          <Switch v-model="form.active" />
           {{ t('STAYDESK.TICKET_STATUS.FORM.ACTIVE') }}
         </label>
         <div class="flex justify-end gap-2">
@@ -173,6 +186,7 @@ onMounted(() => store.fetch());
             solid
             blue
             type="submit"
+            data-staydesk-save
             :is-loading="store.uiFlags.isSaving"
           >
             {{ t('STAYDESK.TEAM_VIEWS.FORM.SAVE') }}

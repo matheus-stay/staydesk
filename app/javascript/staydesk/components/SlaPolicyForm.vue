@@ -4,9 +4,12 @@ import { useI18n } from 'vue-i18n';
 import { useStore } from 'dashboard/composables/store';
 import { useConversationFilterContext } from 'dashboard/components-next/filter/provider';
 import Button from 'dashboard/components-next/button/Button.vue';
+import Switch from 'dashboard/components-next/switch/Switch.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import Select from 'dashboard/components-next/select/Select.vue';
 import ConditionRow from 'dashboard/components-next/filter/ConditionRow.vue';
+import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
+import { fromSaveButton } from '../helpers/form';
 import {
   newConditionRow,
   payloadToRows,
@@ -47,6 +50,12 @@ const form = ref({
 });
 const targets = ref(emptyTargets());
 const rows = ref([]);
+const pauseOptions = computed(() =>
+  PAUSE_STATUSES.map(status => ({
+    value: status,
+    label: t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${status}.TEXT`),
+  }))
+);
 const conditionsRef = useTemplateRef('conditionsRef');
 
 const calendarOptions = computed(() => [
@@ -58,7 +67,13 @@ const calendarOptions = computed(() => [
 ]);
 
 onMounted(async () => {
-  await store.dispatch('attributes/get');
+  await Promise.all([
+    store.dispatch('attributes/get'),
+    store.dispatch('agents/get'),
+    store.dispatch('teams/get'),
+    store.dispatch('inboxes/get'),
+    store.dispatch('labels/get'),
+  ]);
   if (!props.policy) return;
   form.value = {
     name: props.policy.name,
@@ -79,12 +94,6 @@ onMounted(async () => {
   targets.value = saved;
   rows.value = payloadToRows(props.policy.conditions || [], filterTypes.value);
 });
-
-const toggle = (list, value) => {
-  const index = list.indexOf(value);
-  if (index === -1) list.push(value);
-  else list.splice(index, 1);
-};
 
 const addRow = () => rows.value.push(newConditionRow());
 const removeRow = index => rows.value.splice(index, 1);
@@ -120,12 +129,16 @@ const submit = () => {
     targets: cleanTargets(),
   });
 };
+// Só o botão de salvar (ou o Enter) envia: clique em botão de dentro não salva.
+const aoEnviar = event => {
+  if (fromSaveButton(event)) submit();
+};
 </script>
 
 <template>
   <form
     class="grid gap-6 rounded-xl border border-n-weak bg-n-solid-1 p-6"
-    @submit.prevent="submit"
+    @submit.prevent="aoEnviar"
   >
     <div class="grid gap-4 md:grid-cols-2">
       <Input
@@ -153,20 +166,13 @@ const submit = () => {
       />
       <fieldset class="grid gap-1 text-sm text-n-slate-12">
         <legend>{{ t('STAYDESK.SLA.FORM.PAUSE_STATUSES') }}</legend>
-        <div class="flex gap-3 pt-1">
-          <label
-            v-for="status in PAUSE_STATUSES"
-            :key="status"
-            class="flex items-center gap-2 rounded-lg border border-n-weak px-3 py-1.5"
-          >
-            <input
-              type="checkbox"
-              :checked="form.pauseStatuses.includes(status)"
-              @change="toggle(form.pauseStatuses, status)"
-            />
-            {{ t(`CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${status}.TEXT`) }}
-          </label>
-        </div>
+        <TagMultiSelectComboBox
+          v-model="form.pauseStatuses"
+          :options="pauseOptions"
+          :placeholder="t('STAYDESK.SLA.FORM.NO_PAUSE')"
+          :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+          :empty-state="t('STAYDESK.PICKER.EMPTY')"
+        />
       </fieldset>
     </div>
 
@@ -252,7 +258,7 @@ const submit = () => {
     </fieldset>
 
     <label class="flex items-center gap-2 text-sm text-n-slate-12">
-      <input v-model="form.active" type="checkbox" />
+      <Switch v-model="form.active" />
       {{ t('STAYDESK.SLA.FORM.ACTIVE') }}
     </label>
 
@@ -260,7 +266,14 @@ const submit = () => {
       <Button sm faded slate type="button" @click="emit('cancel')">
         {{ t('STAYDESK.TEAM_VIEWS.FORM.CANCEL') }}
       </Button>
-      <Button sm solid blue type="submit" :is-loading="isSaving">
+      <Button
+        sm
+        solid
+        blue
+        type="submit"
+        data-staydesk-save
+        :is-loading="isSaving"
+      >
         {{ t('STAYDESK.TEAM_VIEWS.FORM.SAVE') }}
       </Button>
     </div>

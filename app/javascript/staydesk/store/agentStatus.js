@@ -6,6 +6,8 @@ export const useAgentStatusStore = defineStore('staydeskAgentStatus', {
     statuses: [],
     currentStatusId: null,
     loads: [],
+    loadQueues: [],
+    offerStats: [],
     uiFlags: {
       isFetching: false,
       hasFetched: false,
@@ -34,6 +36,12 @@ export const useAgentStatusStore = defineStore('staydeskAgentStatus', {
       }
     },
 
+    // As filas de carga da conta: é delas que saem os campos de limite.
+    async fetchLoadQueues() {
+      const { data } = await AgentStatusesAPI.loadQueues();
+      this.loadQueues = data.load_queues || [];
+    },
+
     // Painel de carga: quantas conversas cada agente atende agora em cada fila.
     async fetchLoads() {
       this.uiFlags.isFetchingLoads = true;
@@ -43,6 +51,12 @@ export const useAgentStatusStore = defineStore('staydeskAgentStatus', {
       } finally {
         this.uiFlags.isFetchingLoads = false;
       }
+    },
+
+    // Aceitação de convites por agente, o indicador da coordenação.
+    async fetchOfferStats() {
+      const { data } = await AgentStatusesAPI.offerStats();
+      this.offerStats = data;
     },
 
     async changeMine(id) {

@@ -37,6 +37,6 @@ class Api::V1::Accounts::Staydesk::TicketStatusesController < Api::V1::Accounts:
   end
 
   def permitted_payload
-    params.require(:ticket_status).permit(:name, :description, :color, :base_status, :default_for_base, :active, :position)
+    params.require(:ticket_status).permit(:name, :description, :color, :base_status, :default_for_base, :apply_on_assign, :active, :position)
   end
 end

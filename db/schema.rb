@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_17_130100) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_17_320000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1463,7 +1463,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_17_130100) do
     t.string "kind", default: "full", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "staydesk_role_id"
     t.index ["account_user_id"], name: "index_staydesk_account_user_roles_on_account_user_id", unique: true
+    t.index ["staydesk_role_id"], name: "index_staydesk_account_user_roles_on_staydesk_role_id"
   end
 
   create_table "staydesk_agent_status_periods", force: :cascade do |t|
@@ -1526,6 +1528,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_17_130100) do
     t.jsonb "holidays", default: [], null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["account_id", "name"], name: "index_staydesk_calendars_on_account_id_and_name", unique: true
     t.index ["account_id"], name: "index_staydesk_calendars_on_account_id"
   end
 
@@ -1543,6 +1546,78 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_17_130100) do
     t.index ["conversation_id"], name: "index_staydesk_conversation_events_on_conversation_id"
   end
 
+  create_table "staydesk_impersonations", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "actor_id", null: false
+    t.bigint "target_id", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "created_at"], name: "index_staydesk_impersonations_on_account_id_and_created_at"
+    t.index ["account_id"], name: "index_staydesk_impersonations_on_account_id"
+  end
+
+  create_table "staydesk_load_queues", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "key", null: false
+    t.string "name", null: false
+    t.string "channel_types", default: [], null: false, array: true
+    t.boolean "catch_all", default: false, null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "inbox_ids", default: [], null: false, array: true
+    t.index ["account_id", "key"], name: "index_staydesk_load_queues_on_account_id_and_key", unique: true
+    t.index ["account_id"], name: "index_staydesk_load_queues_on_account_id"
+  end
+
+  create_table "staydesk_offers", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "conversation_id", null: false
+    t.bigint "user_id", null: false
+    t.string "status", default: "pendente", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "answered_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_staydesk_offers_on_account_id"
+    t.index ["conversation_id", "status"], name: "index_staydesk_offers_on_conversation_id_and_status"
+    t.index ["user_id", "status"], name: "index_staydesk_offers_on_user_id_and_status"
+  end
+
+  create_table "staydesk_queues", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "team_id", null: false
+    t.string "name", null: false
+    t.string "description"
+    t.jsonb "conditions", default: [], null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "fallback_after_minutes"
+    t.bigint "fallback_team_ids", default: [], null: false, array: true
+    t.string "fallback_mode", default: "quando_faltar", null: false
+    t.boolean "accept_required", default: false, null: false
+    t.integer "accept_timeout_seconds", default: 30, null: false
+    t.index ["account_id", "name"], name: "index_staydesk_queues_on_account_id_and_name", unique: true
+    t.index ["account_id", "position"], name: "index_staydesk_queues_on_account_id_and_position"
+    t.index ["account_id"], name: "index_staydesk_queues_on_account_id"
+  end
+
+  create_table "staydesk_roles", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.string "description"
+    t.string "permissions", default: [], null: false, array: true
+    t.boolean "built_in", default: false, null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "name"], name: "index_staydesk_roles_on_account_id_and_name", unique: true
+    t.index ["account_id"], name: "index_staydesk_roles_on_account_id"
+  end
+
   create_table "staydesk_sla_policies", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.string "name", null: false
@@ -1556,6 +1631,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_17_130100) do
     t.decimal "warning_ratio", precision: 3, scale: 2, default: "0.2", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["account_id", "name"], name: "index_staydesk_sla_policies_on_account_id_and_name", unique: true
     t.index ["account_id", "position"], name: "index_staydesk_sla_policies_on_account_id_and_position"
     t.index ["account_id"], name: "index_staydesk_sla_policies_on_account_id"
   end
@@ -1574,6 +1650,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_17_130100) do
     t.bigint "created_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["account_id", "name"], name: "index_staydesk_team_views_on_account_id_and_name", unique: true
     t.index ["account_id", "position"], name: "index_staydesk_team_views_on_account_id_and_position"
     t.index ["account_id"], name: "index_staydesk_team_views_on_account_id"
     t.index ["team_ids"], name: "index_staydesk_team_views_on_team_ids", using: :gin
@@ -1600,6 +1677,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_17_130100) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "apply_on_assign", default: false, null: false
     t.index ["account_id", "name"], name: "index_staydesk_ticket_statuses_on_account_id_and_name", unique: true
     t.index ["account_id", "position"], name: "index_staydesk_ticket_statuses_on_account_id_and_position"
     t.index ["account_id"], name: "index_staydesk_ticket_statuses_on_account_id"

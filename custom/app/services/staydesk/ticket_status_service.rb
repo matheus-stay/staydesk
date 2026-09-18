@@ -23,6 +23,15 @@ class Staydesk::TicketStatusService
     @conversation
   end
 
+  # O caso ganhou responsável: entra no status de trabalho em curso. Voltou para a
+  # fila sem ninguém: desfaz, para não ficar "em andamento" parado esperando dono.
+  def follow_assignment!
+    em_andamento = Staydesk::TicketStatus.on_assign(@conversation.account)
+    return if em_andamento.blank?
+
+    @conversation.assignee_id.present? ? assumir(em_andamento) : devolver(em_andamento)
+  end
+
   # Chamado quando o status base mudou por outro caminho (botão do upstream, automação,
   # bot): mantém o atributo coerente com o status base novo.
   def align_with_base!
@@ -35,5 +44,21 @@ class Staydesk::TicketStatusService
     return if new_attributes == attributes
 
     @conversation.update!(custom_attributes: new_attributes)
+  end
+
+  private
+
+  def assumir(em_andamento)
+    return unless @conversation.status == 'open'
+    return if current&.id == em_andamento.id
+
+    apply(em_andamento)
+  end
+
+  def devolver(em_andamento)
+    return unless current&.id == em_andamento.id
+
+    inicial = Staydesk::TicketStatus.default_for(@conversation.account, 'open')
+    apply(inicial) if inicial && inicial.id != em_andamento.id
   end
 end

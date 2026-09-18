@@ -1,17 +1,20 @@
 class Staydesk::TeamWorkspacePolicy < ApplicationPolicy
+  include Staydesk::AreaDeConfiguracao
+  configura_a_area :visualizacoes
+
   def index?
-    @account_user.administrator?
+    configura?
   end
 
   def show?
-    @account_user.administrator?
+    configura?
   end
 
   def update?
-    @account_user.administrator?
+    configura?
   end
 
   def schema?
-    @account_user.administrator?
+    configura?
   end
 end

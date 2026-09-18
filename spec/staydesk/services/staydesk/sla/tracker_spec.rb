@@ -66,4 +66,26 @@ RSpec.describe 'StayDesk SLA lifecycle' do
     expect(Staydesk::Sla::Applier.new(conversation).perform).to be_nil
     expect(Staydesk::AppliedSla.where(conversation: conversation)).to be_empty
   end
+
+  it 'does not undo an attribute written while it held an older copy of the conversation' do
+    conversation = new_conversation
+    Staydesk::Sla::Applier.new(conversation).perform
+    tracker = Staydesk::Sla::Tracker.new(Conversation.find(conversation.id))
+
+    # Outro caminho grava no meio do caminho, com a cópia do tracker já carregada.
+    conversation.update!(custom_attributes: { 'staydesk_status' => 'Em atendimento' })
+    tracker.sync_attributes
+
+    expect(conversation.reload.custom_attributes).to include('staydesk_status' => 'Em atendimento')
+    expect(conversation.custom_attributes).to include('sla_alvo' => 'Padrão')
+  end
+
+  it 'lets a policy be deleted even with conversations being measured' do
+    conversation = new_conversation
+    Staydesk::Sla::Applier.new(conversation).perform
+    expect(Staydesk::AppliedSla.where(conversation: conversation)).to exist
+
+    expect { policy.destroy! }.not_to raise_error
+    expect(Staydesk::AppliedSla.where(conversation: conversation)).not_to exist
+  end
 end

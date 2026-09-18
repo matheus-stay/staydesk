@@ -4,5 +4,6 @@ json.description resource.description
 json.color resource.color
 json.base_status resource.base_status
 json.default_for_base resource.default_for_base
+json.apply_on_assign resource.apply_on_assign
 json.position resource.position
 json.active resource.active

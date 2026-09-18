@@ -1,0 +1,14 @@
+{
+  "_comentario": "Catálogo de permissões do StayDesk. Acrescentar uma linha aqui já a torna escolhível no papel do agente; o rótulo vem do i18n em STAYDESK.AGENT_ROLES.PERMISSIONS. `area` liga a permissão às policies e às rotas de configuração.",
+  "permissoes": [
+    { "chave": "report_manage", "area": "relatorios" },
+    { "chave": "staydesk_report_own", "area": "relatorios" },
+    { "chave": "staydesk_settings_manage", "area": "configuracoes" },
+    { "chave": "staydesk_queues_manage", "area": "filas" },
+    { "chave": "staydesk_sla_manage", "area": "sla" },
+    { "chave": "staydesk_statuses_manage", "area": "status" },
+    { "chave": "staydesk_views_manage", "area": "visualizacoes" },
+    { "chave": "staydesk_roles_manage", "area": "papeis" },
+    { "chave": "staydesk_light", "area": "atendimento" }
+  ]
+}

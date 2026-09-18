@@ -1,21 +1,24 @@
 class Staydesk::AgentStatusPolicy < ApplicationPolicy
+  include Staydesk::AreaDeConfiguracao
+  configura_a_area :status
+
   def index?
     true
   end
 
   def create?
-    @account_user.administrator?
+    configura?
   end
 
   def update?
-    @account_user.administrator?
+    configura?
   end
 
   def destroy?
-    @account_user.administrator?
+    configura?
   end
 
   def loads?
-    @account_user.administrator?
+    configura?
   end
 end

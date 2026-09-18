@@ -75,4 +75,5 @@ class Macro < ApplicationRecord
   end
 end
 
+Macro.prepend_mod_with('Macro') # staydesk:hook macro actions
 Macro.include_mod_with('Audit::Macro')

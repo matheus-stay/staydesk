@@ -16,7 +16,7 @@ class Staydesk::Calendar < ApplicationRecord
   self.table_name = 'staydesk_calendars'
 
   belongs_to :account
-  has_many :sla_policies, class_name: 'Staydesk::SlaPolicy', foreign_key: :calendar_id, dependent: :nullify, inverse_of: :calendar
+  has_many :sla_policies, class_name: 'Staydesk::SlaPolicy', dependent: :nullify, inverse_of: :calendar
 
   validates :name, presence: true, uniqueness: { scope: :account_id }
   validates :timezone, inclusion: { in: ->(_) { ActiveSupport::TimeZone.all.map { |zone| zone.tzinfo.name } } }
@@ -29,7 +29,9 @@ class Staydesk::Calendar < ApplicationRecord
   private
 
   def weekly_hours_shape
-    return if weekly_hours.is_a?(Array) && weekly_hours.all? { |slot| slot.is_a?(Hash) && slot['day'].to_s =~ /\A[0-6]\z/ && slot['open'].to_s =~ /\A\d{2}:\d{2}\z/ && slot['close'].to_s =~ /\A\d{2}:\d{2}\z/ }
+    return if weekly_hours.is_a?(Array) && weekly_hours.all? do |slot|
+      slot.is_a?(Hash) && slot['day'].to_s =~ /\A[0-6]\z/ && slot['open'].to_s =~ /\A\d{2}:\d{2}\z/ && slot['close'].to_s =~ /\A\d{2}:\d{2}\z/
+    end
 
     errors.add(:weekly_hours, 'must be a list of { day: 0-6, open: HH:MM, close: HH:MM }')
   end

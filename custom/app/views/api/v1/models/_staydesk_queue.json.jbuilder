@@ -1,0 +1,14 @@
+json.id resource.id
+json.name resource.name
+json.description resource.description
+json.team_id resource.team_id
+json.team_name resource.team&.name
+json.fallback_mode resource.fallback_mode
+json.fallback_team_ids resource.fallback_team_ids
+json.fallback_team_names resource.fallback_teams.pluck(:name)
+json.fallback_after_minutes resource.fallback_after_minutes
+json.conditions resource.conditions
+json.accept_required resource.accept_required
+json.accept_timeout_seconds resource.accept_timeout_seconds
+json.position resource.position
+json.active resource.active

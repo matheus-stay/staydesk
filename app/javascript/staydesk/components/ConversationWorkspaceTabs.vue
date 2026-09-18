@@ -63,7 +63,7 @@ const emit = defineEmits(['select', 'close']);
         <button
           type="button"
           :aria-label="`${$t('GENERAL.CLOSE')} #${tab.id}`"
-          class="absolute end-1.5 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded text-n-slate-9 outline-none hover:bg-n-alpha-3 hover:text-n-slate-12 focus-visible:ring-2 focus-visible:ring-n-brand"
+          class="absolute end-1.5 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded !p-0 text-n-slate-9 outline-none hover:bg-n-alpha-3 hover:text-n-slate-12 focus-visible:ring-2 focus-visible:ring-n-brand"
           @click.stop="emit('close', tab)"
         >
           <span class="i-lucide-x size-3.5" />

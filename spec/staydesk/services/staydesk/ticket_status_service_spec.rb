@@ -45,4 +45,38 @@ RSpec.describe Staydesk::TicketStatusService do
     expect(conversation.reload.snoozed_until).to be_nil
     expect(conversation.status).to eq('open')
   end
+
+  context 'when a status is marked to apply on assignment' do
+    let!(:em_andamento) do
+      Staydesk::TicketStatus.create!(account: account, name: 'Em andamento', base_status: 'open', position: 3,
+                                     apply_on_assign: true)
+    end
+    let(:agent) { create(:user, account: account, role: :agent) }
+
+    it 'moves the conversation to it when someone takes the case' do
+      described_class.new(conversation).apply(novo)
+
+      conversation.reload.update!(assignee: agent)
+
+      expect(conversation.reload.custom_attributes['staydesk_status']).to eq('Em andamento')
+      expect(conversation.status).to eq('open')
+    end
+
+    it 'goes back to the default when the conversation returns to the queue' do
+      conversation.update!(assignee: agent)
+      expect(conversation.reload.custom_attributes['staydesk_status']).to eq('Em andamento')
+
+      conversation.update!(assignee: nil)
+
+      expect(conversation.reload.custom_attributes['staydesk_status']).to eq('Novo')
+    end
+
+    it 'leaves a waiting case alone when it gets an assignee' do
+      described_class.new(conversation).apply(espera)
+
+      conversation.reload.update!(assignee: agent)
+
+      expect(conversation.reload.custom_attributes['staydesk_status']).to eq('Em espera')
+    end
+  end
 end

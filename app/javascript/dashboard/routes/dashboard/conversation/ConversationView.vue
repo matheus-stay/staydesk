@@ -14,6 +14,7 @@ import ConversationSidebar from 'dashboard/components/widgets/conversation/Conve
 import { conversationListPageURL } from 'dashboard/helper/URLHelper';
 import { useConversationWorkspaceTabs } from 'staydesk/composables/useConversationWorkspaceTabs';
 import TicketFieldsPanel from 'staydesk/components/TicketFieldsPanel.vue';
+import { useWorkspace as useStaydeskWorkspace } from 'staydesk/composables/useWorkspace'; // staydesk:hook layout
 
 export default {
   components: {
@@ -69,8 +70,10 @@ export default {
       closeTab,
       setActiveConversation,
     } = useConversationWorkspaceTabs(accountId);
+    const staydeskWorkspace = useStaydeskWorkspace(); // staydesk:hook layout
 
     return {
+      staydeskWorkspace, // staydesk:hook layout
       uiSettings,
       updateUISettings,
       accountId,
@@ -305,6 +308,7 @@ export default {
     />
     <div class="flex min-h-0 min-w-0 flex-1 gap-0 p-0">
       <ChatList
+        v-if="!staydeskWorkspace.hidesListWhenOpen.value || !conversationId"
         :show-conversation-list="showConversationList"
         :conversation-inbox="inboxId"
         :label="label"

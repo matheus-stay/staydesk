@@ -11,6 +11,7 @@ import vueActionCable from './helper/actionCable';
 import { useRouter } from 'vue-router';
 import { useStore } from 'dashboard/composables/store';
 import WootSnackbarBox from './components/SnackbarContainer.vue';
+import StaydeskOfferCard from 'staydesk/components/OfferCard.vue'; // staydesk:hook offers
 import { setColorTheme } from './helper/themeHelper';
 import { isOnOnboardingView } from 'v3/helpers/RouteHelper';
 import { useAccount } from 'dashboard/composables/useAccount';
@@ -34,6 +35,7 @@ export default {
     WootSnackbarBox,
     PendingEmailVerificationBanner,
     LowBackupCodesBanner,
+    StaydeskOfferCard, // staydesk:hook offers
   },
   setup() {
     const router = useRouter();
@@ -152,6 +154,7 @@ export default {
         <component :is="Component" />
       </transition>
     </router-view>
+    <StaydeskOfferCard v-if="currentAccountId" />
     <WootSnackbarBox />
     <NetworkNotification />
   </div>

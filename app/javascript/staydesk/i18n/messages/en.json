@@ -19,7 +19,10 @@
         "CONDITIONS": "Conditions",
         "ADD_CONDITION": "Add condition",
         "SAVE": "Save",
-        "CANCEL": "Cancel"
+        "CANCEL": "Cancel",
+        "CURRENT_AGENT": "The agent themselves",
+        "TEAMS_PLACEHOLDER": "Every team",
+        "ADD_COLUMN": "Add column"
       },
       "COLUMN": {
         "sla": "SLA",
@@ -104,7 +107,8 @@
         "PRIORITY": "Priority",
         "CONDITIONS": "Applies when",
         "CONDITIONS_HINT": "No conditions means every conversation. Policies are checked in order; the first match wins.",
-        "ACTIVE": "Active"
+        "ACTIVE": "Active",
+        "NO_PAUSE": "The clock never pauses"
       },
       "API": {
         "SAVE_SUCCESS": "Policy saved",
@@ -172,7 +176,27 @@
       },
       "STANDARD_FIELDS": "Assignee, team and priority",
       "YES": "Yes",
-      "NO": "No"
+      "NO": "No",
+      "ADD_MENU_ITEM": "Add menu item",
+      "ADD_PANEL": "Add section",
+      "ADD_FIELD": "Add field",
+      "APPS_PLACEHOLDER": "Every app",
+      "SIDE_APPS_HINT": "Pick the ones that should show beside the conversation, in the right panel, instead of in a tab.",
+      "SIDE_APPS_PLACEHOLDER": "None beside the conversation",
+      "MACROS_PLACEHOLDER": "Pick the macros",
+      "CONVERSATION_MENU_HINT": "What shows inside Conversations. Leaving only the views, the agent enters through their team queue, as in Zendesk.",
+      "ADD_CONVERSATION_ITEM": "Add item",
+      "CONVERSATION_MENU_ITEMS": {
+        "All": "All conversations",
+        "Mentions": "Mentions",
+        "Participating": "Participating",
+        "Unattended": "Unattended",
+        "Folders": "Saved filters",
+        "StaydeskTeamViews": "Views",
+        "Teams": "Teams",
+        "Channels": "Channels"
+      },
+      "HIDE_LIST_WHEN_OPEN": "Hide the list while a conversation is open (data on the left, conversation in the middle, apps on the right)"
     },
     "SUBMIT_AS": {
       "BUTTON": "Send as {status}",
@@ -184,7 +208,7 @@
     "FIELDS_TITLE": "Ticket fields",
     "AGENT_ROLES": {
       "SETTINGS_TITLE": "Agent roles",
-      "SETTINGS_DESCRIPTION": "Light agents read the conversations of their teams and inboxes and only write private notes. Administrators are always full.",
+      "SETTINGS_DESCRIPTION": "Roles with granular permissions, granted or revoked at any time, plus \"sign in as\" to follow an agent. A light agent reads their teams and inboxes and writes private notes only; an administrator is always full.",
       "KIND": {
         "full": "Full agent",
         "light": "Light agent"
@@ -192,6 +216,38 @@
       "API": {
         "SAVE_SUCCESS": "Role saved",
         "SAVE_ERROR": "The role could not be saved"
+      },
+      "ROLES": {
+        "TITLE": "Roles",
+        "NEW": "New role",
+        "NAME": "Name",
+        "DESCRIPTION": "Description (optional)",
+        "PERMISSIONS": "What this role unlocks",
+        "NO_PERMISSIONS": "No extra permission",
+        "NONE": "No role",
+        "EDIT": "Edit",
+        "DELETE": "Delete",
+        "DELETE_CONFIRM": "Delete the role \"{name}\"? Whoever holds it goes back to what the agent type allows.",
+        "PERMISSIONS_PLACEHOLDER": "No extra permission"
+      },
+      "PERMISSIONS": {
+        "report_manage": "See reports for the whole team",
+        "staydesk_report_own": "See only their own numbers",
+        "staydesk_settings_manage": "Change account settings",
+        "staydesk_light": "Light agent: reads and writes private notes only",
+        "staydesk_queues_manage": "Set up queues and overflow",
+        "staydesk_sla_manage": "Set up SLA policies and calendars",
+        "staydesk_statuses_manage": "Set up ticket and agent statuses",
+        "staydesk_views_manage": "Set up views and the workspace",
+        "staydesk_roles_manage": "Set up roles and sign in as another agent"
+      },
+      "AGENTS_TITLE": "Agents",
+      "IMPERSONATION": {
+        "BUTTON": "Sign in as",
+        "ERROR": "Could not open the agent session",
+        "TRAIL": "Recent access",
+        "TRAIL_HINT": "Every time someone signs in as another person it is recorded here.",
+        "TRAIL_LINE": "{actor} signed in as {target} on {when}"
       }
     },
     "CALENDARS": {
@@ -250,7 +306,9 @@
         "ACTIVE": "Active",
         "CAPACITY_CHAT": "Concurrent chats",
         "CAPACITY_TICKET": "Concurrent tickets",
-        "CAPACITY_HINT": "How many conversations automatic distribution hands over at once in this status. Blank means no limit; zero takes the agent out of that queue. Email inboxes count as tickets, everything else as chat, and only what is being handled counts."
+        "CAPACITY_HINT": "How many conversations automatic distribution hands over at once in this status. Blank means no limit; zero takes the agent out of that queue. Email inboxes count as tickets, everything else as chat, and only what is being handled counts.",
+        "INBOXES_PLACEHOLDER": "Every inbox",
+        "CAPACITY_QUEUE": "{queue} limit"
       },
       "API": {
         "SAVE_SUCCESS": "Status saved",
@@ -277,6 +335,22 @@
         "NO_STATUS": "No custom status",
         "REFRESH": "Refresh",
         "EMPTY": "Nobody is handling anything right now."
+      },
+      "ACCEPTANCE": {
+        "TITLE": "Offer acceptance",
+        "DESCRIPTION": "Chat and WhatsApp are offered and the agent has to accept. These are the last seven days.",
+        "OFFERS": "Offers",
+        "RATE": "Acceptance",
+        "ANSWER_TIME": "Time to accept",
+        "SUMMARY": "{offers} received · {declined} declined · {expired} expired"
+      },
+      "OFFERS": {
+        "TITLE": "Chat and WhatsApp acceptance",
+        "DESCRIPTION": "Invitations offered to each agent and what they did with them. Tickets need no acceptance.",
+        "OFFERED": "Offered",
+        "ACCEPTED": "Accepted",
+        "RATE": "Acceptance",
+        "ANSWER_TIME": "Time to answer"
       }
     },
     "TICKET_STATUS": {
@@ -295,7 +369,8 @@
         "BASE_STATUS_HINT": "When the base status changes another way (automation, bot, auto resolve), the conversation gets the default status of that base.",
         "COLOR": "Color",
         "DEFAULT_FOR_BASE": "Default for this base status",
-        "ACTIVE": "Active (shown to agents)"
+        "ACTIVE": "Active (shown to agents)",
+        "APPLY_ON_ASSIGN": "Becomes this status when someone takes the case"
       },
       "PICKER": {
         "LABEL": "Status",
@@ -312,6 +387,105 @@
         "SAVE_ERROR": "Could not save the status",
         "DELETE_SUCCESS": "Status deleted",
         "DELETE_ERROR": "Could not delete the status"
+      }
+    },
+    "QUEUES": {
+      "SETTINGS_TITLE": "Queues",
+      "SETTINGS_DESCRIPTION": "An incoming conversation goes through the queues in order and the first match hands it to that team. Who inside the team takes it is still decided by the agent status and load.",
+      "EMPTY": "No queues. Without one, a conversation arrives with no team and distribution uses the inbox only.",
+      "NEW": "New queue",
+      "EDIT": "Edit",
+      "MOVE_UP": "Move up",
+      "MOVE_DOWN": "Move down",
+      "CATCH_ALL": "Catches everything",
+      "FORM": {
+        "NAME": "Name",
+        "DESCRIPTION": "Description (optional)",
+        "TEAM": "Team that receives",
+        "ACTIVE": "Active",
+        "CONDITIONS": "Conditions",
+        "CONDITIONS_HINT": "Any conversation field works, including the attributes you create. With no condition at all, the queue catches whatever is left.",
+        "FALLBACK_MINUTES": "Only after how many minutes (optional)",
+        "FALLBACK_HINT": "The conversation still belongs to the owning team. This only sets who can take it, and each agent status decides whether they get that channel.",
+        "FALLBACK_TEAMS": "Teams that help on this queue",
+        "MODE": "How those teams help",
+        "MODE_OPTIONS": {
+          "quando_faltar": "Only when the owning team has nobody available",
+          "sempre": "Always, they work this queue alongside the owner"
+        },
+        "FALLBACK_PLACEHOLDER": "No team helps",
+        "ACCEPT": "Agent acceptance",
+        "ACCEPT_REQUIRED": "The agent must accept before the conversation becomes theirs",
+        "ACCEPT_TIMEOUT": "Time to accept (seconds)",
+        "ACCEPT_HINT": "Without an answer in time, the conversation goes back to the queue and is offered to another available agent. Use it for chat and WhatsApp; tickets usually do not need it."
+      },
+      "DELETE": {
+        "BUTTON": "Delete",
+        "CONFIRM": "Delete the queue \"{name}\"? Conversations it would hand over move to the next matching queue."
+      },
+      "API": {
+        "SAVE_SUCCESS": "Queue saved",
+        "SAVE_ERROR": "Could not save the queue",
+        "DELETE_SUCCESS": "Queue deleted",
+        "DELETE_ERROR": "Could not delete the queue"
+      },
+      "FALLBACK_NOW": "overflows to {team}",
+      "FALLBACK_AFTER": "→ {teams} after {minutes} min",
+      "HELPS_ALWAYS": "with {team}",
+      "ACCEPT_BADGE": "· acceptance required in {seconds}s",
+      "FALLBACK_ALWAYS": "→ {teams} always help",
+      "FALLBACK_WHEN_MISSING": "→ {teams} when nobody is available"
+    },
+    "OFFERS": {
+      "TITLE": "New conversation in {inbox}",
+      "ACCEPT": "Accept",
+      "DECLINE": "Decline",
+      "NOTIFICATION": "New conversation from {contact}",
+      "SECONDS_LEFT": "{seconds}s"
+    },
+    "PICKER": {
+      "SEARCH": "Search...",
+      "EMPTY": "Nothing found"
+    },
+    "SIDEBAR": {
+      "COLLAPSE": "Collapse sidebar",
+      "EXPAND": "Expand sidebar",
+      "BACK_TO_WORK": "Back to the Hub"
+    },
+    "CONTACT": {
+      "OPEN_PROFILE": "Open the customer profile"
+    },
+    "CENTRAL": {
+      "HOME": "Home",
+      "TITLE": "Central",
+      "SECTIONS": {
+        "WORK": "Service",
+        "SERVICE_LEVEL": "Statuses and targets",
+        "PEOPLE": "People",
+        "CHANNELS": "Channels",
+        "RULES": "Rules and automation",
+        "ACCOUNT": "Account",
+        "OTHER": "Other"
+      },
+      "DESCRIPTION": "Where the operation is set up and watched. The Hub is where work happens.",
+      "KPIS": {
+        "TITLE": "How the operation is doing",
+        "DAYS": "{days} days",
+        "LOADING": "Loading the numbers…",
+        "CSAT": "CSAT",
+        "CSAT_HINT": "{answers} answers in the period",
+        "QUEUE": "Waiting in the queue",
+        "QUEUE_HINT": "oldest for {wait}",
+        "ONLINE": "Online now",
+        "ONLINE_HINT": "of {total} agents",
+        "FIRST_REPLY": "First reply · {queue}",
+        "RESOLUTION": "resolved in {time}",
+        "AGENT": "Agent",
+        "STATUS": "Status",
+        "AVAILABLE_TIME": "Available time",
+        "NOW": "Now",
+        "CONNECTED": "connected",
+        "AWAY": "away"
       }
     }
   },

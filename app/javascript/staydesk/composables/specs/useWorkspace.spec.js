@@ -54,4 +54,20 @@ describe('useWorkspace', () => {
     expect(isTable.value).toBe(true);
     expect(columns.value).toEqual(['status']);
   });
+  it('keeps every conversation tab when the workspace says nothing', () => {
+    const { filterAssigneeTabs } = useWorkspace();
+    const tabs = [{ key: 'me' }, { key: 'unassigned' }, { key: 'all' }];
+
+    expect(filterAssigneeTabs(tabs)).toEqual(tabs);
+  });
+
+  it('leaves only the agent own tab when the workspace hides the queue', () => {
+    const store = useWorkspaceStore();
+    store.config = { ...store.config, list: { tabs: ['me'] } };
+    const { filterAssigneeTabs } = useWorkspace();
+
+    expect(
+      filterAssigneeTabs([{ key: 'me' }, { key: 'unassigned' }, { key: 'all' }])
+    ).toEqual([{ key: 'me' }]);
+  });
 });

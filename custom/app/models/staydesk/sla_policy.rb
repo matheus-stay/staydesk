@@ -24,7 +24,9 @@ class Staydesk::SlaPolicy < ApplicationRecord
 
   belongs_to :account
   belongs_to :calendar, class_name: 'Staydesk::Calendar', optional: true
-  has_many :applied_slas, class_name: 'Staydesk::AppliedSla', foreign_key: :sla_policy_id, dependent: :nullify, inverse_of: :sla_policy
+  # As medições em curso não sobrevivem à política: a coluna é obrigatória e o
+  # histórico que importa fica nos eventos de SLA e nos atributos da conversa.
+  has_many :applied_slas, class_name: 'Staydesk::AppliedSla', dependent: :destroy, inverse_of: :sla_policy
 
   validates :name, presence: true, uniqueness: { scope: :account_id }
   validates :warning_ratio, numericality: { greater_than: 0, less_than: 1 }

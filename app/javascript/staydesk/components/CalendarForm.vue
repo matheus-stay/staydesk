@@ -2,7 +2,9 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'dashboard/components-next/button/Button.vue';
+import Switch from 'dashboard/components-next/switch/Switch.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
+import { fromSaveButton } from '../helpers/form';
 
 const props = defineProps({
   calendar: { type: Object, default: null },
@@ -59,12 +61,16 @@ const submit = () => {
     holidays: holidays.value.filter(holiday => holiday.date),
   });
 };
+// Só o botão de salvar (ou o Enter) envia: clique em botão de dentro não salva.
+const aoEnviar = event => {
+  if (fromSaveButton(event)) submit();
+};
 </script>
 
 <template>
   <form
     class="grid gap-6 rounded-xl border border-n-weak bg-n-solid-1 p-6"
-    @submit.prevent="submit"
+    @submit.prevent="aoEnviar"
   >
     <div class="grid gap-4 md:grid-cols-2">
       <Input v-model="name" :label="t('STAYDESK.CALENDARS.FORM.NAME')" />
@@ -84,7 +90,7 @@ const submit = () => {
         class="flex flex-wrap items-center gap-3 text-sm text-n-slate-12"
       >
         <label class="flex w-40 items-center gap-2">
-          <input v-model="item.enabled" type="checkbox" />
+          <Switch v-model="item.enabled" />
           {{ t(`STAYDESK.CALENDARS.DAYS.${item.day}`) }}
         </label>
         <input
@@ -142,7 +148,14 @@ const submit = () => {
       <Button sm faded slate type="button" @click="emit('cancel')">
         {{ t('STAYDESK.TEAM_VIEWS.FORM.CANCEL') }}
       </Button>
-      <Button sm solid blue type="submit" :is-loading="isSaving">
+      <Button
+        sm
+        solid
+        blue
+        type="submit"
+        data-staydesk-save
+        :is-loading="isSaving"
+      >
         {{ t('STAYDESK.TEAM_VIEWS.FORM.SAVE') }}
       </Button>
     </div>

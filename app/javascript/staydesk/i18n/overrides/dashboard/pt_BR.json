@@ -151,5 +151,14 @@
       "SHARE_TEXT": "Confira minha retrospectiva de {year} com o StayDesk!",
       "BRANDING": "Feito com StayDesk"
     }
+  },
+  "CHAT_LIST": {
+    "WORKSPACE_TABS": {
+      "UNSAVED": "Não enviado"
+    }
+  },
+  "SIDEBAR": {
+    "SETTINGS": "Central",
+    "CONVERSATIONS": "Hub"
   }
 }

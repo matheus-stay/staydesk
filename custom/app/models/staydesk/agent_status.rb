@@ -20,9 +20,6 @@ class Staydesk::AgentStatus < ApplicationRecord
   self.table_name = 'staydesk_agent_statuses'
 
   AVAILABILITIES = %w[online busy].freeze
-  # Filas de atendimento simultâneo (SPEC-11): conversas de caixas de e-mail contam
-  # como ticket; as demais, como chat. Cada fila tem o próprio limite.
-  QUEUES = %w[chat ticket].freeze
 
   belongs_to :account
   has_many :periods, class_name: 'Staydesk::AgentStatusPeriod', dependent: :destroy, inverse_of: :agent_status
@@ -52,11 +49,16 @@ class Staydesk::AgentStatus < ApplicationRecord
   private
 
   def normalize_capacity
-    self.capacity = (capacity || {}).slice(*QUEUES).filter_map do |queue, value|
+    self.capacity = (capacity || {}).slice(*filas_de_carga).filter_map do |queue, value|
       next if value.nil? || value.to_s.strip.empty?
 
       [queue, value.to_i]
     end.to_h
+  end
+
+  # Sem conta ainda (registro novo em validação), vale o padrão do produto.
+  def filas_de_carga
+    account ? Staydesk::LoadQueue.keys_for(account) : Staydesk::LoadQueue::DEFAULTS.pluck(:key)
   end
 
   def capacity_must_be_whole_numbers

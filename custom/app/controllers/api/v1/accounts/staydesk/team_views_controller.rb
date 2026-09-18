@@ -55,7 +55,7 @@ class Api::V1::Accounts::Staydesk::TeamViewsController < Api::V1::Accounts::Stay
 
   def filter_service(view, page: nil)
     filter_params = ActionController::Parameters.new(
-      payload: view.payload, page: page, sort_by: view.sort_by
+      payload: view.payload(Current.user), page: page, sort_by: view.sort_by
     ).permit!
     ::Conversations::FilterService.new(filter_params, Current.user, Current.account)
   end

@@ -59,6 +59,22 @@
           "type": "integer",
           "minimum": 10,
           "maximum": 100
+        },
+        "tabs": {
+          "description": "Abas da lista de conversas visíveis: só as minhas, as sem responsável, todas. Ausente = todas.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "me",
+              "unassigned",
+              "all"
+            ]
+          }
+        },
+        "hide_when_open": {
+          "description": "Esconde a lista de conversas quando um atendimento está aberto, deixando dados à esquerda, conversa no meio e aplicativos à direita, como no Zendesk.",
+          "type": "boolean"
         }
       }
     },
@@ -82,6 +98,13 @@
         },
         "apps": {
           "description": "Ids dos Dashboard Apps visíveis; ausente = todos.",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "side_apps": {
+          "description": "Ids dos aplicativos que aparecem ao lado da conversa, no painel direito, em vez de em aba.",
           "type": "array",
           "items": {
             "type": "integer"
@@ -130,6 +153,23 @@
       "type": "object",
       "additionalProperties": {
         "type": "object"
+      }
+    },
+    "conversation_menu": {
+      "description": "Itens dentro de Conversas que o usuário enxerga. Ausente = todos. `StaydeskTeamViews` são as visualizações por time.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "All",
+          "Mentions",
+          "Participating",
+          "Unattended",
+          "Folders",
+          "StaydeskTeamViews",
+          "Teams",
+          "Channels"
+        ]
       }
     }
   }

@@ -12,6 +12,19 @@ Rails.application.routes.draw do
             resource :ping, only: [:show], controller: 'ping'
             resource :workspace, only: [:show], controller: 'workspace'
             resources :agent_roles, only: [:index, :update], param: :user_id
+            resources :roles, only: [:index, :create, :update, :destroy]
+            resources :impersonations, only: [:index, :create]
+            resources :offers, only: [:index] do
+              member do
+                post :accept
+                post :decline
+              end
+            end
+            resources :queues, only: [:index, :create, :update, :destroy] do
+              collection do
+                put :reorder
+              end
+            end
             resources :events, only: [:index]
             resources :calendars, only: [:index, :show, :create, :update, :destroy]
             resources :sla_policies, only: [:index, :show, :create, :update, :destroy] do
@@ -23,6 +36,9 @@ Rails.application.routes.draw do
             resources :agent_statuses, only: [:index, :create, :update, :destroy]
             resources :agent_status_periods, only: [:index, :create]
             resources :agent_loads, only: [:index]
+            resources :load_queues, only: [:index, :create, :update, :destroy]
+            resources :kpis, only: [:index]
+            resources :offer_stats, only: [:index]
             resources :ticket_statuses, only: [:index, :create, :update, :destroy] do
               collection do
                 put :reorder

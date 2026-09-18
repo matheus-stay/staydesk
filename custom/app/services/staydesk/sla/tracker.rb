@@ -52,8 +52,12 @@ class Staydesk::Sla::Tracker
   def sync_attributes(applied_sla = applied)
     return if applied_sla.nil?
 
-    attributes = (@conversation.custom_attributes || {}).merge(applied_sla.conversation_attributes)
-    return if attributes == @conversation.custom_attributes
+    # Relê os atributos do banco: entre carregar a conversa e chegar aqui, outro
+    # caminho (status do ticket, automação, agente) pode ter escrito, e o selo de
+    # SLA não pode desfazer isso.
+    current = Conversation.where(id: @conversation.id).pick(:custom_attributes) || {}
+    attributes = current.merge(applied_sla.conversation_attributes)
+    return if attributes == current
 
     # update! publica conversation.updated (selo ao vivo, webhooks); o listener ignora a mudança só de SLA.
     @conversation.update!(custom_attributes: attributes)

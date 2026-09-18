@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Staydesk::AgentLoadService do
+    # A caixa só devolve quem está conectado: aqui todo mundo da conta está.
+    before do
+      allow(OnlineStatusTracker).to receive(:get_available_users) do
+        account.users.pluck(:id).to_h { |id| [id.to_s, 'online'] }
+      end
+    end
+
   let(:account) { create(:account) }
   let(:chat_inbox) { create(:inbox, account: account) }
   let(:email_inbox) { create(:inbox, :with_email, account: account) }
