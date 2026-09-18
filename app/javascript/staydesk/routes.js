@@ -3,6 +3,7 @@ import ConversationView from 'dashboard/routes/dashboard/conversation/Conversati
 import SettingsWrapper from 'dashboard/routes/dashboard/settings/SettingsWrapper.vue';
 import CentralHome from './pages/CentralHome.vue';
 import ApiDocs from './pages/ApiDocs.vue';
+import WideSettingsWrapper from './layouts/WideSettingsWrapper.vue';
 import ApiTokensSettings from './pages/ApiTokensSettings.vue';
 import TeamViewsSettings from './pages/TeamViewsSettings.vue';
 import WorkspaceSettings from './pages/WorkspaceSettings.vue';
@@ -72,7 +73,7 @@ const routes = [
   },
   {
     path: frontendURL('accounts/:accountId/settings/staydesk/api-docs'),
-    component: SettingsWrapper,
+    component: WideSettingsWrapper,
     children: [
       {
         path: '',

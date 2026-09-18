@@ -24,6 +24,8 @@ class Staydesk::Role < ApplicationRecord
   CATALOGO = Rails.root.join('custom/config/permissions.json').freeze
 
   def self.catalogo
+    return JSON.parse(File.read(CATALOGO))['permissoes'] if Rails.env.development?
+
     @catalogo ||= JSON.parse(File.read(CATALOGO))['permissoes']
   end
 

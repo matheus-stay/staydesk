@@ -4,6 +4,9 @@ class Staydesk::ApiReference
 
   class << self
     def conteudo
+      # Em desenvolvimento lê o arquivo a cada vez: editar o JSON aparece na hora.
+      return @conteudo = JSON.parse(File.read(ARQUIVO)) if Rails.env.development?
+
       @conteudo ||= JSON.parse(File.read(ARQUIVO))
     end
 

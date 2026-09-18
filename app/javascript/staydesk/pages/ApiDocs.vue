@@ -1,26 +1,44 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
-import SettingsLayout from 'dashboard/routes/dashboard/settings/SettingsLayout.vue';
-import BaseSettingsHeader from 'dashboard/routes/dashboard/settings/components/BaseSettingsHeader.vue';
-import Input from 'dashboard/components-next/input/Input.vue';
 import ApiReferenceAPI from '../api/apiReference';
 import EndpointCard from '../components/EndpointCard.vue';
+import TryItPanel from '../components/TryItPanel.vue';
+import { paraHtml } from '../helpers/markdownLeve';
 
-// Central › Documentação da API: a referência inteira numa página, no formato de
-// quem vai integrar. O conteúdo vem do servidor, do mesmo arquivo que um teste
-// confere contra as rotas, então o que está aqui existe de verdade.
+// Central › Documentação da API. Três colunas: o índice, a referência e o painel
+// de teste, que acompanha o endpoint em foco. O conteúdo vem do servidor, do
+// mesmo arquivo que um teste confere contra as rotas.
 const { t } = useI18n();
 
 const referencia = ref(null);
 const busca = ref('');
+const selecionado = ref(null);
 const grupoAtivo = ref(null);
+const conteudo = ref(null);
+let observador = null;
 
 const base = computed(() => referencia.value?.base || '');
 const grupos = computed(() => referencia.value?.grupos || []);
+const total = computed(() =>
+  grupos.value.reduce((soma, grupo) => soma + grupo.endpoints.length, 0)
+);
 
 const casa = (endpoint, termo) =>
-  [endpoint.caminho, endpoint.resumo, endpoint.metodo, endpoint.mcp]
+  [
+    endpoint.titulo,
+    endpoint.caminho,
+    endpoint.resumo,
+    endpoint.metodo,
+    endpoint.mcp,
+  ]
     .filter(Boolean)
     .some(campo => campo.toLowerCase().includes(termo));
 
@@ -35,91 +53,184 @@ const gruposVisiveis = computed(() => {
     .filter(grupo => grupo.endpoints.length);
 });
 
-const total = computed(() =>
-  grupos.value.reduce((soma, grupo) => soma + grupo.endpoints.length, 0)
-);
+const idDe = endpoint => `${endpoint.metodo}-${endpoint.caminho}`;
 
-const irPara = chave => {
-  grupoAtivo.value = chave;
-  document
-    .getElementById(`grupo-${chave}`)
-    ?.scrollIntoView({ behavior: 'smooth' });
+const selecionar = endpoint => {
+  selecionado.value = endpoint;
 };
+
+const irPara = (grupo, endpoint = null) => {
+  grupoAtivo.value = grupo.chave;
+  if (endpoint) selecionar(endpoint);
+  const alvo = endpoint
+    ? document.getElementById(idDe(endpoint))
+    : document.getElementById(`grupo-${grupo.chave}`);
+  alvo?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+// Quem está no meio da tela vira o endpoint em foco, para o painel de teste
+// acompanhar a leitura sem clique.
+const observar = () => {
+  observador?.disconnect();
+  observador = new IntersectionObserver(
+    entradas => {
+      const visivel = entradas
+        .filter(entrada => entrada.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (!visivel) return;
+      const id = visivel.target.id;
+      const grupo = grupos.value.find(item =>
+        item.endpoints.some(endpoint => idDe(endpoint) === id)
+      );
+      if (!grupo) return;
+      selecionado.value = grupo.endpoints.find(
+        endpoint => idDe(endpoint) === id
+      );
+      grupoAtivo.value = grupo.chave;
+    },
+    {
+      root: conteudo.value?.closest('.overflow-auto') || null,
+      rootMargin: '-15% 0px -60% 0px',
+      threshold: 0,
+    }
+  );
+  document
+    .querySelectorAll('article[id]')
+    .forEach(el => observador.observe(el));
+};
+
+watch(gruposVisiveis, async () => {
+  await nextTick();
+  observar();
+});
 
 onMounted(async () => {
   const { data } = await ApiReferenceAPI.show();
   referencia.value = data;
+  selecionado.value = data.grupos[0]?.endpoints[0] || null;
+  grupoAtivo.value = data.grupos[0]?.chave || null;
+  await nextTick();
+  observar();
 });
+
+onBeforeUnmount(() => observador?.disconnect());
 </script>
 
 <template>
-  <SettingsLayout>
-    <template #header>
-      <BaseSettingsHeader
-        :title="t('STAYDESK.API_DOCS.TITLE')"
-        :description="t('STAYDESK.API_DOCS.DESCRIPTION', { total })"
-      />
-    </template>
-    <template #body>
-      <div class="grid gap-6 lg:grid-cols-[14rem_minmax(0,1fr)]">
-        <nav class="hidden lg:block">
-          <div class="sticky top-4 grid gap-1">
+  <div class="mx-auto w-full max-w-[110rem] px-8 pb-16 pt-6 font-inter">
+    <header class="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <div class="grid gap-1">
+        <h1 class="m-0 text-2xl font-medium tracking-tight text-n-slate-12">
+          {{ t('STAYDESK.API_DOCS.TITLE') }}
+        </h1>
+        <p class="m-0 max-w-3xl text-sm text-n-slate-11">
+          {{ t('STAYDESK.API_DOCS.DESCRIPTION', { total }) }}
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <code
+          class="rounded-lg border border-n-weak bg-n-alpha-1 px-3 py-1.5 font-mono text-xs text-n-slate-11"
+        >
+          {{ base }}
+        </code>
+        <input
+          v-model="busca"
+          type="search"
+          :placeholder="t('STAYDESK.API_DOCS.SEARCH')"
+          class="h-9 w-72 rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
+        />
+      </div>
+    </header>
+
+    <p v-if="!referencia" class="text-sm text-n-slate-11">
+      {{ t('STAYDESK.API_DOCS.LOADING') }}
+    </p>
+
+    <div v-else class="grid gap-8 xl:grid-cols-[15rem_minmax(0,1fr)_26rem]">
+      <nav class="hidden xl:block">
+        <div
+          class="sticky top-6 grid max-h-[calc(100vh-6rem)] gap-4 overflow-auto pr-2"
+        >
+          <div
+            v-for="grupo in gruposVisiveis"
+            :key="grupo.chave"
+            class="grid gap-0.5"
+          >
             <button
-              v-for="grupo in grupos"
-              :key="grupo.chave"
               type="button"
-              class="rounded-lg px-2 py-1.5 text-start text-sm"
+              class="rounded-lg px-2 py-1.5 text-start text-[13px] font-medium"
               :class="
                 grupoAtivo === grupo.chave
+                  ? 'text-n-slate-12'
+                  : 'text-n-slate-11 hover:text-n-slate-12'
+              "
+              @click="irPara(grupo)"
+            >
+              {{ grupo.titulo }}
+            </button>
+            <button
+              v-for="endpoint in grupo.endpoints"
+              :key="idDe(endpoint)"
+              type="button"
+              class="flex items-center gap-2 rounded-lg px-2 py-1 text-start text-xs"
+              :class="
+                selecionado && idDe(selecionado) === idDe(endpoint)
                   ? 'bg-n-alpha-2 text-n-slate-12'
                   : 'text-n-slate-11 hover:bg-n-alpha-1'
               "
-              @click="irPara(grupo.chave)"
+              @click="irPara(grupo, endpoint)"
             >
-              {{ grupo.titulo }}
-              <span class="ml-1 text-xs text-n-slate-10">
-                {{ grupo.endpoints.length }}
+              <span
+                class="w-11 shrink-0 font-mono text-[10px] font-semibold text-n-slate-10"
+              >
+                {{ endpoint.metodo }}
               </span>
+              <span class="truncate">{{ endpoint.titulo }}</span>
             </button>
           </div>
-        </nav>
+        </div>
+      </nav>
 
-        <div class="grid gap-8">
-          <Input v-model="busca" :placeholder="t('STAYDESK.API_DOCS.SEARCH')" />
-          <p v-if="!referencia" class="text-sm text-n-slate-11">
-            {{ t('STAYDESK.API_DOCS.LOADING') }}
-          </p>
-          <p v-else-if="!gruposVisiveis.length" class="text-sm text-n-slate-11">
-            {{ t('STAYDESK.API_DOCS.EMPTY', { term: busca }) }}
-          </p>
-          <section
-            v-for="grupo in gruposVisiveis"
-            :id="`grupo-${grupo.chave}`"
-            :key="grupo.chave"
-            class="grid gap-2 scroll-mt-4"
-          >
-            <h2 class="m-0 text-lg font-medium text-n-slate-12">
+      <div ref="conteudo" class="grid gap-12">
+        <p v-if="!gruposVisiveis.length" class="text-sm text-n-slate-11">
+          {{ t('STAYDESK.API_DOCS.EMPTY', { term: busca }) }}
+        </p>
+        <section
+          v-for="grupo in gruposVisiveis"
+          :id="`grupo-${grupo.chave}`"
+          :key="grupo.chave"
+          class="grid gap-5 scroll-mt-6"
+        >
+          <div class="grid gap-3">
+            <h2 class="m-0 text-2xl font-medium tracking-tight text-n-slate-12">
               {{ grupo.titulo }}
             </h2>
-            <p
+            <div
               v-if="grupo.texto"
-              class="m-0 whitespace-pre-line text-sm text-n-slate-11"
-            >
-              {{ grupo.texto }}
-            </p>
+              class="grid max-w-3xl gap-3 text-[14.5px] leading-relaxed text-n-slate-11 [&_p]:m-0"
+              v-html="paraHtml(grupo.texto)"
+            />
             <pre
               v-if="grupo.exemplo"
-              class="m-0 overflow-x-auto rounded-lg bg-n-solid-1 p-3 text-xs text-n-slate-12"
+              class="m-0 max-w-3xl overflow-x-auto rounded-xl bg-n-slate-12 px-4 py-3 font-mono text-[12.5px] leading-relaxed text-n-slate-2"
             ><code>{{ grupo.exemplo }}</code></pre>
-            <EndpointCard
-              v-for="endpoint in grupo.endpoints"
-              :key="`${endpoint.metodo}-${endpoint.caminho}`"
-              :endpoint="endpoint"
-              :base="base"
-            />
-          </section>
+          </div>
+          <EndpointCard
+            v-for="endpoint in grupo.endpoints"
+            :key="idDe(endpoint)"
+            :endpoint="endpoint"
+            :base="base"
+            :selected="!!selecionado && idDe(selecionado) === idDe(endpoint)"
+            @select="selecionar"
+          />
+        </section>
+      </div>
+
+      <div class="hidden xl:block">
+        <div class="sticky top-6 max-h-[calc(100vh-6rem)] overflow-auto pr-1">
+          <TryItPanel :endpoint="selecionado" :base="base" />
         </div>
       </div>
-    </template>
-  </SettingsLayout>
+    </div>
+  </div>
 </template>

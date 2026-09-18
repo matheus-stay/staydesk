@@ -582,19 +582,39 @@
     },
     "API_DOCS": {
       "TITLE": "Documentação da API",
-      "DESCRIPTION": "Os {total} endpoints do StayDesk, com escopo, parâmetros e exemplo de chamada. O que está aqui existe de verdade: um teste confere esta página contra as rotas do servidor.",
-      "SEARCH": "Buscar endpoint, caminho ou ferramenta do MCP…",
+      "DESCRIPTION": "Os {total} endpoints do StayDesk, com o que cada um faz, os parâmetros, exemplos de payload e de resposta, e o painel para testar a chamada com a sua sessão. O que está aqui existe de verdade: um teste confere esta página contra as rotas do servidor.",
+      "SEARCH": "Buscar endpoint, caminho ou ferramenta…",
       "LOADING": "Carregando a referência…",
       "EMPTY": "Nada encontrado para \"{term}\".",
       "REQUIRED": "obrigatório",
       "REQUEST": "Chamada",
       "RESPONSE": "Resposta",
       "COPY": "Copiar",
-      "VIA_MCP": "MCP: {tool}",
+      "COPIED": "Copiado",
+      "PAYLOAD": "Exemplo de payload",
+      "RESPONSE_EXAMPLE": "Exemplo de resposta",
+      "RESPONSES": "Respostas",
+      "SCOPE_HINT": "Escopo que o token precisa ter",
+      "MCP_HINT": "Ferramenta equivalente no MCP",
+      "COLS": {
+        "NAME": "Campo",
+        "TYPE": "Tipo",
+        "DESCRIPTION": "Descrição",
+        "EXAMPLE": "Exemplo"
+      },
       "PARAMS": {
         "PATH": "No caminho",
         "QUERY": "Na query",
         "BODY": "No corpo"
+      },
+      "TRY": {
+        "TITLE": "Testar",
+        "PICK": "Escolha um endpoint para montar a chamada.",
+        "RUN": "Testar",
+        "CONFIRM": "Isso altera a conta de verdade.",
+        "CONFIRM_BUTTON": "Confirmar e executar",
+        "INVALID_JSON": "O corpo não é um JSON válido.",
+        "TOOK": "em {ms} ms"
       }
     }
   },

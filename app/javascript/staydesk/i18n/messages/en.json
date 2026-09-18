@@ -582,19 +582,39 @@
     },
     "API_DOCS": {
       "TITLE": "API documentation",
-      "DESCRIPTION": "The {total} StayDesk endpoints, with scope, parameters and a call example. What is here really exists: a test checks this page against the server routes.",
-      "SEARCH": "Search endpoint, path or MCP tool…",
+      "DESCRIPTION": "The {total} StayDesk endpoints, with what each one does, the parameters, payload and response examples, and a panel to try the call with your session. What is here really exists: a test checks this page against the server routes.",
+      "SEARCH": "Search endpoint, path or tool…",
       "LOADING": "Loading the reference…",
       "EMPTY": "Nothing found for \"{term}\".",
       "REQUIRED": "required",
       "REQUEST": "Request",
       "RESPONSE": "Response",
       "COPY": "Copy",
-      "VIA_MCP": "MCP: {tool}",
+      "COPIED": "Copied",
+      "PAYLOAD": "Payload example",
+      "RESPONSE_EXAMPLE": "Response example",
+      "RESPONSES": "Responses",
+      "SCOPE_HINT": "Scope the token needs",
+      "MCP_HINT": "Equivalent MCP tool",
+      "COLS": {
+        "NAME": "Field",
+        "TYPE": "Type",
+        "DESCRIPTION": "Description",
+        "EXAMPLE": "Example"
+      },
       "PARAMS": {
         "PATH": "In the path",
         "QUERY": "In the query",
         "BODY": "In the body"
+      },
+      "TRY": {
+        "TITLE": "Try it",
+        "PICK": "Pick an endpoint to build the call.",
+        "RUN": "Try it",
+        "CONFIRM": "This changes the account for real.",
+        "CONFIRM_BUTTON": "Confirm and run",
+        "INVALID_JSON": "The body is not valid JSON.",
+        "TOOK": "in {ms} ms"
       }
     }
   },

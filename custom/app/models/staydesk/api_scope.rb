@@ -9,6 +9,9 @@ class Staydesk::ApiScope
 
   class << self
     def grupos
+      # Em desenvolvimento lê o arquivo a cada vez: editar o JSON aparece na hora.
+      return @grupos = JSON.parse(File.read(CATALOGO))['grupos'] if Rails.env.development?
+
       @grupos ||= JSON.parse(File.read(CATALOGO))['grupos']
     end
 
