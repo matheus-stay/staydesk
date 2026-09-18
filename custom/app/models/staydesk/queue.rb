@@ -11,22 +11,22 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  account_id  :bigint           not null
-#  team_id     :bigint           not null                (o time que recebe)
-#  fallback_team_ids      :bigint   default([]), not null, is an Array  (grupos que ajudam)
-#  fallback_mode          :string   default("quando_faltar"), not null   (sempre | quando_faltar)
-#  fallback_after_minutes :integer  (nulo = transborda na hora; com valor, espera esses minutos)
+#  team_id     :bigint           not null                (o primeiro grupo principal: onde a conversa entra)
+#  team_ids               :bigint   default([]), not null, is an Array  (grupos principais)
+#  fallback_team_ids      :bigint   default([]), not null, is an Array  (grupos secundários)
+#  fallback_after_minutes :integer  (nulo = secundários entram na hora; com valor, esperam esses minutos)
+#  channel_types          :string   default([]), not null, is an Array
+#  inbox_ids              :bigint   default([]), not null, is an Array
+#  priority_mode          :string   default("chegada"), not null   (chegada | sla)
 #
 # Fila de encaminhamento (SPEC-15), no modelo do Zendesk: a conversa que chega é
-# comparada com as filas em ordem e a primeira que casar entrega ao time dela. Quem
-# dentro do time vai atender continua sendo decidido pelo status e pela carga do
-# agente (SPEC-09 e SPEC-11).
+# comparada com as filas em ordem e a primeira que casar entrega aos grupos
+# principais dela; sem ninguém disponível neles, aos secundários. Quem dentro do
+# grupo vai atender continua sendo decidido pelo status e pela carga do agente
+# (SPEC-09 e SPEC-11).
 class Staydesk::Queue < ApplicationRecord
   self.table_name = 'staydesk_queues'
 
-  # `sempre`: os grupos que ajudam trabalham esta fila junto com o dono, como o N3
-  # que atende ticket de N2 no tempo livre. `quando_faltar`: só entram quando o dono
-  # está sem ninguém disponível.
-  FALLBACK_MODES = %w[sempre quando_faltar].freeze
   # Em que ordem a fila entrega quando há mais de um esperando. `chegada` é o
   # mais antigo primeiro; `sla` é quem está mais perto de vencer primeiro, e o
   # que não tem SLA vai depois, por chegada.
@@ -35,14 +35,33 @@ class Staydesk::Queue < ApplicationRecord
   belongs_to :account
   belongs_to :team
 
+  before_validation :alinhar_grupos
+
   validates :name, presence: true, uniqueness: { scope: :account_id }
   validates :fallback_after_minutes, numericality: { greater_than: 0 }, allow_nil: true
-  validates :fallback_mode, inclusion: { in: FALLBACK_MODES }
   validates :priority_mode, inclusion: { in: PRIORITY_MODES }
   validate :conditions_shape
-  validate :fallback_is_another_team
+  validate :grupos_da_conta
+  validate :secundario_nao_e_principal
 
-  scope :with_fallback, -> { active.where.not(fallback_team_ids: []) }
+  scope :ordered, -> { order(:position, :id) }
+  scope :active, -> { where(active: true) }
+
+  # A fila que responde por um grupo: a primeira em que ele é principal e, se não
+  # houver, a primeira em que ele é secundário.
+  def self.da_equipe(account_id, team_id)
+    return if team_id.blank?
+
+    filas = active.where(account_id: account_id).ordered.to_a
+    filas.find { |fila| fila.team_ids.include?(team_id) } || filas.find { |fila| fila.fallback_team_ids.include?(team_id) }
+  end
+
+  # Quem está em qualquer um destes grupos, sem repetir.
+  def self.membros(team_ids)
+    return [] if team_ids.blank?
+
+    TeamMember.where(team_id: team_ids).distinct.pluck(:user_id)
+  end
 
   # A fila pega esta conversa? Canal e caixa primeiro, porque é assim que a
   # operação pensa; as condições avançadas afinam o resto. Campo vazio é "todos",
@@ -59,18 +78,36 @@ class Staydesk::Queue < ApplicationRecord
     channel_types.empty? && inbox_ids.empty?
   end
 
-  scope :ordered, -> { order(:position, :id) }
-  scope :active, -> { where(active: true) }
+  # Os grupos principais, na ordem configurada.
+  def teams
+    por_id = account.teams.where(id: team_ids).index_by(&:id)
+    team_ids.filter_map { |id| por_id[id] }
+  end
 
-  # Os grupos que ajudam nesta fila, além do dono.
+  # Os grupos secundários: só entram quando nenhum principal tem gente disponível.
   def fallback_teams
     account.teams.where(id: fallback_team_ids)
   end
 
   private
 
-  def fallback_is_another_team
-    errors.add(:fallback_team_ids, 'não pode incluir o time que já recebe') if fallback_team_ids.include?(team_id)
+  # O primeiro grupo principal é onde a conversa entra; `team_id` guarda isso e
+  # atende quem só manda `team_id` pela API.
+  def alinhar_grupos
+    self.team_ids = [team_id] if team_ids.blank? && team_id.present?
+    self.team_id = team_ids.first if team_ids.present?
+  end
+
+  def grupos_da_conta
+    return errors.add(:team_ids, 'precisa de pelo menos um grupo principal') if team_ids.blank?
+    return if account.blank?
+
+    ids = team_ids + fallback_team_ids
+    errors.add(:team_ids, 'tem grupo que não é desta conta') if (ids - account.teams.where(id: ids).ids).any?
+  end
+
+  def secundario_nao_e_principal
+    errors.add(:fallback_team_ids, 'não pode repetir um grupo principal') if fallback_team_ids.intersect?(team_ids)
   end
 
   def conditions_shape

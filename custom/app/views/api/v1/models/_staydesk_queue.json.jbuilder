@@ -1,13 +1,15 @@
 json.id resource.id
 json.name resource.name
 json.description resource.description
+json.team_ids resource.team_ids
+json.team_names resource.teams.map(&:name)
+# O primeiro grupo principal, onde a conversa entra.
 json.team_id resource.team_id
 json.team_name resource.team&.name
-json.fallback_mode resource.fallback_mode
-json.priority_mode resource.priority_mode
 json.fallback_team_ids resource.fallback_team_ids
 json.fallback_team_names resource.fallback_teams.pluck(:name)
 json.fallback_after_minutes resource.fallback_after_minutes
+json.priority_mode resource.priority_mode
 json.channel_types resource.channel_types
 json.inbox_ids resource.inbox_ids
 json.conditions resource.conditions

@@ -225,7 +225,7 @@
           "caminho": "staydesk/distribution_checks",
           "titulo": "Diagnosticar a distribuição",
           "resumo": "Para cada agente e cada fila de encaminhamento, se ele recebe trabalho dela e, se não, qual condição falta.",
-          "detalhes": "Responde à pergunta \"coloquei online e não caiu nada\". A distribuição só entrega a quem passa em cinco condições, e o diagnóstico mostra cada uma com sim ou não:\n\n`connected` — tem conexão viva agora, não só o status marcado no banco.\n`available` — o status atual é de disponibilidade `online`.\n`has_capacity` — o status tem limite acima de zero para a fila de carga daquela fila.\n`in_group` — está no grupo dono da fila ou num grupo que ajuda.\n`inbox_member` — é membro de ao menos uma caixa que a fila pega.\n\n`receives` é o E lógico das cinco. A condição que falta é o que corrigir: normalmente é grupo ou caixa.",
+          "detalhes": "Responde à pergunta \"coloquei online e não caiu nada\". A distribuição só entrega a quem passa em cinco condições, e o diagnóstico mostra cada uma com sim ou não:\n\n`connected` — tem conexão viva agora, não só o status marcado no banco.\n`available` — o status atual é de disponibilidade `online`.\n`has_capacity` — o status tem limite acima de zero para a fila de carga daquela fila.\n`in_group` — está num grupo principal ou secundário da fila.\n`inbox_member` — é membro de ao menos uma caixa que a fila pega.\n\n`receives` é o E lógico das cinco. A condição que falta é o que corrigir: normalmente é grupo ou caixa.",
           "escopo": "relatorios:leitura",
           "mcp": "staydesk_diagnostico_da_distribuicao",
           "respostas": [
@@ -717,13 +717,13 @@
     {
       "chave": "filas",
       "titulo": "Filas",
-      "texto": "Há duas filas, e o nome parecido confunde.\n\nA **fila de encaminhamento** decide o grupo dono do trabalho, pelo canal e pela caixa de entrada: \"chat e WhatsApp caem no N1, e-mail cai no N2\". A conversa recebe o grupo na criação, e a primeira fila que casar leva. Transbordo não troca o grupo: só amplia quem pode atender.\n\nA **fila de carga** decide em qual balde a conversa conta para o limite do agente. É a caixa que diz de qual fila de carga a conversa é, e o limite de cada uma fica no status do agente.",
+      "texto": "Há duas filas, e o nome parecido confunde.\n\nA **fila de encaminhamento** decide para quais grupos o trabalho vai, pelo canal e pela caixa de entrada: \"chat e WhatsApp caem no N1, e-mail cai no N2\". Primeiro os grupos principais; sem ninguém disponível neles, os secundários. A conversa entra no primeiro principal na criação e, quando alguém pega, fica no grupo desse agente, como no Zendesk.\n\nA **fila de carga** decide em qual balde a conversa conta para o limite do agente. É a caixa que diz de qual fila de carga a conversa é, e o limite de cada uma fica no status do agente.",
       "endpoints": [
         {
           "metodo": "GET",
           "caminho": "staydesk/queues",
           "titulo": "Listar filas de encaminhamento",
-          "resumo": "As filas na ordem em que são avaliadas, com grupo dono, canais, caixas, transbordo e aceite.",
+          "resumo": "As filas na ordem em que são avaliadas, com grupos principais e secundários, canais, caixas, ordem de entrega e aceite.",
           "detalhes": "A ordem é a de `position`: a conversa passa pelas filas de cima para baixo e a primeira que casar leva. Fila sem canal, sem caixa e sem condição recolhe o que sobrou, então costuma ficar por último.",
           "escopo": "operacao:leitura",
           "respostas": [
@@ -746,14 +746,19 @@
               "id": 11,
               "name": "Chat e WhatsApp",
               "description": "Todo chat nasce no N1",
+              "team_ids": [
+                3
+              ],
               "team_id": 3,
+              "team_names": [
+                "suporte n1"
+              ],
               "team_name": "suporte n1",
               "channel_types": [
                 "Channel::WebWidget",
                 "Channel::Whatsapp"
               ],
               "inbox_ids": [],
-              "fallback_mode": "quando_faltar",
               "fallback_team_ids": [
                 4,
                 5
@@ -776,7 +781,7 @@
           "caminho": "staydesk/queues",
           "titulo": "Criar fila de encaminhamento",
           "resumo": "Cria uma fila. Ela entra no fim da ordem.",
-          "detalhes": "O mínimo é nome e grupo dono. Sem canal e sem caixa, a fila pega tudo que sobrar. Aceite obrigatório é para chat e WhatsApp: ticket normalmente não passa por aceite.",
+          "detalhes": "O mínimo é nome e grupo principal. Sem canal e sem caixa, a fila pega tudo que sobrar. Aceite obrigatório é para chat e WhatsApp: ticket normalmente não passa por aceite.",
           "escopo": "operacao:escrita",
           "respostas": [
             {
@@ -806,11 +811,13 @@
               "exemplo": "Chat e WhatsApp"
             },
             {
-              "nome": "team_id",
-              "tipo": "inteiro",
-              "descricao": "O grupo dono do trabalho. A conversa fica com ele e não troca.",
+              "nome": "team_ids",
+              "tipo": "lista de inteiro",
+              "descricao": "Grupos principais, na ordem. A conversa entra no primeiro; quando alguém pega, ela fica no grupo desse agente. Mandar só `team_id` equivale a um único principal.",
               "obrigatorio": true,
-              "exemplo": 3
+              "exemplo": [
+                3
+              ]
             },
             {
               "nome": "description",
@@ -839,17 +846,11 @@
             {
               "nome": "fallback_team_ids",
               "tipo": "lista de inteiro",
-              "descricao": "Grupos que ajudam quando o dono não dá conta.",
+              "descricao": "Grupos secundários: só entram quando nenhum principal tem gente disponível (e a espera, se houver, passou).",
               "exemplo": [
                 4,
                 5
               ]
-            },
-            {
-              "nome": "fallback_mode",
-              "tipo": "texto",
-              "descricao": "`sempre`: os grupos que ajudam trabalham a fila junto com o dono. `quando_faltar`: só entram quando o dono está sem ninguém disponível.",
-              "exemplo": "quando_faltar"
             },
             {
               "nome": "priority_mode",
@@ -860,7 +861,7 @@
             {
               "nome": "fallback_after_minutes",
               "tipo": "inteiro",
-              "descricao": "No modo `quando_faltar`, minutos de espera antes de liberar o transbordo. Nulo libera na hora.",
+              "descricao": "Minutos sem ninguém disponível nos principais antes de os secundários entrarem. Em branco, entram na hora.",
               "exemplo": 5
             },
             {
@@ -891,6 +892,9 @@
           "payload": {
             "queue": {
               "name": "Chat e WhatsApp",
+              "team_ids": [
+                3
+              ],
               "team_id": 3,
               "description": "Todo chat nasce no N1",
               "channel_types": [
@@ -902,7 +906,6 @@
                 4,
                 5
               ],
-              "fallback_mode": "quando_faltar",
               "accept_required": true,
               "accept_timeout_seconds": 30
             }
@@ -911,14 +914,19 @@
             "id": 11,
             "name": "Chat e WhatsApp",
             "description": "Todo chat nasce no N1",
+            "team_ids": [
+              3
+            ],
             "team_id": 3,
+            "team_names": [
+              "suporte n1"
+            ],
             "team_name": "suporte n1",
             "channel_types": [
               "Channel::WebWidget",
               "Channel::Whatsapp"
             ],
             "inbox_ids": [],
-            "fallback_mode": "quando_faltar",
             "fallback_team_ids": [
               4,
               5
@@ -940,7 +948,7 @@
           "caminho": "staydesk/queues/{id}",
           "titulo": "Alterar fila de encaminhamento",
           "resumo": "Altera qualquer campo da fila. Mande só o que muda.",
-          "detalhes": "Trocar o grupo dono não mexe nas conversas que já estão com o grupo antigo: vale para as próximas. Desligar (`active: false`) tira a fila da avaliação sem apagar.",
+          "detalhes": "Trocar o grupo principal não mexe nas conversas que já estão com o grupo antigo: vale para as próximas. Desligar (`active: false`) tira a fila da avaliação sem apagar.",
           "escopo": "operacao:escrita",
           "respostas": [
             {
@@ -983,11 +991,13 @@
               "exemplo": "Chat e WhatsApp"
             },
             {
-              "nome": "team_id",
-              "tipo": "inteiro",
-              "descricao": "O grupo dono do trabalho. A conversa fica com ele e não troca.",
+              "nome": "team_ids",
+              "tipo": "lista de inteiro",
+              "descricao": "Grupos principais, na ordem. A conversa entra no primeiro; quando alguém pega, ela fica no grupo desse agente. Mandar só `team_id` equivale a um único principal.",
               "obrigatorio": true,
-              "exemplo": 3
+              "exemplo": [
+                3
+              ]
             },
             {
               "nome": "description",
@@ -1016,17 +1026,11 @@
             {
               "nome": "fallback_team_ids",
               "tipo": "lista de inteiro",
-              "descricao": "Grupos que ajudam quando o dono não dá conta.",
+              "descricao": "Grupos secundários: só entram quando nenhum principal tem gente disponível (e a espera, se houver, passou).",
               "exemplo": [
                 4,
                 5
               ]
-            },
-            {
-              "nome": "fallback_mode",
-              "tipo": "texto",
-              "descricao": "`sempre`: os grupos que ajudam trabalham a fila junto com o dono. `quando_faltar`: só entram quando o dono está sem ninguém disponível.",
-              "exemplo": "quando_faltar"
             },
             {
               "nome": "priority_mode",
@@ -1037,7 +1041,7 @@
             {
               "nome": "fallback_after_minutes",
               "tipo": "inteiro",
-              "descricao": "No modo `quando_faltar`, minutos de espera antes de liberar o transbordo. Nulo libera na hora.",
+              "descricao": "Minutos sem ninguém disponível nos principais antes de os secundários entrarem. Em branco, entram na hora.",
               "exemplo": 5
             },
             {
@@ -1074,14 +1078,19 @@
             "id": 11,
             "name": "Chat e WhatsApp",
             "description": "Todo chat nasce no N1",
+            "team_ids": [
+              3
+            ],
             "team_id": 3,
+            "team_names": [
+              "suporte n1"
+            ],
             "team_name": "suporte n1",
             "channel_types": [
               "Channel::WebWidget",
               "Channel::Whatsapp"
             ],
             "inbox_ids": [],
-            "fallback_mode": "quando_faltar",
             "fallback_team_ids": [
               4,
               5

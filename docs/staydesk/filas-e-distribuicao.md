@@ -1,23 +1,24 @@
 # Filas e distribuição
 
-A operação é por **grupo**, nunca por canal. Todo chat nasce no grupo de primeiro
-nível; todo ticket nasce no de segundo. O canal não decide o grupo: decide o que
-o agente recebe, pelo status dele.
+A fila é por **canal**: o que entra por chat e WhatsApp vai para uns grupos, o
+que entra por e-mail e WHMCS vai para outros. Dentro do grupo, o que cada agente
+recebe é decidido pelo status dele.
 
 ## Fila de encaminhamento
 
-Uma fila diz **para qual grupo** a demanda vai e **quem pode ajudar** quando o
-grupo dono não dá conta. Fica em Central › Atendimento › Filas.
+Uma fila diz **o que entra** nela (canal, caixa, condições) e **para quais
+grupos** vai: primeiro os principais; sem ninguém disponível neles, os
+secundários. É o desenho das filas de encaminhamento omnichannel do Zendesk.
+Fica em Central › Atendimento › Filas.
 
 | Campo | O que faz |
 |---|---|
-| Time | O grupo dono. A conversa fica com ele e não troca |
+| Grupos principais | Quem recebe primeiro. A conversa entra no primeiro da lista e, quando alguém pega, fica no grupo desse agente |
 | Canais | Quais canais entram nesta fila. Vazio é "todos" |
 | Caixas de entrada | Caixas específicas, para quando o canal não basta. A caixa vence o canal |
 | Condições | Afinam o resto (etiqueta, prioridade, campo do ticket). Opcional |
-| Times de transbordo | Quem entra na distribuição além do dono |
-| Modo | `sempre` (trabalham a fila junto) ou `quando_faltar` (só quando não há ninguém do dono) |
-| Espera | Minutos antes de liberar o transbordo, no modo `quando_faltar` |
+| Grupos secundários | Só entram quando nenhum principal tem alguém disponível. Opcional |
+| Espera | Minutos sem ninguém disponível nos principais antes de os secundários entrarem. Em branco, na hora |
 | Prioridade | Em que ordem a fila entrega: `chegada` (mais antigo primeiro) ou `sla` (mais perto de vencer primeiro) |
 | Aceite | Se o agente precisa aceitar antes de a conversa virar dele |
 | Tempo para aceitar | Segundos até a conversa voltar para a fila |
@@ -30,8 +31,16 @@ para o que o canal não resolve, como etiqueta, prioridade ou campo do ticket.
 A ordem importa: a primeira fila que casar leva. A conversa recebe o grupo na
 criação e, se entrou sem grupo, a varredura a encaminha depois.
 
-**Transbordo não troca o grupo.** O que muda é quem pode pegar. O caso continua
-sendo do dono, e é isso que mantém o relatório por grupo honesto.
+**A conversa fica no grupo de quem pegou**, como no Zendesk. Ela entra no
+primeiro grupo principal; se quem a recebeu é de outro principal ou de um
+secundário, passa para o grupo dele. Quem já está no grupo em que ela entrou não
+muda nada. Assim o relatório por grupo mostra quem de fato atendeu.
+
+Vários grupos principais é o jeito de dois grupos trabalharem a mesma fila
+juntos (o N3 que pega ticket do N2 no tempo livre); grupo secundário é o
+transbordo clássico, para quando o principal está sem gente. O canal que cada
+agente recebe continua vindo do status dele: um agente do N2 em "Só tickets" não
+recebe chat mesmo que o N2 seja principal da fila de chat.
 
 ## Filas de carga
 
@@ -65,18 +74,18 @@ A conta é, nesta ordem:
 1. Quem é membro da caixa.
 2. Quem está **conectado de verdade**, não só marcado como online no banco.
 3. Quem ainda tem vaga na fila de carga daquela caixa, pelo status atual.
-4. Quem é do grupo dono. Faltando gente, entram os grupos de transbordo conforme
-   o modo e a espera da fila.
+4. Quem é de um grupo principal da fila. Faltando gente, entram os grupos
+   secundários, depois da espera configurada.
 
-O passo 2 existe porque sem ele o grupo dono parece cheio de gente, o transbordo
-nunca abre e a conversa espera por quem não está atendendo.
+O passo 2 existe porque sem ele o grupo principal parece cheio de gente, os
+secundários nunca entram e a conversa espera por quem não está atendendo.
 
 Quando alguém "coloca online e não cai nada", a resposta está em Central › Status
 dos agentes › **Quem recebe o quê**: para cada agente e cada fila, se a
 distribuição entrega e, se não, qual condição falta (conexão, status, vaga,
 grupo ou caixa). Pela API é `GET staydesk/distribution_checks`. Nove em dez vezes
-é grupo ou caixa: o agente precisa estar no grupo dono da fila, ou num grupo que
-ajuda, **e** ser membro de uma caixa que a fila pega.
+é grupo ou caixa: o agente precisa estar num grupo principal ou secundário da
+fila **e** ser membro de uma caixa que a fila pega.
 
 ## Aceite
 

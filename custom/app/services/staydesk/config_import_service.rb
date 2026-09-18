@@ -126,22 +126,35 @@ class Staydesk::ConfigImportService
 
   def atributos_da_fila(dados)
     {
-      description: dados['descricao'], team: time!(dados.fetch('time')),
+      description: dados['descricao'],
       channel_types: Array(dados['canais']), inbox_ids: caixas_por_nome(dados['caixas']),
       conditions: condicoes(dados)
     }.merge(entrega_da_fila(dados))
   end
 
-  # Como a fila entrega: quem ajuda, em que ordem e se exige aceite.
+  # Como a fila entrega: para quem, em que ordem e se exige aceite. `time` (um)
+  # ou `times` (vários) são os grupos principais; `times_secundarios` só entram
+  # quando nenhum principal tem gente. `ajuda: sempre` do arquivo antigo dizia
+  # que os que ajudavam eram principais também.
   def entrega_da_fila(dados)
     {
-      fallback_team_ids: (dados['times_que_ajudam'] || dados['times_de_transbordo'] || []).map { |nome| time!(nome).id },
-      fallback_mode: dados['ajuda'] || 'quando_faltar',
-      priority_mode: dados['prioridade'] || 'chegada',
+      team_ids: grupos_principais(dados),
+      fallback_team_ids: dados['ajuda'] == 'sempre' ? [] : grupos_secundarios(dados).map { |nome| time!(nome).id },
       fallback_after_minutes: dados['espera_minutos'],
+      priority_mode: dados['prioridade'] || 'chegada',
       accept_required: dados.fetch('exige_aceite', false),
       accept_timeout_seconds: dados['segundos_para_aceitar'] || 30
     }
+  end
+
+  def grupos_principais(dados)
+    nomes = Array(dados['times'].presence || dados.fetch('time'))
+    nomes += grupos_secundarios(dados) if dados['ajuda'] == 'sempre'
+    nomes.map { |nome| time!(nome).id }.uniq
+  end
+
+  def grupos_secundarios(dados)
+    Array(dados['times_secundarios'] || dados['times_que_ajudam'] || dados['times_de_transbordo'])
   end
 
   def importar_visualizacoes

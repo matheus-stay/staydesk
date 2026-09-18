@@ -36,9 +36,7 @@ class Staydesk::OfferService
   private
 
   def fila_da_conversa
-    return if @conversation.team_id.blank?
-
-    Staydesk::Queue.active.where(account_id: @conversation.account_id, team_id: @conversation.team_id).ordered.first
+    Staydesk::Queue.da_equipe(@conversation.account_id, @conversation.team_id)
   end
 
   def redistribuir(sem:)

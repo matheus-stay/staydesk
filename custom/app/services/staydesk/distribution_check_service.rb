@@ -52,7 +52,7 @@ class Staydesk::DistributionCheckService
       connected: conectados.include?(agente[:id]),
       available: status.present? && status.availability == 'online',
       has_capacity: agente[:limite].nil? ? status.present? : agente[:limite].positive?,
-      in_group: agente[:times].include?(fila.team_id) || fila.fallback_team_ids.intersect?(agente[:times]),
+      in_group: (fila.team_ids + fila.fallback_team_ids).intersect?(agente[:times]),
       inbox_member: caixas_da_fila.map(&:id).intersect?(agente[:caixas])
     }
   end

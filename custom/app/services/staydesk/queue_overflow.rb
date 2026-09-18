@@ -1,7 +1,7 @@
-# Transbordo de fila (SPEC-15), no modelo da operação: o trabalho é do grupo dono
-# (todo chat é do N1, todo ticket é do N2 ou N3) e isso não muda. O que muda é quem
-# pode atender: sem ninguém disponível no grupo dono, os agentes do grupo de
-# transbordo entram na distribuição, sem que a conversa troque de grupo.
+# Quem pode pegar a conversa, no modelo do Zendesk: primeiro quem está nos grupos
+# principais da fila; se nenhum deles tem gente disponível (e a espera passou),
+# quem está nos grupos secundários. A conversa entra no primeiro grupo principal
+# e, quando alguém pega, passa para o grupo desse agente (Custom::Conversation).
 class Staydesk::QueueOverflow
   def initialize(conversation)
     @conversation = conversation
@@ -9,42 +9,35 @@ class Staydesk::QueueOverflow
 
   # Dos agentes que já poderiam receber nesta caixa, quem realmente entra na roda.
   def eligible_user_ids(available_user_ids)
-    time = @conversation.team
-    disponiveis = available_user_ids
-    return disponiveis if time.blank?
+    return available_user_ids if @conversation.team_id.blank?
 
-    do_grupo = time.members.ids & disponiveis
-    # Grupo que ajuda sempre trabalha a fila junto com o dono.
-    return (do_grupo + (transbordo_ids & disponiveis)).uniq if ajuda_sempre?
-    return do_grupo if do_grupo.any?
-    return do_grupo unless transbordo_liberado?
+    principais = Staydesk::Queue.membros(grupos_principais) & available_user_ids
+    return principais if principais.any?
+    return principais unless transbordo_liberado?
 
-    transbordo_ids & disponiveis
+    Staydesk::Queue.membros(fila.fallback_team_ids) & available_user_ids
   end
 
   def transbordo_teams
     fila&.fallback_teams || Team.none
   end
 
-  def ajuda_sempre?
-    fila.present? && fila.fallback_mode == 'sempre' && transbordo_teams.any?
-  end
-
   private
 
   def fila
-    @fila ||= Staydesk::Queue.with_fallback
-                             .where(account_id: @conversation.account_id, team_id: @conversation.team_id)
-                             .ordered.first
+    return @fila if defined?(@fila)
+
+    @fila = Staydesk::Queue.da_equipe(@conversation.account_id, @conversation.team_id)
   end
 
-  def transbordo_ids
-    transbordo_teams.flat_map { |time| time.members.ids }.uniq
+  # Sem fila para o grupo, o grupo da conversa é o único principal.
+  def grupos_principais
+    fila ? fila.team_ids : [@conversation.team_id]
   end
 
-  # Sem espera configurada o transbordo vale na hora; com espera, só depois dela.
+  # Sem espera configurada os secundários entram na hora; com espera, só depois dela.
   def transbordo_liberado?
-    return false if transbordo_teams.empty?
+    return false if fila.blank? || fila.fallback_team_ids.empty?
     return true if fila.fallback_after_minutes.blank?
 
     @conversation.created_at <= fila.fallback_after_minutes.minutes.ago

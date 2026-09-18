@@ -421,7 +421,7 @@
     },
     "QUEUES": {
       "SETTINGS_TITLE": "Routing queues",
-      "SETTINGS_DESCRIPTION": "An incoming conversation goes through the queues in order and the first match hands it to that team. Who inside the team takes it is still decided by the agent status and load.",
+      "SETTINGS_DESCRIPTION": "An incoming conversation goes through the queues in order and the first match hands it to its primary groups; with nobody available there, to the secondary ones. Who inside the group takes it is still decided by the agent status and load.",
       "EMPTY": "No queues. Without one, a conversation arrives with no team and distribution uses the inbox only.",
       "NEW": "New queue",
       "EDIT": "Edit",
@@ -431,19 +431,14 @@
       "FORM": {
         "NAME": "Name",
         "DESCRIPTION": "Description (optional)",
-        "TEAM": "Team that receives",
+        "TEAM": "Primary groups",
         "ACTIVE": "Active",
         "CONDITIONS": "Conditions",
         "CONDITIONS_HINT": "Any conversation field works, including the attributes you create. With no condition at all, the queue catches whatever is left.",
-        "FALLBACK_MINUTES": "Only after how many minutes (optional)",
-        "FALLBACK_HINT": "The conversation still belongs to the owning team. This only sets who can take it, and each agent status decides whether they get that channel.",
-        "FALLBACK_TEAMS": "Teams that help on this queue",
-        "MODE": "How those teams help",
-        "MODE_OPTIONS": {
-          "quando_faltar": "Only when the owning team has nobody available",
-          "sempre": "Always, they work this queue alongside the owner"
-        },
-        "FALLBACK_PLACEHOLDER": "No team helps",
+        "FALLBACK_MINUTES": "Only after how many minutes with nobody available (optional)",
+        "FALLBACK_HINT": "Secondary groups only receive when no primary group has anyone available. Blank means right away; with minutes, the conversation waits that long first.",
+        "FALLBACK_TEAMS": "Secondary groups",
+        "FALLBACK_PLACEHOLDER": "Pick the groups",
         "ACCEPT": "Agent acceptance",
         "ACCEPT_REQUIRED": "The agent must accept before the conversation becomes theirs",
         "ACCEPT_TIMEOUT": "Time to accept (seconds)",
@@ -459,7 +454,11 @@
         "PRIORITY_OPTIONS": {
           "chegada": "By arrival (oldest first)",
           "sla": "By SLA (closest to breaching first)"
-        }
+        },
+        "TEAM_PLACEHOLDER": "Pick at least one group",
+        "GROUPS": "Groups",
+        "GROUPS_HINT": "Work goes to the primary groups first. The conversation lands in the first group of the list and, once someone takes it, stays with that agent's group. Who gets chat or tickets inside the group is still decided by the agent status.",
+        "SECONDARY_ENABLE": "Enable secondary groups"
       },
       "DELETE": {
         "BUTTON": "Delete",
@@ -471,11 +470,8 @@
         "DELETE_SUCCESS": "Queue deleted",
         "DELETE_ERROR": "Could not delete the queue"
       },
-      "FALLBACK_NOW": "overflows to {team}",
       "FALLBACK_AFTER": "→ {teams} after {minutes} min",
-      "HELPS_ALWAYS": "with {team}",
       "ACCEPT_BADGE": "· acceptance required in {seconds}s",
-      "FALLBACK_ALWAYS": "→ {teams} always help",
       "FALLBACK_WHEN_MISSING": "→ {teams} when nobody is available",
       "ALL_CHANNELS": "Every channel",
       "PRIORITY_BADGE": "· delivers by SLA"

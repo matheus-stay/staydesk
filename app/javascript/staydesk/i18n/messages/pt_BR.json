@@ -421,7 +421,7 @@
     },
     "QUEUES": {
       "SETTINGS_TITLE": "Filas de encaminhamento",
-      "SETTINGS_DESCRIPTION": "A conversa que chega passa pelas filas na ordem e a primeira que casar entrega ao time dela. Quem, dentro do time, vai atender continua sendo decidido pelo status e pela carga do agente.",
+      "SETTINGS_DESCRIPTION": "A conversa que chega passa pelas filas na ordem e a primeira que casar entrega aos grupos principais dela; sem ninguém disponível neles, aos secundários. Quem, dentro do grupo, vai atender continua sendo decidido pelo status e pela carga do agente.",
       "EMPTY": "Nenhuma fila. Sem fila, a conversa chega sem time e a distribuição usa só a caixa de entrada.",
       "NEW": "Nova fila",
       "EDIT": "Editar",
@@ -431,19 +431,14 @@
       "FORM": {
         "NAME": "Nome",
         "DESCRIPTION": "Descrição (opcional)",
-        "TEAM": "Time que recebe",
+        "TEAM": "Grupos principais",
         "ACTIVE": "Ativa",
         "CONDITIONS": "Condições",
         "CONDITIONS_HINT": "Qualquer campo da conversa serve, inclusive os atributos que vocês criarem. Sem condição nenhuma, a fila recolhe tudo que sobrou.",
-        "FALLBACK_MINUTES": "Só depois de quantos minutos (opcional)",
-        "FALLBACK_HINT": "A conversa continua pertencendo ao grupo dono. Isto só define quem pode atender, e o status de cada agente é que decide se ele recebe daquele canal.",
-        "FALLBACK_TEAMS": "Grupos que ajudam nesta fila",
-        "MODE": "Como esses grupos ajudam",
-        "MODE_OPTIONS": {
-          "quando_faltar": "Só quando o grupo dono está sem ninguém disponível",
-          "sempre": "Sempre, trabalham esta fila junto com o dono"
-        },
-        "FALLBACK_PLACEHOLDER": "Nenhum grupo ajuda",
+        "FALLBACK_MINUTES": "Só depois de quantos minutos sem ninguém disponível (opcional)",
+        "FALLBACK_HINT": "Os secundários só recebem quando nenhum grupo principal tem alguém disponível. Em branco, entram na hora; com minutos, a conversa espera esse tempo antes.",
+        "FALLBACK_TEAMS": "Grupos secundários",
+        "FALLBACK_PLACEHOLDER": "Escolha os grupos",
         "ACCEPT": "Aceite do agente",
         "ACCEPT_REQUIRED": "O agente precisa aceitar antes de a conversa virar dele",
         "ACCEPT_TIMEOUT": "Tempo para aceitar (segundos)",
@@ -459,7 +454,11 @@
         "PRIORITY_OPTIONS": {
           "chegada": "Por chegada (mais antigo primeiro)",
           "sla": "Por SLA (mais perto de vencer primeiro)"
-        }
+        },
+        "TEAM_PLACEHOLDER": "Escolha pelo menos um grupo",
+        "GROUPS": "Grupos",
+        "GROUPS_HINT": "O trabalho vai primeiro para os grupos principais. A conversa entra no primeiro da lista e, quando alguém pega, fica no grupo desse agente. Quem recebe chat ou ticket dentro do grupo continua sendo decidido pelo status do agente.",
+        "SECONDARY_ENABLE": "Ativar grupos secundários"
       },
       "DELETE": {
         "BUTTON": "Excluir",
@@ -471,11 +470,8 @@
         "DELETE_SUCCESS": "Fila excluída",
         "DELETE_ERROR": "Não foi possível excluir a fila"
       },
-      "FALLBACK_NOW": "transborda para {team}",
       "FALLBACK_AFTER": "→ {teams} depois de {minutes} min",
-      "HELPS_ALWAYS": "com {team}",
       "ACCEPT_BADGE": "· exige aceite em {seconds}s",
-      "FALLBACK_ALWAYS": "→ {teams} ajudam sempre",
       "FALLBACK_WHEN_MISSING": "→ {teams} quando faltar gente",
       "ALL_CHANNELS": "Todos os canais",
       "PRIORITY_BADGE": "· entrega por SLA"

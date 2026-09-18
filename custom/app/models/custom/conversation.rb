@@ -7,11 +7,12 @@ module Custom::Conversation
     base.after_update_commit :staydesk_record_events
     base.after_update_commit :staydesk_align_ticket_status
     base.after_update_commit :staydesk_status_on_assign
+    base.after_update_commit :staydesk_follow_assignee_team
     base.has_one :staydesk_applied_sla, class_name: 'Staydesk::AppliedSla', dependent: :destroy
   end
 
-  # Quem pode receber esta conversa: o grupo dono e, se ninguém dele estiver
-  # disponível, o grupo de transbordo da fila (SPEC-15). A conversa não troca de grupo.
+  # Quem pode receber esta conversa: os grupos principais da fila e, se ninguém
+  # deles estiver disponível, os secundários (SPEC-15).
   def team_member_ids_with_capacity
     disponiveis = inbox.member_ids_with_assignment_capacity
     return super if team.blank? || team.allow_auto_assign.blank?
@@ -46,6 +47,24 @@ module Custom::Conversation
   # (SPEC-15). Roda no mesmo processo do commit, não em job, para chegar antes.
   def staydesk_route_to_queue
     Staydesk::QueueRouter.new(self).perform
+  end
+
+  # Como no Zendesk, a conversa fica no grupo de quem pegou: entregue a alguém de
+  # outro grupo principal, ou de um secundário, ela passa para o grupo dele.
+  def staydesk_follow_assignee_team
+    return unless saved_changes.key?('assignee_id') && assignee_id.present? && team_id.present?
+    return if TeamMember.exists?(team_id: team_id, user_id: assignee_id)
+
+    destino = staydesk_grupo_do_responsavel
+    update!(team_id: destino) if destino.present?
+  end
+
+  # Dos grupos da fila que responde por este grupo, o primeiro em que o responsável está.
+  def staydesk_grupo_do_responsavel
+    fila = Staydesk::Queue.da_equipe(account_id, team_id)
+    return if fila.blank?
+
+    (fila.team_ids + fila.fallback_team_ids).find { |id| TeamMember.exists?(team_id: id, user_id: assignee_id) }
   end
 
   # Atribuiu a alguém: o caso entra em andamento sozinho, como na operação.

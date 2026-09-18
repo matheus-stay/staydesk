@@ -86,7 +86,7 @@ RSpec.describe Staydesk::QueueRouter do
       expect(elegiveis(conversation)).to eq([agente_n3.id])
     end
 
-    it 'abre para o grupo de transbordo quando o dono não tem ninguém, sem trocar o grupo' do
+    it 'abre para o grupo secundário quando o principal não tem ninguém' do
       monta_transbordo
       conversation = conversa
       TeamMember.find_by(team: n3, user: agente_n3).destroy!
@@ -106,13 +106,40 @@ RSpec.describe Staydesk::QueueRouter do
       expect(elegiveis(conversation.reload)).to eq([agente_n2.id])
     end
 
-    it 'com ajuda sempre, o grupo que ajuda trabalha a fila junto com o dono' do
+    it 'com mais de um grupo principal, todos trabalham a fila juntos e a conversa entra no primeiro' do
       monta_transbordo
-      Staydesk::Queue.find_by(name: 'Tickets do N3').update!(fallback_mode: 'sempre')
+      Staydesk::Queue.find_by(name: 'Tickets do N3').update!(team_ids: [n3.id, n2.id], fallback_team_ids: [])
       conversation = conversa
 
       expect(conversation.reload.team).to eq(n3)
       expect(elegiveis(conversation)).to contain_exactly(agente_n3.id, agente_n2.id)
+    end
+
+    it 'não deixa um grupo ser principal e secundário ao mesmo tempo' do
+      monta_transbordo
+      fila = Staydesk::Queue.find_by(name: 'Tickets do N3')
+
+      expect(fila.update(team_ids: [n3.id, n2.id])).to be(false)
+      expect(fila.errors[:fallback_team_ids]).to be_present
+    end
+
+    it 'a conversa passa para o grupo de quem pegou, como no Zendesk' do
+      monta_transbordo
+      conversation = conversa
+      TeamMember.find_by(team: n3, user: agente_n3).destroy!
+
+      conversation.reload.update!(assignee: agente_n2)
+
+      expect(conversation.reload.team).to eq(n2)
+    end
+
+    it 'quem pegou está no grupo em que a conversa entrou: ela fica lá' do
+      monta_transbordo
+      conversation = conversa
+
+      conversation.reload.update!(assignee: agente_n3)
+
+      expect(conversation.reload.team).to eq(n3)
     end
 
     it 'aceita mais de um grupo de transbordo' do
@@ -127,7 +154,7 @@ RSpec.describe Staydesk::QueueRouter do
       expect(elegiveis(conversation.reload)).to contain_exactly(agente_n2.id, agente_n1.id)
     end
 
-    it 'o job chama a distribuição depois da espera, mantendo o grupo' do
+    it 'o job chama a distribuição depois da espera e a conversa vai para o grupo de quem pegou' do
       monta_transbordo(minutos: 10)
       conversation = conversa
       TeamMember.find_by(team: n3, user: agente_n3).destroy!
@@ -137,8 +164,8 @@ RSpec.describe Staydesk::QueueRouter do
       Staydesk::Queues::SweepJob.new.perform
 
       conversation.reload
-      expect(conversation.team).to eq(n3)
       expect(conversation.assignee).to eq(agente_n2)
+      expect(conversation.team).to eq(n2)
     end
   end
 

@@ -3,8 +3,8 @@
 # disponível ficaria esperando para sempre. Aqui a fila é oferecida de novo a
 # cada minuto e assim que alguém muda de status, mais velha primeiro.
 #
-# Quem pode pegar sai de Staydesk::QueueOverflow (grupo dono, transbordo e a
-# espera configurada) cruzado com a carga do status do agente, então o mesmo
+# Quem pode pegar sai de Staydesk::QueueOverflow (grupos principais, secundários
+# e a espera configurada) cruzado com a carga do status do agente, então o mesmo
 # job serve ao transbordo por tempo.
 class Staydesk::Queues::SweepJob < ApplicationJob
   queue_as :scheduled_jobs
@@ -38,11 +38,16 @@ class Staydesk::Queues::SweepJob < ApplicationJob
     end
   end
 
+  # A fila de cada grupo: a primeira em que ele é principal e, faltando, a
+  # primeira em que ele é secundário (mesma regra de Staydesk::Queue.da_equipe).
   def filas_por_time(conversas)
-    contas = conversas.map(&:account_id).uniq
-    Staydesk::Queue.active.where(account_id: contas).ordered.each_with_object({}) do |fila, mapa|
-      mapa[[fila.account_id, fila.team_id]] ||= fila
-    end
+    filas = Staydesk::Queue.active.where(account_id: conversas.map(&:account_id).uniq).ordered.to_a
+    pares = pares_por_grupo(filas, :team_ids) + pares_por_grupo(filas, :fallback_team_ids)
+    pares.each_with_object({}) { |(chave, fila), mapa| mapa[chave] ||= fila }
+  end
+
+  def pares_por_grupo(filas, campo)
+    filas.flat_map { |fila| fila.public_send(campo).map { |time| [[fila.account_id, time], fila] } }
   end
 
   # O prazo mais próximo entre as métricas ainda abertas do SLA da conversa.
@@ -60,7 +65,7 @@ class Staydesk::Queues::SweepJob < ApplicationJob
   def distribuir(conversa)
     return unless conversa.inbox.enable_auto_assignment?
 
-    # Sem grupo dono não há fila: conversa que entrou antes de a fila existir, ou
+    # Sem grupo não há fila: conversa que entrou antes de a fila existir, ou
     # que nenhuma regra pegou na criação, passa pelo roteador agora.
     Staydesk::QueueRouter.new(conversa).perform if conversa.team_id.blank?
     return if conversa.reload.team_id.blank?

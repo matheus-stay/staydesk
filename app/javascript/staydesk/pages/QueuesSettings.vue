@@ -23,9 +23,10 @@ import { fromSaveButton } from '../helpers/form';
 import { canaisDaConta, nomeDoCanal } from '../helpers/canais';
 
 // Filas de encaminhamento (SPEC-15), no modelo do Zendesk: a conversa que chega é
-// comparada com as filas em ordem e a primeira que casar entrega ao time dela.
-// As condições usam o mesmo construtor do filtro avançado, então qualquer campo
-// da conversa serve, inclusive os atributos que a operação criar.
+// comparada com as filas em ordem e a primeira que casar entrega aos grupos
+// principais dela; sem ninguém disponível neles, aos secundários. As condições
+// usam o mesmo construtor do filtro avançado, então qualquer campo da conversa
+// serve, inclusive os atributos que a operação criar.
 const { t } = useI18n();
 const store = useStore();
 const teams = useMapGetter('teams/getTeams');
@@ -41,9 +42,9 @@ const deleteDialog = useTemplateRef('deleteDialog');
 const emptyForm = () => ({
   name: '',
   description: '',
-  teamId: null,
+  teamIds: [],
+  secondaryEnabled: false,
   fallbackTeamIds: [],
-  fallbackMode: 'quando_faltar',
   priorityMode: 'chegada',
   fallbackAfterMinutes: '',
   channelTypes: [],
@@ -59,14 +60,9 @@ const conditionsRef = useTemplateRef('conditionsRef');
 const teamOptions = computed(() =>
   teams.value.map(team => ({ value: team.id, label: team.name }))
 );
-const fallbackTeams = computed(() =>
-  teams.value.filter(team => team.id !== form.value.teamId)
-);
-const modeOptions = computed(() =>
-  ['quando_faltar', 'sempre'].map(value => ({
-    value,
-    label: t(`STAYDESK.QUEUES.FORM.MODE_OPTIONS.${value}`),
-  }))
+// Um grupo não pode ser principal e secundário ao mesmo tempo.
+const secondaryOptions = computed(() =>
+  teamOptions.value.filter(option => !form.value.teamIds.includes(option.value))
 );
 const canalOptions = computed(() => canaisDaConta(inboxes.value));
 const caixaOptions = computed(() =>
@@ -90,16 +86,10 @@ const priorityOptions = computed(() =>
     label: t(`STAYDESK.QUEUES.FORM.PRIORITY_OPTIONS.${value}`),
   }))
 );
-const fallbackOptions = computed(() =>
-  fallbackTeams.value.map(team => ({ value: team.id, label: team.name }))
-);
 // Para quem a fila transborda, e quando: o nome do grupo já diz o essencial.
 const transbordo = queue => {
   const nomes = (queue.fallback_team_names || []).join(', ');
   if (!nomes) return '';
-  if (queue.fallback_mode === 'sempre') {
-    return t('STAYDESK.QUEUES.FALLBACK_ALWAYS', { teams: nomes });
-  }
   return queue.fallback_after_minutes
     ? t('STAYDESK.QUEUES.FALLBACK_AFTER', {
         teams: nomes,
@@ -153,9 +143,9 @@ const startEdit = queue => {
     ? {
         name: queue.name,
         description: queue.description || '',
-        teamId: queue.team_id,
+        teamIds: [...(queue.team_ids || [])],
+        secondaryEnabled: (queue.fallback_team_ids || []).length > 0,
         fallbackTeamIds: [...(queue.fallback_team_ids || [])],
-        fallbackMode: queue.fallback_mode || 'quando_faltar',
         priorityMode: queue.priority_mode || 'chegada',
         fallbackAfterMinutes: queue.fallback_after_minutes ?? '',
         channelTypes: [...(queue.channel_types || [])],
@@ -171,18 +161,21 @@ const startEdit = queue => {
 };
 
 const save = async () => {
-  if (!form.value.name.trim() || !form.value.teamId) return;
+  if (!form.value.name.trim() || !form.value.teamIds.length) return;
   if (!(conditionsRef.value || []).every(row => row.validate())) return;
   isSaving.value = true;
   try {
     const payload = {
       name: form.value.name.trim(),
       description: form.value.description.trim(),
-      team_id: form.value.teamId,
-      fallback_team_ids: form.value.fallbackTeamIds,
-      fallback_mode: form.value.fallbackMode,
+      team_ids: form.value.teamIds,
+      fallback_team_ids: form.value.secondaryEnabled
+        ? form.value.fallbackTeamIds
+        : [],
+      fallback_after_minutes: form.value.secondaryEnabled
+        ? form.value.fallbackAfterMinutes || null
+        : null,
       priority_mode: form.value.priorityMode,
-      fallback_after_minutes: form.value.fallbackAfterMinutes || null,
       channel_types: form.value.channelTypes,
       inbox_ids: form.value.inboxIds,
       accept_required: form.value.acceptRequired,
@@ -285,15 +278,11 @@ const aoEnviar = event => {
       >
         <div class="grid gap-4 md:grid-cols-2">
           <Input v-model="form.name" :label="t('STAYDESK.QUEUES.FORM.NAME')" />
-          <label class="grid gap-1 text-sm text-n-slate-12">
-            <span>{{ t('STAYDESK.QUEUES.FORM.TEAM') }}</span>
-            <Select v-model="form.teamId" :options="teamOptions" />
-          </label>
+          <Input
+            v-model="form.description"
+            :label="t('STAYDESK.QUEUES.FORM.DESCRIPTION')"
+          />
         </div>
-        <Input
-          v-model="form.description"
-          :label="t('STAYDESK.QUEUES.FORM.DESCRIPTION')"
-        />
         <fieldset class="grid gap-3">
           <legend class="text-sm text-n-slate-12">
             {{ t('STAYDESK.QUEUES.FORM.INTAKE') }}
@@ -322,41 +311,52 @@ const aoEnviar = event => {
             />
           </label>
         </fieldset>
-        <fieldset class="grid gap-2">
+        <fieldset class="grid gap-3">
           <legend class="text-sm text-n-slate-12">
-            {{ t('STAYDESK.QUEUES.FORM.FALLBACK_TEAMS') }}
+            {{ t('STAYDESK.QUEUES.FORM.GROUPS') }}
           </legend>
-          <TagMultiSelectComboBox
-            v-model="form.fallbackTeamIds"
-            :options="fallbackOptions"
-            :placeholder="t('STAYDESK.QUEUES.FORM.FALLBACK_PLACEHOLDER')"
-            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
-            :empty-state="t('STAYDESK.PICKER.EMPTY')"
-          />
-          <label class="grid max-w-md gap-1 text-sm text-n-slate-12">
-            <span>{{ t('STAYDESK.QUEUES.FORM.MODE') }}</span>
-            <Select
-              v-model="form.fallbackMode"
-              :options="modeOptions"
-              :disabled="!form.fallbackTeamIds.length"
+          <p class="m-0 text-xs text-n-slate-11">
+            {{ t('STAYDESK.QUEUES.FORM.GROUPS_HINT') }}
+          </p>
+          <label class="grid gap-1 text-sm text-n-slate-12">
+            <span>{{ t('STAYDESK.QUEUES.FORM.TEAM') }}</span>
+            <TagMultiSelectComboBox
+              v-model="form.teamIds"
+              :options="teamOptions"
+              :placeholder="t('STAYDESK.QUEUES.FORM.TEAM_PLACEHOLDER')"
+              :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+              :empty-state="t('STAYDESK.PICKER.EMPTY')"
             />
           </label>
-          <label class="grid max-w-xs gap-1 text-sm text-n-slate-12">
-            <span>{{ t('STAYDESK.QUEUES.FORM.FALLBACK_MINUTES') }}</span>
-            <input
-              v-model="form.fallbackAfterMinutes"
-              type="number"
-              min="1"
-              :disabled="
-                !form.fallbackTeamIds.length || form.fallbackMode === 'sempre'
-              "
-              class="h-9 w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12 disabled:opacity-50"
-            />
+          <label class="flex items-center gap-2 text-sm text-n-slate-12">
+            <Switch v-model="form.secondaryEnabled" />
+            {{ t('STAYDESK.QUEUES.FORM.SECONDARY_ENABLE') }}
           </label>
+          <template v-if="form.secondaryEnabled">
+            <label class="grid gap-1 text-sm text-n-slate-12">
+              <span>{{ t('STAYDESK.QUEUES.FORM.FALLBACK_TEAMS') }}</span>
+              <TagMultiSelectComboBox
+                v-model="form.fallbackTeamIds"
+                :options="secondaryOptions"
+                :placeholder="t('STAYDESK.QUEUES.FORM.FALLBACK_PLACEHOLDER')"
+                :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+                :empty-state="t('STAYDESK.PICKER.EMPTY')"
+              />
+            </label>
+            <label class="grid max-w-xs gap-1 text-sm text-n-slate-12">
+              <span>{{ t('STAYDESK.QUEUES.FORM.FALLBACK_MINUTES') }}</span>
+              <input
+                v-model="form.fallbackAfterMinutes"
+                type="number"
+                min="1"
+                class="h-9 w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
+              />
+            </label>
+            <p class="m-0 text-xs text-n-slate-11">
+              {{ t('STAYDESK.QUEUES.FORM.FALLBACK_HINT') }}
+            </p>
+          </template>
         </fieldset>
-        <p class="text-xs text-n-slate-11">
-          {{ t('STAYDESK.QUEUES.FORM.FALLBACK_HINT') }}
-        </p>
         <fieldset class="grid gap-3">
           <legend class="text-sm text-n-slate-12">
             {{ t('STAYDESK.QUEUES.FORM.PRIORITY') }}
@@ -475,7 +475,7 @@ const aoEnviar = event => {
               </p>
             </td>
             <td class="py-3 pr-4 text-n-slate-12">
-              {{ queue.team_name }}
+              {{ (queue.team_names || [queue.team_name]).join(', ') }}
               <span
                 v-if="(queue.fallback_team_names || []).length"
                 class="text-xs text-n-slate-11"

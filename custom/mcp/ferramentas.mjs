@@ -52,9 +52,8 @@ export const FERRAMENTAS = [
   criar('filas', 'staydesk/queues', 'queue', 'Cria uma fila de encaminhamento.', {
     name: TEXTO,
     description: TEXTO,
-    team_id: NUMERO,
+    team_ids: LISTA,
     fallback_team_ids: LISTA,
-    fallback_mode: { ...TEXTO, enum: ['sempre', 'quando_faltar'] },
     priority_mode: { ...TEXTO, enum: ['chegada', 'sla'] },
     fallback_after_minutes: NUMERO,
     accept_required: BOOLEANO,
@@ -64,9 +63,8 @@ export const FERRAMENTAS = [
   atualizar('filas', 'staydesk/queues', 'queue', 'Altera uma fila de encaminhamento.', {
     name: TEXTO,
     description: TEXTO,
-    team_id: NUMERO,
+    team_ids: LISTA,
     fallback_team_ids: LISTA,
-    fallback_mode: { ...TEXTO, enum: ['sempre', 'quando_faltar'] },
     priority_mode: { ...TEXTO, enum: ['chegada', 'sla'] },
     fallback_after_minutes: NUMERO,
     accept_required: BOOLEANO,
