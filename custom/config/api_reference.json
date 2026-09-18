@@ -1,0 +1,1241 @@
+{
+  "_comentario": "Referência da API do StayDesk, renderizada na Central. Um teste confere que todo endpoint aqui existe nas rotas e que toda rota de staydesk/ está aqui: a documentação não desatualiza sem quebrar o build.",
+  "base": "/api/v1/accounts/{account_id}",
+  "grupos": [
+    {
+      "chave": "comecar",
+      "titulo": "Começar",
+      "texto": "Toda chamada vai para `/api/v1/accounts/{account_id}/...` com o cabeçalho `api_access_token`. O token pode ser o pessoal de um usuário ou, o recomendado para integração, um token de API com escopo próprio, criado em Central › Pessoas › Tokens de API.\n\nO token age em nome de um agente e só alcança os escopos marcados: o escopo estreita, nunca amplia o que essa pessoa pode. Endpoint fora do escopo responde 403 dizendo qual escopo falta.\n\nRespostas são JSON. Erro de validação volta 422 com `message`; falta de permissão volta 401 ou 403; token inválido, suspenso ou vencido volta 401.",
+      "exemplo": "curl -H \"api_access_token: sd_seu_token\" \\\n  \"https://staydesk.staycloud.com.br/api/v1/accounts/1/staydesk/kpis?since=2026-09-01T00:00:00Z\"",
+      "endpoints": [
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/ping",
+          "resumo": "Diz se a camada StayDesk está no ar. Serve para monitoração.",
+          "escopo": "operacao:leitura"
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/api_reference",
+          "escopo": "operacao:leitura",
+          "resumo": "Esta própria referência, em JSON. É o que a Central usa para desenhar esta página."
+        }
+      ]
+    },
+    {
+      "chave": "numeros",
+      "titulo": "Números da operação",
+      "texto": "Os indicadores são calculados no servidor, então a Central, o dashboard e o MCP leem a mesma conta.",
+      "endpoints": [
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/kpis",
+          "resumo": "CSAT, tempos de primeira resposta, resposta e resolução por fila de carga, quem espera na fila e o tempo de cada agente em cada status.",
+          "escopo": "relatorios:leitura",
+          "mcp": "staydesk_kpis",
+          "query": [
+            {
+              "nome": "since",
+              "tipo": "data ISO 8601",
+              "descricao": "Início do período. Padrão: 7 dias atrás"
+            },
+            {
+              "nome": "until",
+              "tipo": "data ISO 8601",
+              "descricao": "Fim do período. Padrão: agora"
+            }
+          ],
+          "resposta": {
+            "periodo": {
+              "de": "2026-09-11T12:00:00Z",
+              "ate": "2026-09-18T12:00:00Z"
+            },
+            "csat": {
+              "respostas": 52,
+              "satisfeitos": 42,
+              "percentual": 80.8,
+              "media": 4.2
+            },
+            "tempos": {
+              "chat": {
+                "primeira_resposta": {
+                  "segundos": 1080,
+                  "amostras": 90
+                }
+              }
+            },
+            "fila": {
+              "total": 6,
+              "por_fila": {
+                "ticket": 6
+              },
+              "espera_mais_antiga_em_segundos": 920409
+            },
+            "agentes": [
+              {
+                "user_id": 2,
+                "nome": "Ana Ribeiro",
+                "status_atual": "Só chat",
+                "online": true,
+                "segundos_disponivel": 26781
+              }
+            ]
+          }
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/agent_loads",
+          "resumo": "Quantas conversas cada agente atende agora em cada fila de carga, contra o limite do status dele.",
+          "escopo": "relatorios:leitura",
+          "mcp": "staydesk_carga_dos_agentes"
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/offer_stats",
+          "resumo": "Aceitação de chat e WhatsApp por agente: oferecidos, aceitos, recusados, expirados, taxa e tempo médio de resposta.",
+          "escopo": "relatorios:leitura",
+          "mcp": "staydesk_aceitacao_dos_agentes",
+          "query": [
+            {
+              "nome": "since",
+              "tipo": "data ISO 8601",
+              "descricao": "Início do período. Padrão: 7 dias atrás"
+            },
+            {
+              "nome": "until",
+              "tipo": "data ISO 8601",
+              "descricao": "Fim do período"
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/events",
+          "resumo": "Linha do tempo das conversas: mudanças de status, responsável, grupo e prioridade.",
+          "escopo": "relatorios:leitura",
+          "mcp": "staydesk_eventos_das_conversas",
+          "query": [
+            {
+              "nome": "since",
+              "tipo": "data ISO 8601",
+              "descricao": "Início do período"
+            },
+            {
+              "nome": "until",
+              "tipo": "data ISO 8601",
+              "descricao": "Fim do período"
+            },
+            {
+              "nome": "limit",
+              "tipo": "inteiro",
+              "descricao": "Quantos eventos por página. Teto de 500"
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/applied_slas",
+          "resumo": "SLA aplicado a cada conversa, com alvo, status e quando vence.",
+          "escopo": "relatorios:leitura",
+          "mcp": "staydesk_slas_aplicados",
+          "query": [
+            {
+              "nome": "since",
+              "tipo": "data ISO 8601",
+              "descricao": "Início do período"
+            },
+            {
+              "nome": "until",
+              "tipo": "data ISO 8601",
+              "descricao": "Fim do período"
+            },
+            {
+              "nome": "limit",
+              "tipo": "inteiro",
+              "descricao": "Teto de 500"
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/agent_status_periods",
+          "resumo": "Os períodos crus de status de cada agente, para quem quiser recalcular tempo por conta própria.",
+          "escopo": "relatorios:leitura"
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/agent_status_periods",
+          "resumo": "Registra a troca de status de quem está chamando.",
+          "escopo": "operacao:escrita",
+          "corpo": [
+            {
+              "nome": "agent_status_id",
+              "tipo": "inteiro",
+              "descricao": "O status que passa a valer",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/conversations/{conversation_id}/sla",
+          "resumo": "O SLA de uma conversa: política, alvos, o que já foi cumprido e o que está correndo.",
+          "escopo": "relatorios:leitura",
+          "path": [
+            {
+              "nome": "conversation_id",
+              "tipo": "inteiro",
+              "descricao": "Número da conversa",
+              "obrigatorio": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chave": "campos",
+      "titulo": "Campos do ticket",
+      "texto": "Campo do ticket é atributo personalizado de conversa. Cada um pode ser marcado como obrigatório para resolver: com a marcação ligada, o agente não fecha a conversa enquanto o campo estiver vazio, e a tentativa volta 422 dizendo quais campos faltam. Automação, robô e resolução automática não travam.\n\nCriar e alterar campo é no endpoint nativo `custom_attribute_definitions`, que aceita `staydesk_required_to_resolve`.",
+      "endpoints": [
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/ticket_fields",
+          "resumo": "Catálogo de campos do ticket da conta, com tipo, opções da lista e quais são obrigatórios para resolver.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_campos_do_ticket_listar"
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/conversations/{conversation_id}/ticket_fields",
+          "resumo": "Os campos com o valor de cada um nesta conversa e a lista do que falta preencher para poder resolver.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_campos_da_conversa",
+          "path": [
+            {
+              "nome": "conversation_id",
+              "tipo": "inteiro",
+              "descricao": "Número da conversa",
+              "obrigatorio": true
+            }
+          ],
+          "resposta": {
+            "fields": [
+              {
+                "key": "tipo_de_demanda",
+                "label": "Tipo de Demanda",
+                "type": "list",
+                "values": [
+                  "Suporte",
+                  "Dúvida"
+                ],
+                "required_to_resolve": true,
+                "value": null,
+                "filled": false
+              }
+            ],
+            "missing_to_resolve": [
+              "tipo_de_demanda"
+            ]
+          }
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/conversations/{conversation_id}/ticket_fields",
+          "resumo": "Preenche os campos informados, deixando os demais como estão.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_campos_da_conversa_preencher",
+          "path": [
+            {
+              "nome": "conversation_id",
+              "tipo": "inteiro",
+              "descricao": "Número da conversa",
+              "obrigatorio": true
+            }
+          ],
+          "corpo": [
+            {
+              "nome": "custom_attributes",
+              "tipo": "objeto",
+              "descricao": "Chave do campo para o valor",
+              "obrigatorio": true
+            }
+          ],
+          "exemplo": "curl -X PATCH -H \"api_access_token: $TOKEN\" -H 'content-type: application/json' \\\n  -d '{\"custom_attributes\":{\"tipo_de_demanda\":\"Suporte\"}}' \\\n  \"$URL/api/v1/accounts/1/staydesk/conversations/423/ticket_fields\""
+        }
+      ]
+    },
+    {
+      "chave": "filas",
+      "titulo": "Filas",
+      "texto": "A **fila de encaminhamento** decide o grupo dono do trabalho, pelo canal e pela caixa de entrada. A **fila de carga** decide em qual balde a conversa conta para o limite do agente.",
+      "endpoints": [
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/queues",
+          "resumo": "Filas de encaminhamento, na ordem em que são avaliadas.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_filas_listar"
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/queues",
+          "resumo": "Cria uma fila de encaminhamento.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_filas_criar",
+          "corpo": [
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome da fila",
+              "obrigatorio": true
+            },
+            {
+              "nome": "team_id",
+              "tipo": "inteiro",
+              "descricao": "O grupo dono do trabalho",
+              "obrigatorio": true
+            },
+            {
+              "nome": "description",
+              "tipo": "texto",
+              "descricao": "Para que a fila serve"
+            },
+            {
+              "nome": "channel_types",
+              "tipo": "lista",
+              "descricao": "Canais que entram. Vazio é todos"
+            },
+            {
+              "nome": "inbox_ids",
+              "tipo": "lista",
+              "descricao": "Caixas específicas. A caixa vence o canal"
+            },
+            {
+              "nome": "fallback_team_ids",
+              "tipo": "lista",
+              "descricao": "Grupos que ajudam"
+            },
+            {
+              "nome": "fallback_mode",
+              "tipo": "texto",
+              "descricao": "sempre ou quando_faltar"
+            },
+            {
+              "nome": "fallback_after_minutes",
+              "tipo": "inteiro",
+              "descricao": "Minutos antes de liberar o transbordo"
+            },
+            {
+              "nome": "accept_required",
+              "tipo": "booleano",
+              "descricao": "Se o agente precisa aceitar"
+            },
+            {
+              "nome": "accept_timeout_seconds",
+              "tipo": "inteiro",
+              "descricao": "Segundos até voltar para a fila"
+            },
+            {
+              "nome": "conditions",
+              "tipo": "lista",
+              "descricao": "Condições avançadas, no formato do filtro do produto"
+            }
+          ]
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/queues/{id}",
+          "resumo": "Altera uma fila de encaminhamento.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_filas_atualizar",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da fila",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "PUT",
+          "caminho": "staydesk/queues/reorder",
+          "resumo": "Troca a ordem em que as filas são avaliadas.",
+          "escopo": "operacao:escrita",
+          "corpo": [
+            {
+              "nome": "ids",
+              "tipo": "lista",
+              "descricao": "Ids na ordem desejada",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "DELETE",
+          "caminho": "staydesk/queues/{id}",
+          "resumo": "Remove uma fila.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da fila",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/load_queues",
+          "resumo": "Filas de carga. Sem nenhuma configurada, devolve o padrão do produto.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_filas_de_carga_listar"
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/load_queues",
+          "resumo": "Cria uma fila de carga.",
+          "escopo": "operacao:escrita",
+          "corpo": [
+            {
+              "nome": "key",
+              "tipo": "texto",
+              "descricao": "Chave usada no limite do status do agente",
+              "obrigatorio": true
+            },
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome que aparece na tela",
+              "obrigatorio": true
+            },
+            {
+              "nome": "channel_types",
+              "tipo": "lista",
+              "descricao": "Canais desta fila"
+            },
+            {
+              "nome": "inbox_ids",
+              "tipo": "lista",
+              "descricao": "Caixas específicas"
+            },
+            {
+              "nome": "catch_all",
+              "tipo": "booleano",
+              "descricao": "Fica com o que nenhuma outra reivindicou"
+            }
+          ]
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/load_queues/{id}",
+          "resumo": "Altera uma fila de carga.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_filas_de_carga_atualizar",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da fila de carga",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "DELETE",
+          "caminho": "staydesk/load_queues/{id}",
+          "resumo": "Remove uma fila de carga.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da fila de carga",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/offers",
+          "resumo": "Convites de atendimento pendentes de quem está chamando.",
+          "escopo": "operacao:leitura"
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/offers/{id}/accept",
+          "escopo": "operacao:escrita",
+          "resumo": "Aceita um convite de atendimento. A conversa passa a ser do agente.",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do convite",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/offers/{id}/decline",
+          "escopo": "operacao:escrita",
+          "resumo": "Recusa um convite. A conversa volta para a fila e é oferecida a outro agente.",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do convite",
+              "obrigatorio": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chave": "status",
+      "titulo": "Status do ticket e do agente",
+      "texto": "O catálogo de status do ticket fica por cima dos quatro status do Chatwoot. O status do agente define disponibilidade e o limite de conversas simultâneas por fila de carga.",
+      "endpoints": [
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/ticket_statuses",
+          "resumo": "Catálogo de status do ticket.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_status_do_ticket_listar"
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/ticket_statuses",
+          "resumo": "Cria um status do ticket.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_status_do_ticket_criar",
+          "corpo": [
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome do status",
+              "obrigatorio": true
+            },
+            {
+              "nome": "base_status",
+              "tipo": "texto",
+              "descricao": "open, pending, snoozed ou resolved",
+              "obrigatorio": true
+            },
+            {
+              "nome": "description",
+              "tipo": "texto",
+              "descricao": "O que este status quer dizer"
+            },
+            {
+              "nome": "color",
+              "tipo": "texto",
+              "descricao": "Cor em hexadecimal"
+            },
+            {
+              "nome": "default_for_base",
+              "tipo": "booleano",
+              "descricao": "É o padrão quando o status base muda por fora"
+            },
+            {
+              "nome": "apply_on_assign",
+              "tipo": "booleano",
+              "descricao": "A conversa assume este status ao ganhar responsável"
+            }
+          ]
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/ticket_statuses/{id}",
+          "resumo": "Altera um status do ticket.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_status_do_ticket_atualizar",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do status",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "PUT",
+          "caminho": "staydesk/ticket_statuses/reorder",
+          "resumo": "Troca a ordem do catálogo.",
+          "escopo": "operacao:escrita",
+          "corpo": [
+            {
+              "nome": "ids",
+              "tipo": "lista",
+              "descricao": "Ids na ordem desejada",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "DELETE",
+          "caminho": "staydesk/ticket_statuses/{id}",
+          "resumo": "Remove um status do ticket.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do status",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/agent_statuses",
+          "resumo": "Status de agente da conta e o status atual de quem chama.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_status_do_agente_listar"
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/agent_statuses",
+          "resumo": "Cria um status de agente.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_status_do_agente_criar",
+          "corpo": [
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome do status",
+              "obrigatorio": true
+            },
+            {
+              "nome": "availability",
+              "tipo": "texto",
+              "descricao": "online ou busy",
+              "obrigatorio": true
+            },
+            {
+              "nome": "capacity",
+              "tipo": "objeto",
+              "descricao": "Limite por fila de carga, como {\"chat\": 6, \"ticket\": 0}"
+            },
+            {
+              "nome": "inbox_ids",
+              "tipo": "lista",
+              "descricao": "Caixas que este status atende. Vazio é todas"
+            },
+            {
+              "nome": "color",
+              "tipo": "texto",
+              "descricao": "Cor em hexadecimal"
+            }
+          ]
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/agent_statuses/{id}",
+          "resumo": "Altera um status de agente.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_status_do_agente_atualizar",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do status",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "DELETE",
+          "caminho": "staydesk/agent_statuses/{id}",
+          "resumo": "Remove um status de agente.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do status",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/conversations/{conversation_id}/ticket_status",
+          "escopo": "operacao:escrita",
+          "resumo": "Aplica um status do ticket a uma conversa, alinhando o status base do Chatwoot na mesma operação.",
+          "path": [
+            {
+              "nome": "conversation_id",
+              "tipo": "inteiro",
+              "descricao": "Número da conversa",
+              "obrigatorio": true
+            }
+          ],
+          "corpo": [
+            {
+              "nome": "ticket_status_id",
+              "tipo": "inteiro",
+              "descricao": "Status a aplicar",
+              "obrigatorio": true
+            },
+            {
+              "nome": "snoozed_until",
+              "tipo": "data",
+              "descricao": "Quando voltar, se o status for de espera"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chave": "sla",
+      "titulo": "SLA e calendário",
+      "texto": "As políticas de SLA são avaliadas na ordem e a primeira que casar vale. O calendário define horário comercial e feriados, e é o que faz o prazo parar fora do expediente.",
+      "endpoints": [
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/sla_policies",
+          "resumo": "Políticas de SLA da conta.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_politicas_de_sla_listar"
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/sla_policies/{id}",
+          "resumo": "Uma política de SLA.",
+          "escopo": "operacao:leitura",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da política",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/sla_policies",
+          "resumo": "Cria uma política de SLA.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_politicas_de_sla_criar",
+          "corpo": [
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome da política",
+              "obrigatorio": true
+            },
+            {
+              "nome": "targets",
+              "tipo": "objeto",
+              "descricao": "Alvos em minutos por métrica e prioridade"
+            },
+            {
+              "nome": "conditions",
+              "tipo": "lista",
+              "descricao": "Quando a política se aplica"
+            },
+            {
+              "nome": "pause_statuses",
+              "tipo": "lista",
+              "descricao": "Status que param o relógio"
+            },
+            {
+              "nome": "warning_ratio",
+              "tipo": "número",
+              "descricao": "Percentual do alvo que dispara o aviso"
+            },
+            {
+              "nome": "calendar_id",
+              "tipo": "inteiro",
+              "descricao": "Calendário do horário comercial"
+            }
+          ]
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/sla_policies/{id}",
+          "resumo": "Altera uma política de SLA.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da política",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "PUT",
+          "caminho": "staydesk/sla_policies/reorder",
+          "resumo": "Troca a ordem de avaliação.",
+          "escopo": "operacao:escrita",
+          "corpo": [
+            {
+              "nome": "ids",
+              "tipo": "lista",
+              "descricao": "Ids na ordem desejada",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "DELETE",
+          "caminho": "staydesk/sla_policies/{id}",
+          "resumo": "Remove uma política.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da política",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/calendars",
+          "resumo": "Calendários de horário comercial.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_calendarios_listar"
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/calendars/{id}",
+          "resumo": "Um calendário, com horários e feriados.",
+          "escopo": "operacao:leitura",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do calendário",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/calendars",
+          "resumo": "Cria um calendário.",
+          "escopo": "operacao:escrita",
+          "corpo": [
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome do calendário",
+              "obrigatorio": true
+            },
+            {
+              "nome": "timezone",
+              "tipo": "texto",
+              "descricao": "Fuso, como America/Sao_Paulo"
+            },
+            {
+              "nome": "weekly_hours",
+              "tipo": "lista",
+              "descricao": "Dia, abertura e fechamento"
+            },
+            {
+              "nome": "holidays",
+              "tipo": "lista",
+              "descricao": "Data e nome de cada feriado"
+            }
+          ]
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/calendars/{id}",
+          "resumo": "Altera um calendário.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do calendário",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "DELETE",
+          "caminho": "staydesk/calendars/{id}",
+          "resumo": "Remove um calendário.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do calendário",
+              "obrigatorio": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chave": "visualizacoes",
+      "titulo": "Visualizações e área de trabalho",
+      "texto": "As visualizações são as filas que o agente vê no Hub. A área de trabalho define menus, colunas, campos e painéis, por time e por papel.",
+      "endpoints": [
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/team_views",
+          "resumo": "Visualizações que quem chama enxerga.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_visualizacoes_listar"
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/team_views/counts",
+          "resumo": "Quantas conversas há em cada visualização.",
+          "escopo": "operacao:leitura"
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/team_views/{id}",
+          "resumo": "Uma visualização, com filtro, colunas e ordem.",
+          "escopo": "operacao:leitura",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da visualização",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/team_views/{id}/conversations",
+          "resumo": "As conversas de uma visualização.",
+          "escopo": "operacao:leitura",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da visualização",
+              "obrigatorio": true
+            }
+          ],
+          "query": [
+            {
+              "nome": "page",
+              "tipo": "inteiro",
+              "descricao": "Página"
+            }
+          ]
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/team_views",
+          "resumo": "Cria uma visualização.",
+          "escopo": "operacao:escrita",
+          "corpo": [
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome",
+              "obrigatorio": true
+            },
+            {
+              "nome": "query",
+              "tipo": "objeto",
+              "descricao": "Filtro, no formato do produto. `me` no valor vira o id de quem pede"
+            },
+            {
+              "nome": "columns",
+              "tipo": "lista",
+              "descricao": "Colunas da tabela"
+            },
+            {
+              "nome": "sort_by",
+              "tipo": "texto",
+              "descricao": "Ordenação"
+            },
+            {
+              "nome": "team_ids",
+              "tipo": "lista",
+              "descricao": "Grupos que enxergam. Vazio é a conta toda"
+            },
+            {
+              "nome": "color",
+              "tipo": "texto",
+              "descricao": "Cor do marcador"
+            }
+          ]
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/team_views/{id}",
+          "resumo": "Altera uma visualização.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da visualização",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "DELETE",
+          "caminho": "staydesk/team_views/{id}",
+          "resumo": "Remove uma visualização.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da visualização",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/workspace",
+          "resumo": "A área de trabalho já resolvida para quem chama.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_area_de_trabalho"
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/team_workspaces",
+          "resumo": "Área de trabalho de cada time.",
+          "escopo": "operacao:leitura"
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/team_workspaces/schema",
+          "resumo": "O esquema do que a área de trabalho aceita.",
+          "escopo": "operacao:leitura"
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/team_workspaces/{team_id}",
+          "resumo": "A área de trabalho de um time.",
+          "escopo": "operacao:leitura",
+          "path": [
+            {
+              "nome": "team_id",
+              "tipo": "inteiro",
+              "descricao": "Id do time",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/team_workspaces/{team_id}",
+          "resumo": "Altera a área de trabalho de um time.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "team_id",
+              "tipo": "inteiro",
+              "descricao": "Id do time",
+              "obrigatorio": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "chave": "acesso",
+      "titulo": "Pessoas e acesso",
+      "texto": "Papéis com permissão granular, tokens de integração e a entrada na conta de um agente para acompanhar o trabalho.",
+      "endpoints": [
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/roles",
+          "resumo": "Papéis da conta e o catálogo de permissões disponível.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_papeis_listar"
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/roles",
+          "resumo": "Cria um papel.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_papeis_criar",
+          "corpo": [
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome do papel",
+              "obrigatorio": true
+            },
+            {
+              "nome": "description",
+              "tipo": "texto",
+              "descricao": "O que este papel libera"
+            },
+            {
+              "nome": "permissions",
+              "tipo": "lista",
+              "descricao": "Chaves do catálogo de permissões"
+            }
+          ]
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/roles/{id}",
+          "resumo": "Altera um papel.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do papel",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "DELETE",
+          "caminho": "staydesk/roles/{id}",
+          "resumo": "Remove um papel.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do papel",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/agent_roles",
+          "resumo": "Quem tem qual papel na conta.",
+          "escopo": "operacao:leitura"
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/agent_roles/{user_id}",
+          "resumo": "Dá ou tira o papel de um agente.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "user_id",
+              "tipo": "inteiro",
+              "descricao": "Id do usuário",
+              "obrigatorio": true
+            }
+          ],
+          "corpo": [
+            {
+              "nome": "staydesk_role_id",
+              "tipo": "inteiro",
+              "descricao": "Papel a conceder. Nulo remove"
+            },
+            {
+              "nome": "kind",
+              "tipo": "texto",
+              "descricao": "full ou light"
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/api_tokens",
+          "resumo": "Tokens de API da conta, com escopos, dono e último uso, mais o catálogo de escopos.",
+          "escopo": "operacao:leitura",
+          "mcp": "staydesk_tokens_de_api_listar"
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/api_tokens",
+          "resumo": "Cria um token de API. O valor em claro volta uma única vez nesta resposta.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_tokens_de_api_criar",
+          "corpo": [
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome do token",
+              "obrigatorio": true
+            },
+            {
+              "nome": "scopes",
+              "tipo": "lista",
+              "descricao": "Escopos no formato grupo:acao",
+              "obrigatorio": true
+            },
+            {
+              "nome": "description",
+              "tipo": "texto",
+              "descricao": "Para que serve"
+            },
+            {
+              "nome": "user_id",
+              "tipo": "inteiro",
+              "descricao": "Em nome de quem o token age. Padrão: quem criou"
+            },
+            {
+              "nome": "expires_at",
+              "tipo": "data",
+              "descricao": "Quando o token vence"
+            }
+          ]
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/api_tokens/{id}",
+          "resumo": "Suspende, reativa ou troca os escopos de um token.",
+          "escopo": "operacao:escrita",
+          "mcp": "staydesk_tokens_de_api_atualizar",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do token",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "DELETE",
+          "caminho": "staydesk/api_tokens/{id}",
+          "resumo": "Revoga um token de vez.",
+          "escopo": "operacao:escrita",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do token",
+              "obrigatorio": true
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "staydesk/impersonations",
+          "resumo": "Trilha de quem entrou na conta de quem.",
+          "escopo": "operacao:leitura"
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/impersonations",
+          "resumo": "Entra na conta de um agente por cinco minutos.",
+          "escopo": "operacao:escrita",
+          "corpo": [
+            {
+              "nome": "user_id",
+              "tipo": "inteiro",
+              "descricao": "Agente a acompanhar",
+              "obrigatorio": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

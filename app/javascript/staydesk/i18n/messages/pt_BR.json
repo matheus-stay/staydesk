@@ -579,6 +579,23 @@
       "API": {
         "SAVE_ERROR": "Não foi possível salvar a fila de carga"
       }
+    },
+    "API_DOCS": {
+      "TITLE": "Documentação da API",
+      "DESCRIPTION": "Os {total} endpoints do StayDesk, com escopo, parâmetros e exemplo de chamada. O que está aqui existe de verdade: um teste confere esta página contra as rotas do servidor.",
+      "SEARCH": "Buscar endpoint, caminho ou ferramenta do MCP…",
+      "LOADING": "Carregando a referência…",
+      "EMPTY": "Nada encontrado para \"{term}\".",
+      "REQUIRED": "obrigatório",
+      "REQUEST": "Chamada",
+      "RESPONSE": "Resposta",
+      "COPY": "Copiar",
+      "VIA_MCP": "MCP: {tool}",
+      "PARAMS": {
+        "PATH": "No caminho",
+        "QUERY": "Na query",
+        "BODY": "No corpo"
+      }
     }
   },
   "AUTOMATION": {

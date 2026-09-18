@@ -150,6 +150,7 @@ export const useStaydeskSidebar = () => {
       icon: 'i-lucide-building-2',
       itens: [
         'Settings Account Settings',
+        'StaydeskApiDocs',
         'Settings Integrations',
         'Settings Data',
         'Settings Audit Logs',
@@ -220,6 +221,13 @@ export const useStaydeskSidebar = () => {
       icon: 'i-lucide-layout-dashboard',
       activeOn: ['staydesk_workspace_settings'],
       to: accountScopedRoute('staydesk_workspace_settings'),
+    },
+    {
+      name: 'StaydeskApiDocs',
+      label: t('STAYDESK.API_DOCS.TITLE'),
+      icon: 'i-lucide-code-xml',
+      activeOn: ['staydesk_api_docs'],
+      to: accountScopedRoute('staydesk_api_docs'),
     },
     {
       name: 'StaydeskApiTokensSettings',

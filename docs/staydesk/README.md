@@ -26,7 +26,7 @@ O produto tem dois espaços, com nome próprio:
 | [permissoes.md](permissoes.md) | Papéis com permissão granular e o agente leve |
 | [kpis.md](kpis.md) | Os números que a Central mostra e de onde cada um sai |
 | [tokens-de-api.md](tokens-de-api.md) | Chaves de integração com escopo de leitura e de escrita |
-| [api-e-mcp.md](api-e-mcp.md) | Todos os endpoints e o servidor MCP |
+| [api-e-mcp.md](api-e-mcp.md) | Todos os endpoints e o servidor MCP. A referência navegável fica na Central, em Documentação da API |
 | [agente-leve.md](agente-leve.md) | O papel que só lê e escreve nota interna |
 | [api-de-eventos.md](api-de-eventos.md) | Linha do tempo das conversas para o dashboard |
 

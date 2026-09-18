@@ -2,6 +2,7 @@ import { frontendURL } from 'dashboard/helper/URLHelper';
 import ConversationView from 'dashboard/routes/dashboard/conversation/ConversationView.vue';
 import SettingsWrapper from 'dashboard/routes/dashboard/settings/SettingsWrapper.vue';
 import CentralHome from './pages/CentralHome.vue';
+import ApiDocs from './pages/ApiDocs.vue';
 import ApiTokensSettings from './pages/ApiTokensSettings.vue';
 import TeamViewsSettings from './pages/TeamViewsSettings.vue';
 import WorkspaceSettings from './pages/WorkspaceSettings.vue';
@@ -66,6 +67,18 @@ const routes = [
         name: 'staydesk_central_home',
         component: CentralHome,
         meta: { permissions: CONFIGURA },
+      },
+    ],
+  },
+  {
+    path: frontendURL('accounts/:accountId/settings/staydesk/api-docs'),
+    component: SettingsWrapper,
+    children: [
+      {
+        path: '',
+        name: 'staydesk_api_docs',
+        component: ApiDocs,
+        meta: { permissions: CONVERSATION_PERMISSIONS },
       },
     ],
   },

@@ -1,5 +1,10 @@
 # API e MCP do StayDesk
 
+> A referência completa, com parâmetros e exemplos por endpoint, está **dentro do
+> produto**: Central › Conta › Documentação da API. Ela é gerada de
+> `custom/config/api_reference.json`, e um teste confere esse arquivo contra as
+> rotas do servidor, então a página não desatualiza sem quebrar o build.
+
 Tudo que a Central configura e mostra tem endpoint próprio, sob
 `/api/v1/accounts/:account_id/staydesk/`. O MCP em `custom/mcp` fala com esses
 mesmos endpoints, então tela, dashboard e agente de IA leem a mesma conta.

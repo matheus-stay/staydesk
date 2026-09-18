@@ -579,6 +579,23 @@
       "API": {
         "SAVE_ERROR": "Could not save the load queue"
       }
+    },
+    "API_DOCS": {
+      "TITLE": "API documentation",
+      "DESCRIPTION": "The {total} StayDesk endpoints, with scope, parameters and a call example. What is here really exists: a test checks this page against the server routes.",
+      "SEARCH": "Search endpoint, path or MCP tool…",
+      "LOADING": "Loading the reference…",
+      "EMPTY": "Nothing found for \"{term}\".",
+      "REQUIRED": "required",
+      "REQUEST": "Request",
+      "RESPONSE": "Response",
+      "COPY": "Copy",
+      "VIA_MCP": "MCP: {tool}",
+      "PARAMS": {
+        "PATH": "In the path",
+        "QUERY": "In the query",
+        "BODY": "In the body"
+      }
     }
   },
   "AUTOMATION": {

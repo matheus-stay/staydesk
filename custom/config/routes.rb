@@ -40,6 +40,7 @@ Rails.application.routes.draw do
             resources :kpis, only: [:index]
             resources :api_tokens, only: [:index, :create, :update, :destroy]
             resources :ticket_fields, only: [:index]
+            resource :api_reference, only: [:show], controller: 'api_reference'
             resources :offer_stats, only: [:index]
             resources :ticket_statuses, only: [:index, :create, :update, :destroy] do
               collection do
