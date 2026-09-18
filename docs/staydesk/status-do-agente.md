@@ -27,3 +27,21 @@ O Chatwoot community não limita quantas conversas a distribuição automática 
 - **Limite conhecido**: vale só para a distribuição automática. Atribuição manual por um administrador não é bloqueada.
 
 O painel **Carga agora**, no fim da página de status, mostra cada agente com o status atual e a carga contra o limite nas duas filas. API: `GET staydesk/agent_loads` (administrador).
+
+## Tempo limite do status
+
+Quem fecha a aba não está atendendo, mas o status ficava gravado como se
+estivesse, e o tempo online seguia contando. Cada status tem um **tempo limite**:
+desconectado por mais que `offline_after_seconds` (padrão 300, mínimo 30, nulo
+desliga), o agente cai do status sozinho. O período fecha, a disponibilidade vai
+a offline e, se o status tiver um destino em `offline_to_status_id`, o agente
+cai nele; sem destino, fica sem status.
+
+A presença é a mesma que a distribuição usa: o sinal de vida da aba, que vence
+em 20 segundos. O padrão de 5 minutos existe porque aba em segundo plano manda o
+sinal mais devagar: com 2 minutos, quem só trocou de janela caía do status. Um job de minuto carimba a presença de quem está conectado e
+desliga quem passou do limite. Ao voltar, a pessoa escolhe o status de novo.
+
+No arquivo de configuração: `desconexao_segundos` e `desconexao_para` em cada
+status. Na tela: Central › Status dos agentes, seção "Tempo limite do status".
+

@@ -44,6 +44,7 @@ const emptyForm = () => ({
   teamId: null,
   fallbackTeamIds: [],
   fallbackMode: 'quando_faltar',
+  priorityMode: 'chegada',
   fallbackAfterMinutes: '',
   channelTypes: [],
   inboxIds: [],
@@ -83,6 +84,12 @@ const oQuePega = queue => {
   return partes.join(', ');
 };
 
+const priorityOptions = computed(() =>
+  ['chegada', 'sla'].map(value => ({
+    value,
+    label: t(`STAYDESK.QUEUES.FORM.PRIORITY_OPTIONS.${value}`),
+  }))
+);
 const fallbackOptions = computed(() =>
   fallbackTeams.value.map(team => ({ value: team.id, label: team.name }))
 );
@@ -149,6 +156,7 @@ const startEdit = queue => {
         teamId: queue.team_id,
         fallbackTeamIds: [...(queue.fallback_team_ids || [])],
         fallbackMode: queue.fallback_mode || 'quando_faltar',
+        priorityMode: queue.priority_mode || 'chegada',
         fallbackAfterMinutes: queue.fallback_after_minutes ?? '',
         channelTypes: [...(queue.channel_types || [])],
         inboxIds: [...(queue.inbox_ids || [])],
@@ -173,6 +181,7 @@ const save = async () => {
       team_id: form.value.teamId,
       fallback_team_ids: form.value.fallbackTeamIds,
       fallback_mode: form.value.fallbackMode,
+      priority_mode: form.value.priorityMode,
       fallback_after_minutes: form.value.fallbackAfterMinutes || null,
       channel_types: form.value.channelTypes,
       inbox_ids: form.value.inboxIds,
@@ -350,6 +359,17 @@ const aoEnviar = event => {
         </p>
         <fieldset class="grid gap-3">
           <legend class="text-sm text-n-slate-12">
+            {{ t('STAYDESK.QUEUES.FORM.PRIORITY') }}
+          </legend>
+          <label class="grid max-w-sm gap-1 text-sm text-n-slate-12">
+            <Select v-model="form.priorityMode" :options="priorityOptions" />
+          </label>
+          <p class="m-0 text-xs text-n-slate-11">
+            {{ t('STAYDESK.QUEUES.FORM.PRIORITY_HINT') }}
+          </p>
+        </fieldset>
+        <fieldset class="grid gap-3">
+          <legend class="text-sm text-n-slate-12">
             {{ t('STAYDESK.QUEUES.FORM.ACCEPT') }}
           </legend>
           <label class="flex items-center gap-2 text-sm text-n-slate-12">
@@ -461,6 +481,12 @@ const aoEnviar = event => {
                 class="text-xs text-n-slate-11"
               >
                 {{ transbordo(queue) }}
+              </span>
+              <span
+                v-if="queue.priority_mode === 'sla'"
+                class="text-xs text-n-slate-11"
+              >
+                {{ t('STAYDESK.QUEUES.PRIORITY_BADGE') }}
               </span>
               <span
                 v-if="queue.accept_required"

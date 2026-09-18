@@ -17,7 +17,8 @@ class Staydesk::KpiService
       csat: csat,
       tempos: tempos,
       fila: fila,
-      agentes: agentes
+      agentes: agentes,
+      resumo_dos_agentes: resumo_dos_agentes
     }
   end
 
@@ -108,10 +109,25 @@ class Staydesk::KpiService
 
   # Quem está online agora e quanto tempo cada um passou em cada status no período.
   def agentes
-    online = conectados
-    Staydesk::Kpi::AgentTimeService.new(account: @account, since: @since, ate: @ate).perform.map do |linha|
-      linha.merge(online: online.include?(linha[:user_id]))
+    @agentes ||= begin
+      online = conectados
+      Staydesk::Kpi::AgentTimeService.new(account: @account, since: @since, ate: @ate).perform.map do |linha|
+        linha.merge(online: online.include?(linha[:user_id]))
+      end
     end
+  end
+
+  # O KPI de tempo online: média entre os agentes que tiveram algum tempo online
+  # no período, no total e por dia trabalhado.
+  def resumo_dos_agentes
+    linhas = agentes.select { |linha| linha[:segundos_online].positive? }
+    return { agentes_com_tempo_online: 0, tempo_online_medio_segundos: 0, media_diaria_online_segundos: 0 } if linhas.empty?
+
+    {
+      agentes_com_tempo_online: linhas.size,
+      tempo_online_medio_segundos: linhas.sum { |linha| linha[:segundos_online] } / linhas.size,
+      media_diaria_online_segundos: linhas.sum { |linha| linha[:media_diaria_online_segundos] } / linhas.size
+    }
   end
 
   def conectados

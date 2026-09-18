@@ -43,9 +43,22 @@ module Staydesk::ConfigImport::Catalogo
         availability: dados['disponibilidade'] || 'online',
         inbox_ids: caixas_por_nome(dados['caixas']),
         capacity: dados['carga'] || {},
+        offline_after_seconds: dados.key?('desconexao_segundos') ? dados['desconexao_segundos'] : 300,
+        counts_as_online: dados.key?('conta_tempo_online') ? dados['conta_tempo_online'] : (dados['disponibilidade'] || 'online') == 'online',
         color: dados['cor'], position: posicao, active: true
       )
       status.name
+    end
+    ligar_destinos_de_desconexao
+  end
+
+  # O destino só existe depois de todos os status estarem criados.
+  def ligar_destinos_de_desconexao
+    secao('status_do_agente').each do |dados|
+      next if dados['desconexao_para'].blank?
+
+      status = Staydesk::AgentStatus.find_by!(account: @account, name: dados.fetch('nome'))
+      status.update!(offline_to_status: Staydesk::AgentStatus.find_by!(account: @account, name: dados['desconexao_para']))
     end
   end
 

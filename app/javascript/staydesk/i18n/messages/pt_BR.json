@@ -366,6 +366,21 @@
           "in_group": "fora do grupo",
           "inbox_member": "fora da caixa"
         }
+      },
+      "TIMEOUT": {
+        "TITLE": "Tempo limite do status",
+        "HINT": "Quem fecha a aba e passa desse tempo cai do status sozinho, e o tempo online para de contar. Deixe vazio para nunca cair.",
+        "AFTER": "Desconectado por (segundos)",
+        "TARGET": "Cai para",
+        "NO_TARGET": "Sem status (offline)",
+        "NEVER": "nunca cai sozinho",
+        "OFFLINE": "sem status",
+        "SUMMARY": "desconectado por {time}, cai para {target}"
+      },
+      "ONLINE_TIME": {
+        "LABEL": "Contabiliza tempo online",
+        "HINT": "O tempo neste status entra no tempo online do agente, que é o KPI da Central. Reunião e almoço normalmente não entram.",
+        "NOT_COUNTED": "não conta como tempo online"
       }
     },
     "TICKET_STATUS": {
@@ -438,7 +453,13 @@
         "CHANNELS": "Canais",
         "CHANNELS_PLACEHOLDER": "Todos os canais",
         "INBOXES": "Caixas de entrada específicas",
-        "INBOXES_PLACEHOLDER": "Todas as caixas do canal"
+        "INBOXES_PLACEHOLDER": "Todas as caixas do canal",
+        "PRIORITY": "Ordem de entrega",
+        "PRIORITY_HINT": "Por chegada, o mais antigo sai primeiro. Por SLA, sai primeiro quem está mais perto de vencer, mesmo que tenha acabado de entrar; o que não tem SLA vai depois, por chegada.",
+        "PRIORITY_OPTIONS": {
+          "chegada": "Por chegada (mais antigo primeiro)",
+          "sla": "Por SLA (mais perto de vencer primeiro)"
+        }
       },
       "DELETE": {
         "BUTTON": "Excluir",
@@ -456,7 +477,8 @@
       "ACCEPT_BADGE": "· exige aceite em {seconds}s",
       "FALLBACK_ALWAYS": "→ {teams} ajudam sempre",
       "FALLBACK_WHEN_MISSING": "→ {teams} quando faltar gente",
-      "ALL_CHANNELS": "Todos os canais"
+      "ALL_CHANNELS": "Todos os canais",
+      "PRIORITY_BADGE": "· entrega por SLA"
     },
     "OFFERS": {
       "TITLE": "Novo atendimento em {inbox}",
@@ -504,10 +526,13 @@
         "RESOLUTION": "resolução em {time}",
         "AGENT": "Agente",
         "STATUS": "Status",
-        "AVAILABLE_TIME": "Tempo disponível",
+        "AVAILABLE_TIME": "Tempo online",
         "NOW": "Agora",
         "CONNECTED": "conectado",
-        "AWAY": "fora"
+        "AWAY": "fora",
+        "ONLINE_TIME": "Tempo online médio por dia",
+        "ONLINE_TIME_HINT": "entre {agents} agentes com tempo online",
+        "PER_DAY": "{time} por dia"
       },
       "SECTION_NOT_FOUND": "Esta seção não existe ou você não tem acesso a ela.",
       "SECTION_HINTS": {

@@ -30,12 +30,34 @@ const emptyForm = () => ({
   inboxIds: [],
   active: true,
   capacity: {},
+  offlineAfterSeconds: 300,
+  offlineToStatusId: null,
+  countsAsOnline: true,
 });
 const form = ref(emptyForm());
 
 const statuses = computed(() => store.statuses);
 // Os limites seguem as filas de carga configuradas, não uma lista fixa no código.
 const loadQueues = computed(() => store.loadQueues);
+const destinoOptions = computed(() => [
+  { value: null, label: t('STAYDESK.AGENT_STATUS.TIMEOUT.NO_TARGET') },
+  ...statuses.value
+    .filter(
+      status => editing.value === 'new' || status.id !== editing.value?.id
+    )
+    .map(status => ({ value: status.id, label: status.name })),
+]);
+const resumoDoLimite = status => {
+  if (!status.offline_after_seconds)
+    return t('STAYDESK.AGENT_STATUS.TIMEOUT.NEVER');
+  const destino = statuses.value.find(
+    item => item.id === status.offline_to_status_id
+  );
+  return t('STAYDESK.AGENT_STATUS.TIMEOUT.SUMMARY', {
+    time: emDuracao(status.offline_after_seconds),
+    target: destino ? destino.name : t('STAYDESK.AGENT_STATUS.TIMEOUT.OFFLINE'),
+  });
+};
 const distributionChecks = computed(() => store.distributionChecks);
 const CHECKS = [
   'connected',
@@ -73,12 +95,13 @@ const startEdit = status => {
         name: status.name,
         color: status.color || '#1a9f63',
         availability: status.availability,
-        inboxIds: [...status.inbox_ids],
+        inboxIds: [...(status.inbox_ids || [])],
         active: status.active,
-        capacity: {
-          chat: status.capacity?.chat ?? '',
-          ticket: status.capacity?.ticket ?? '',
-        },
+        // Os limites seguem as filas de carga da conta, não uma lista fixa.
+        capacity: { ...(status.capacity || {}) },
+        offlineAfterSeconds: status.offline_after_seconds ?? '',
+        offlineToStatusId: status.offline_to_status_id || null,
+        countsAsOnline: status.counts_as_online !== false,
       }
     : emptyForm();
 };
@@ -95,6 +118,12 @@ const save = async () => {
       color: form.value.color,
       availability: form.value.availability,
       inbox_ids: form.value.inboxIds,
+      offline_after_seconds:
+        form.value.offlineAfterSeconds === ''
+          ? null
+          : Number(form.value.offlineAfterSeconds),
+      offline_to_status_id: form.value.offlineToStatusId || null,
+      counts_as_online: form.value.countsAsOnline,
       active: form.value.active,
       capacity: {
         chat: form.value.capacity.chat,
@@ -231,6 +260,43 @@ const aoEnviar = event => {
         <p class="text-xs text-n-slate-11">
           {{ t('STAYDESK.AGENT_STATUS.FORM.CAPACITY_HINT') }}
         </p>
+        <label class="flex items-start gap-2 text-sm text-n-slate-12">
+          <Switch v-model="form.countsAsOnline" />
+          <span class="grid gap-0.5">
+            <span>{{ t('STAYDESK.AGENT_STATUS.ONLINE_TIME.LABEL') }}</span>
+            <span class="text-xs text-n-slate-11">
+              {{ t('STAYDESK.AGENT_STATUS.ONLINE_TIME.HINT') }}
+            </span>
+          </span>
+        </label>
+        <fieldset class="grid gap-3">
+          <legend class="text-sm text-n-slate-12">
+            {{ t('STAYDESK.AGENT_STATUS.TIMEOUT.TITLE') }}
+          </legend>
+          <p class="m-0 text-xs text-n-slate-11">
+            {{ t('STAYDESK.AGENT_STATUS.TIMEOUT.HINT') }}
+          </p>
+          <div class="grid gap-4 md:grid-cols-2">
+            <label class="grid gap-1 text-sm text-n-slate-12">
+              <span>{{ t('STAYDESK.AGENT_STATUS.TIMEOUT.AFTER') }}</span>
+              <input
+                v-model="form.offlineAfterSeconds"
+                type="number"
+                min="30"
+                step="30"
+                :placeholder="t('STAYDESK.AGENT_STATUS.TIMEOUT.NEVER')"
+                class="h-9 w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
+              />
+            </label>
+            <label class="grid gap-1 text-sm text-n-slate-12">
+              <span>{{ t('STAYDESK.AGENT_STATUS.TIMEOUT.TARGET') }}</span>
+              <Select
+                v-model="form.offlineToStatusId"
+                :options="destinoOptions"
+              />
+            </label>
+          </div>
+        </fieldset>
         <fieldset class="grid gap-2">
           <legend class="text-sm text-n-slate-12">
             {{ t('STAYDESK.AGENT_STATUS.FORM.INBOXES') }}
@@ -289,7 +355,13 @@ const aoEnviar = event => {
             </td>
             <td class="py-3 pr-4 text-n-slate-11">{{ inboxNames(status) }}</td>
             <td class="py-3 pr-4 text-n-slate-11">
-              {{ capacitySummary(status) }}
+              <p class="m-0">{{ capacitySummary(status) }}</p>
+              <p class="m-0 text-xs text-n-slate-10">
+                {{ resumoDoLimite(status) }}
+                <template v-if="status.counts_as_online === false">
+                  · {{ t('STAYDESK.AGENT_STATUS.ONLINE_TIME.NOT_COUNTED') }}
+                </template>
+              </p>
             </td>
             <td class="whitespace-nowrap py-3 text-right">
               <Button

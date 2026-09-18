@@ -18,6 +18,7 @@ grupo dono não dá conta. Fica em Central › Atendimento › Filas.
 | Times de transbordo | Quem entra na distribuição além do dono |
 | Modo | `sempre` (trabalham a fila junto) ou `quando_faltar` (só quando não há ninguém do dono) |
 | Espera | Minutos antes de liberar o transbordo, no modo `quando_faltar` |
+| Prioridade | Em que ordem a fila entrega: `chegada` (mais antigo primeiro) ou `sla` (mais perto de vencer primeiro) |
 | Aceite | Se o agente precisa aceitar antes de a conversa virar dele |
 | Tempo para aceitar | Segundos até a conversa voltar para a fila |
 
@@ -93,8 +94,12 @@ O Chatwoot só distribui quando a conversa nasce ou recebe mensagem. Quem entrou
 antes de o agente ficar disponível ficaria esperando para sempre.
 
 A varredura (`Staydesk::Queues::SweepJob`) roda **a cada minuto** e **assim que
-alguém muda de status**. Ela pega o que está aberto e sem responsável, mais
-antigo primeiro, encaminha quem ficou sem grupo e chama a distribuição. Como a
+alguém muda de status**. Ela pega o que está aberto e sem responsável, encaminha
+quem ficou sem grupo e chama a distribuição, na ordem que cada fila manda: fila
+de cima primeiro; dentro dela, `chegada` entrega o mais antigo e `sla` entrega
+quem está mais perto de vencer, olhando a métrica ainda aberta mais próxima.
+Um urgente que acabou de entrar com 5 minutos de alvo passa na frente de um
+antigo a que faltam 10. Como a
 elegibilidade já considera transbordo e espera, a mesma varredura resolve o
 transbordo por tempo.
 

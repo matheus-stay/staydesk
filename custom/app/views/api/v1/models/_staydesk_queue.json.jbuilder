@@ -4,6 +4,7 @@ json.description resource.description
 json.team_id resource.team_id
 json.team_name resource.team&.name
 json.fallback_mode resource.fallback_mode
+json.priority_mode resource.priority_mode
 json.fallback_team_ids resource.fallback_team_ids
 json.fallback_team_names resource.fallback_teams.pluck(:name)
 json.fallback_after_minutes resource.fallback_after_minutes

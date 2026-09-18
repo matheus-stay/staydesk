@@ -27,6 +27,10 @@ class Staydesk::Queue < ApplicationRecord
   # que atende ticket de N2 no tempo livre. `quando_faltar`: só entram quando o dono
   # está sem ninguém disponível.
   FALLBACK_MODES = %w[sempre quando_faltar].freeze
+  # Em que ordem a fila entrega quando há mais de um esperando. `chegada` é o
+  # mais antigo primeiro; `sla` é quem está mais perto de vencer primeiro, e o
+  # que não tem SLA vai depois, por chegada.
+  PRIORITY_MODES = %w[chegada sla].freeze
 
   belongs_to :account
   belongs_to :team
@@ -34,6 +38,7 @@ class Staydesk::Queue < ApplicationRecord
   validates :name, presence: true, uniqueness: { scope: :account_id }
   validates :fallback_after_minutes, numericality: { greater_than: 0 }, allow_nil: true
   validates :fallback_mode, inclusion: { in: FALLBACK_MODES }
+  validates :priority_mode, inclusion: { in: PRIORITY_MODES }
   validate :conditions_shape
   validate :fallback_is_another_team
 

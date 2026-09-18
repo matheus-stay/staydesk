@@ -68,7 +68,7 @@
           "caminho": "staydesk/kpis",
           "titulo": "Ler os KPIs da operação",
           "resumo": "CSAT, tempos por fila, fila de espera e tempo de cada agente em cada status, no período pedido.",
-          "detalhes": "É o endpoint que alimenta a home da Central e o dashboard. Traz quatro blocos:\n\n**csat** — da pesquisa de satisfação, no período. Satisfeito é nota 4 ou 5; neutro é 3; insatisfeito é 1 ou 2. Vem o total, o percentual, a média e o recorte por agente responsável.\n\n**tempos** — por fila de carga (`chat`, `ticket`, ou o que a conta configurou), a média de `primeira_resposta`, `resposta` e `resolucao`, em segundos, com a versão só em horário comercial e quantas amostras entraram na média.\n\n**fila** — quantas conversas abertas estão sem responsável agora, por fila, e há quanto tempo espera a mais antiga.\n\n**agentes** — para cada pessoa: status atual, se está conectada agora, segundos em cada status dentro da janela e a soma do tempo em status que atendem. Período que começou antes da janela conta só o pedaço dentro dela.",
+          "detalhes": "É o endpoint que alimenta a home da Central e o dashboard. Traz quatro blocos:\n\n**csat** — da pesquisa de satisfação, no período. Satisfeito é nota 4 ou 5; neutro é 3; insatisfeito é 1 ou 2. Vem o total, o percentual, a média e o recorte por agente responsável.\n\n**tempos** — por fila de carga (`chat`, `ticket`, ou o que a conta configurou), a média de `primeira_resposta`, `resposta` e `resolucao`, em segundos, com a versão só em horário comercial e quantas amostras entraram na média.\n\n**fila** — quantas conversas abertas estão sem responsável agora, por fila, e há quanto tempo espera a mais antiga.\n\n**agentes** — para cada pessoa: status atual, se está conectada agora, segundos em cada status dentro da janela e a soma do tempo em status que atendem. Período que começou antes da janela conta só o pedaço dentro dela.\n\n**resumo_dos_agentes** — o KPI de tempo online: quantos agentes tiveram tempo online no período, a média do tempo online entre eles e a média por dia trabalhado. Só conta o tempo nos status marcados como \"contabiliza tempo online\".",
           "escopo": "relatorios:leitura",
           "respostas": [
             {
@@ -165,9 +165,17 @@
                   "Só chat": 26781
                 },
                 "segundos_disponivel": 26781,
-                "segundos_no_periodo": 26781
+                "segundos_no_periodo": 26781,
+                "segundos_online": 26781,
+                "dias_online": 1,
+                "media_diaria_online_segundos": 26781
               }
-            ]
+            ],
+            "resumo_dos_agentes": {
+              "agentes_com_tempo_online": 4,
+              "tempo_online_medio_segundos": 26781,
+              "media_diaria_online_segundos": 26781
+            }
           }
         },
         {
@@ -844,6 +852,12 @@
               "exemplo": "quando_faltar"
             },
             {
+              "nome": "priority_mode",
+              "tipo": "texto",
+              "descricao": "Ordem de entrega quando há mais de um esperando: `chegada` (mais antigo primeiro) ou `sla` (mais perto de vencer primeiro; sem SLA vai depois, por chegada).",
+              "exemplo": "sla"
+            },
+            {
               "nome": "fallback_after_minutes",
               "tipo": "inteiro",
               "descricao": "No modo `quando_faltar`, minutos de espera antes de liberar o transbordo. Nulo libera na hora.",
@@ -1013,6 +1027,12 @@
               "tipo": "texto",
               "descricao": "`sempre`: os grupos que ajudam trabalham a fila junto com o dono. `quando_faltar`: só entram quando o dono está sem ninguém disponível.",
               "exemplo": "quando_faltar"
+            },
+            {
+              "nome": "priority_mode",
+              "tipo": "texto",
+              "descricao": "Ordem de entrega quando há mais de um esperando: `chegada` (mais antigo primeiro) ou `sla` (mais perto de vencer primeiro; sem SLA vai depois, por chegada).",
+              "exemplo": "sla"
             },
             {
               "nome": "fallback_after_minutes",
@@ -1848,7 +1868,7 @@
           "caminho": "staydesk/agent_statuses",
           "titulo": "Listar status do agente",
           "resumo": "Os status de agente da conta e qual é o atual de quem chama.",
-          "detalhes": "Cada status traz disponibilidade, limite por fila de carga e as caixas que atende. `current_status_id` é o de quem está chamando.",
+          "detalhes": "Cada status traz disponibilidade, limite por fila de carga e as caixas que atende. `current_status_id` é o de quem está chamando.\n\nCada status traz também o **tempo limite**: `offline_after_seconds` e `offline_to_status_id`. Quem fecha a aba e passa desse tempo cai do status sozinho, e o tempo online para de contar.",
           "escopo": "operacao:leitura",
           "respostas": [
             {
@@ -1951,6 +1971,24 @@
               "tipo": "booleano",
               "descricao": "Status inativo some do menu do agente.",
               "exemplo": true
+            },
+            {
+              "nome": "offline_after_seconds",
+              "tipo": "inteiro",
+              "descricao": "Tempo limite do status: desconectado por mais que isso, o agente cai do status. Nulo desliga a regra; mínimo 30. Padrão 300: aba em segundo plano manda presença mais devagar, e 2 minutos derrubava gente que só trocou de janela.",
+              "exemplo": 120
+            },
+            {
+              "nome": "offline_to_status_id",
+              "tipo": "inteiro",
+              "descricao": "Para qual status cair ao desconectar. Sem destino, fica sem status, que é offline.",
+              "exemplo": null
+            },
+            {
+              "nome": "counts_as_online",
+              "tipo": "booleano",
+              "descricao": "Se o tempo neste status entra no tempo online do agente. Padrão: sim para status disponível, não para ausente.",
+              "exemplo": true
             }
           ],
           "payload": {
@@ -2044,6 +2082,24 @@
               "nome": "active",
               "tipo": "booleano",
               "descricao": "Status inativo some do menu do agente.",
+              "exemplo": true
+            },
+            {
+              "nome": "offline_after_seconds",
+              "tipo": "inteiro",
+              "descricao": "Tempo limite do status: desconectado por mais que isso, o agente cai do status. Nulo desliga a regra; mínimo 30. Padrão 300: aba em segundo plano manda presença mais devagar, e 2 minutos derrubava gente que só trocou de janela.",
+              "exemplo": 120
+            },
+            {
+              "nome": "offline_to_status_id",
+              "tipo": "inteiro",
+              "descricao": "Para qual status cair ao desconectar. Sem destino, fica sem status, que é offline.",
+              "exemplo": null
+            },
+            {
+              "nome": "counts_as_online",
+              "tipo": "booleano",
+              "descricao": "Se o tempo neste status entra no tempo online do agente. Padrão: sim para status disponível, não para ausente.",
               "exemplo": true
             }
           ],
@@ -2199,19 +2255,23 @@
             {
               "nome": "targets",
               "tipo": "objeto",
-              "descricao": "Alvos em minutos, por métrica e por prioridade. Métricas: `first_response`, `next_response`, `resolution`. Prioridades: `urgent`, `high`, `medium`, `low`, `none`.",
+              "descricao": "Alvos em minutos, por prioridade e dentro dela por métrica. Prioridades: `urgent`, `high`, `medium`, `low`, `none`. Métricas: `first_response`, `next_response`, `resolution`. Prioridade sem alvo fica sem SLA.",
               "exemplo": {
-                "first_response": {
-                  "urgent": 5,
-                  "high": 10,
-                  "medium": 15,
-                  "low": 30
+                "urgent": {
+                  "first_response": 5,
+                  "resolution": 60
                 },
-                "resolution": {
-                  "urgent": 60,
-                  "high": 120,
-                  "medium": 240,
-                  "low": 480
+                "high": {
+                  "first_response": 10,
+                  "resolution": 120
+                },
+                "medium": {
+                  "first_response": 15,
+                  "resolution": 240
+                },
+                "low": {
+                  "first_response": 30,
+                  "resolution": 480
                 }
               }
             },
@@ -2262,17 +2322,21 @@
             "sla_policy": {
               "name": "SLA - Chat/WhatsApp",
               "targets": {
-                "first_response": {
-                  "urgent": 5,
-                  "high": 10,
-                  "medium": 15,
-                  "low": 30
+                "urgent": {
+                  "first_response": 5,
+                  "resolution": 60
                 },
-                "resolution": {
-                  "urgent": 60,
-                  "high": 120,
-                  "medium": 240,
-                  "low": 480
+                "high": {
+                  "first_response": 10,
+                  "resolution": 120
+                },
+                "medium": {
+                  "first_response": 15,
+                  "resolution": 240
+                },
+                "low": {
+                  "first_response": 30,
+                  "resolution": 480
                 }
               },
               "conditions": [
@@ -2349,19 +2413,23 @@
             {
               "nome": "targets",
               "tipo": "objeto",
-              "descricao": "Alvos em minutos, por métrica e por prioridade. Métricas: `first_response`, `next_response`, `resolution`. Prioridades: `urgent`, `high`, `medium`, `low`, `none`.",
+              "descricao": "Alvos em minutos, por prioridade e dentro dela por métrica. Prioridades: `urgent`, `high`, `medium`, `low`, `none`. Métricas: `first_response`, `next_response`, `resolution`. Prioridade sem alvo fica sem SLA.",
               "exemplo": {
-                "first_response": {
-                  "urgent": 5,
-                  "high": 10,
-                  "medium": 15,
-                  "low": 30
+                "urgent": {
+                  "first_response": 5,
+                  "resolution": 60
                 },
-                "resolution": {
-                  "urgent": 60,
-                  "high": 120,
-                  "medium": 240,
-                  "low": 480
+                "high": {
+                  "first_response": 10,
+                  "resolution": 120
+                },
+                "medium": {
+                  "first_response": 15,
+                  "resolution": 240
+                },
+                "low": {
+                  "first_response": 30,
+                  "resolution": 480
                 }
               }
             },

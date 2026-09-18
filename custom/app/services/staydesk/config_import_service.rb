@@ -119,18 +119,29 @@ class Staydesk::ConfigImportService
   def importar_filas
     secao('filas').each_with_index.map do |dados, posicao|
       fila = Staydesk::Queue.find_or_initialize_by(account: @account, name: dados.fetch('nome'))
-      fila.update!(
-        description: dados['descricao'], team: time!(dados.fetch('time')),
-        fallback_team_ids: (dados['times_que_ajudam'] || dados['times_de_transbordo'] || []).map { |nome| time!(nome).id },
-        fallback_mode: dados['ajuda'] || 'quando_faltar',
-        accept_required: dados.fetch('exige_aceite', false),
-        accept_timeout_seconds: dados['segundos_para_aceitar'] || 30,
-        fallback_after_minutes: dados['espera_minutos'],
-        channel_types: Array(dados['canais']), inbox_ids: caixas_por_nome(dados['caixas']),
-        conditions: condicoes(dados), position: posicao, active: true
-      )
+      fila.update!(atributos_da_fila(dados).merge(position: posicao, active: true))
       fila.name
     end
+  end
+
+  def atributos_da_fila(dados)
+    {
+      description: dados['descricao'], team: time!(dados.fetch('time')),
+      channel_types: Array(dados['canais']), inbox_ids: caixas_por_nome(dados['caixas']),
+      conditions: condicoes(dados)
+    }.merge(entrega_da_fila(dados))
+  end
+
+  # Como a fila entrega: quem ajuda, em que ordem e se exige aceite.
+  def entrega_da_fila(dados)
+    {
+      fallback_team_ids: (dados['times_que_ajudam'] || dados['times_de_transbordo'] || []).map { |nome| time!(nome).id },
+      fallback_mode: dados['ajuda'] || 'quando_faltar',
+      priority_mode: dados['prioridade'] || 'chegada',
+      fallback_after_minutes: dados['espera_minutos'],
+      accept_required: dados.fetch('exige_aceite', false),
+      accept_timeout_seconds: dados['segundos_para_aceitar'] || 30
+    }
   end
 
   def importar_visualizacoes

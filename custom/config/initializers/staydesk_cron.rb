@@ -14,4 +14,10 @@ Rails.application.reloader.to_prepare do
   Sidekiq::Cron::Job.create(
     name: 'staydesk_queue_sweep_job', cron: '* * * * *', class: 'Staydesk::Queues::SweepJob', queue: 'scheduled_jobs', source: 'staydesk'
   )
+
+  # Quem fechou a aba cai do status depois do tempo limite dele.
+  Sidekiq::Cron::Job.create(
+    name: 'staydesk_agent_disconnect_job', cron: '* * * * *', class: 'Staydesk::AgentStatuses::DisconnectJob',
+    queue: 'scheduled_jobs', source: 'staydesk'
+  )
 end

@@ -57,7 +57,16 @@ Para cada pessoa da conta:
 | `segundos_no_periodo` | Tempo total com algum status |
 
 Período que começou antes da janela entra só pelo pedaço que cai dentro dela, e
-período aberto conta até agora.
+período aberto conta até agora. `segundos_online` soma só os status marcados
+como "contabiliza tempo online", e `media_diaria_online_segundos` divide pelos
+dias em que houve algum tempo online.
+
+### Tempo online médio
+
+`resumo_dos_agentes` é o KPI da equipe: quantos agentes tiveram tempo online no
+período, a média do tempo online entre eles e a média por dia trabalhado. Cada
+status diz se conta ou não: "Disponível" e "Só chat" contam, "Reunião" e
+"Almoço" não, e isso se marca na tela de status.
 
 ## Onde aparece
 

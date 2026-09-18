@@ -22,11 +22,17 @@ class Staydesk::AgentStatus < ApplicationRecord
   AVAILABILITIES = %w[online busy].freeze
 
   belongs_to :account
+  # Tempo limite do status, como no Zendesk: desconectado por mais que
+  # `offline_after_seconds`, o agente cai em `offline_to_status` (ou fica sem
+  # status, que é offline). Nulo em segundos desliga a regra para este status.
+  belongs_to :offline_to_status, class_name: 'Staydesk::AgentStatus', optional: true
   has_many :periods, class_name: 'Staydesk::AgentStatusPeriod', dependent: :destroy, inverse_of: :agent_status
 
   validates :name, presence: true, uniqueness: { scope: :account_id }
   validates :availability, inclusion: { in: AVAILABILITIES }
   validate :capacity_must_be_whole_numbers
+  validates :offline_after_seconds, numericality: { greater_than_or_equal_to: 30 }, allow_nil: true
+  validate :offline_target_is_another_status_of_the_account
 
   before_validation :normalize_capacity
 
@@ -59,6 +65,13 @@ class Staydesk::AgentStatus < ApplicationRecord
   # Sem conta ainda (registro novo em validação), vale o padrão do produto.
   def filas_de_carga
     account ? Staydesk::LoadQueue.keys_for(account) : Staydesk::LoadQueue::DEFAULTS.pluck(:key)
+  end
+
+  def offline_target_is_another_status_of_the_account
+    return if offline_to_status.blank?
+
+    errors.add(:offline_to_status_id, 'não pode ser o próprio status') if offline_to_status_id == id
+    errors.add(:offline_to_status_id, 'precisa ser um status desta conta') if offline_to_status.account_id != account_id
   end
 
   def capacity_must_be_whole_numbers

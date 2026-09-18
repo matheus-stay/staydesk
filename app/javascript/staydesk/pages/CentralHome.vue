@@ -56,7 +56,7 @@ const onlineAgora = computed(
 );
 const agentes = computed(() =>
   [...(kpis.value?.agentes || [])].sort(
-    (um, outro) => outro.segundos_disponivel - um.segundos_disponivel
+    (um, outro) => outro.segundos_online - um.segundos_online
   )
 );
 
@@ -147,6 +147,26 @@ onMounted(buscar);
                 }}
               </p>
             </article>
+            <article class="rounded-xl border border-n-weak p-4">
+              <p class="m-0 text-xs uppercase text-n-slate-11">
+                {{ t('STAYDESK.CENTRAL.KPIS.ONLINE_TIME') }}
+              </p>
+              <p class="m-0 text-2xl text-n-slate-12">
+                {{
+                  emDuracao(
+                    kpis.resumo_dos_agentes?.media_diaria_online_segundos
+                  )
+                }}
+              </p>
+              <p class="m-0 text-xs text-n-slate-11">
+                {{
+                  t('STAYDESK.CENTRAL.KPIS.ONLINE_TIME_HINT', {
+                    agents:
+                      kpis.resumo_dos_agentes?.agentes_com_tempo_online || 0,
+                  })
+                }}
+              </p>
+            </article>
             <article
               v-for="[fila, tempos] in filas"
               :key="fila"
@@ -192,7 +212,14 @@ onMounted(buscar);
                     {{ agente.status_atual || '—' }}
                   </td>
                   <td class="py-2 pr-4 text-n-slate-11">
-                    {{ emDuracao(agente.segundos_disponivel) }}
+                    {{ emDuracao(agente.segundos_online) }}
+                    <span class="text-xs text-n-slate-10">
+                      {{
+                        t('STAYDESK.CENTRAL.KPIS.PER_DAY', {
+                          time: emDuracao(agente.media_diaria_online_segundos),
+                        })
+                      }}
+                    </span>
                   </td>
                   <td class="py-2 text-n-slate-11">
                     {{

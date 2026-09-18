@@ -366,6 +366,21 @@
           "in_group": "not in the group",
           "inbox_member": "not in the inbox"
         }
+      },
+      "TIMEOUT": {
+        "TITLE": "Status timeout",
+        "HINT": "Whoever closes the tab and goes past this time drops out of the status on their own, and online time stops counting. Leave empty to never drop.",
+        "AFTER": "Disconnected for (seconds)",
+        "TARGET": "Drops to",
+        "NO_TARGET": "No status (offline)",
+        "NEVER": "never drops on its own",
+        "OFFLINE": "no status",
+        "SUMMARY": "disconnected for {time}, drops to {target}"
+      },
+      "ONLINE_TIME": {
+        "LABEL": "Counts as online time",
+        "HINT": "Time in this status goes into the agent's online time, the KPI in Central. Meetings and lunch usually do not.",
+        "NOT_COUNTED": "does not count as online time"
       }
     },
     "TICKET_STATUS": {
@@ -438,7 +453,13 @@
         "CHANNELS": "Channels",
         "CHANNELS_PLACEHOLDER": "Every channel",
         "INBOXES": "Specific inboxes",
-        "INBOXES_PLACEHOLDER": "Every inbox of the channel"
+        "INBOXES_PLACEHOLDER": "Every inbox of the channel",
+        "PRIORITY": "Delivery order",
+        "PRIORITY_HINT": "By arrival, the oldest goes first. By SLA, whoever is closest to breaching goes first, even if it just came in; anything without SLA goes after, by arrival.",
+        "PRIORITY_OPTIONS": {
+          "chegada": "By arrival (oldest first)",
+          "sla": "By SLA (closest to breaching first)"
+        }
       },
       "DELETE": {
         "BUTTON": "Delete",
@@ -456,7 +477,8 @@
       "ACCEPT_BADGE": "· acceptance required in {seconds}s",
       "FALLBACK_ALWAYS": "→ {teams} always help",
       "FALLBACK_WHEN_MISSING": "→ {teams} when nobody is available",
-      "ALL_CHANNELS": "Every channel"
+      "ALL_CHANNELS": "Every channel",
+      "PRIORITY_BADGE": "· delivers by SLA"
     },
     "OFFERS": {
       "TITLE": "New conversation in {inbox}",
@@ -504,10 +526,13 @@
         "RESOLUTION": "resolved in {time}",
         "AGENT": "Agent",
         "STATUS": "Status",
-        "AVAILABLE_TIME": "Available time",
+        "AVAILABLE_TIME": "Online time",
         "NOW": "Now",
         "CONNECTED": "connected",
-        "AWAY": "away"
+        "AWAY": "away",
+        "ONLINE_TIME": "Average online time per day",
+        "ONLINE_TIME_HINT": "across {agents} agents with online time",
+        "PER_DAY": "{time} per day"
       },
       "SECTION_NOT_FOUND": "This section does not exist or you cannot access it.",
       "SECTION_HINTS": {

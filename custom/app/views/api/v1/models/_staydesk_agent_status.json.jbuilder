@@ -6,3 +6,6 @@ json.inbox_ids resource.inbox_ids
 json.capacity resource.capacity
 json.position resource.position
 json.active resource.active
+json.offline_after_seconds resource.offline_after_seconds
+json.offline_to_status_id resource.offline_to_status_id
+json.counts_as_online resource.counts_as_online

@@ -31,6 +31,10 @@ class Api::V1::Accounts::Staydesk::AgentStatusesController < Api::V1::Accounts::
   end
 
   def permitted_payload
-    params.require(:agent_status).permit(:name, :color, :availability, :position, :active, inbox_ids: [], capacity: {})
+    params.require(:agent_status).permit(
+      :name, :color, :availability, :position,
+      :offline_after_seconds, :offline_to_status_id, :counts_as_online, :active,
+      inbox_ids: [], capacity: {}
+    )
   end
 end
