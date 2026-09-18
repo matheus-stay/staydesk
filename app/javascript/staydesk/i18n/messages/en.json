@@ -510,7 +510,8 @@
         "RULES": "Rules and automation",
         "ACCOUNT": "Account",
         "OTHER": "Other",
-        "DISTRIBUTION": "Work distribution"
+        "DISTRIBUTION": "Work distribution",
+        "REPORTS": "Reports"
       },
       "DESCRIPTION": "Where the operation is set up and watched. The Hub is where work happens.",
       "KPIS": {
@@ -544,7 +545,8 @@
         "CentralRegras": "What runs on its own and what the agent reuses: automations, macros, canned responses, bots, labels and ticket fields.",
         "CentralConta": "The account itself: general data, API documentation, integrations, audit, security and billing.",
         "CentralOutros": "Product screens without a section of their own yet.",
-        "CentralDistribuicao": "How work reaches the people who handle it, in order: what counts as chat and as ticket, which groups each demand goes to, how much each agent can take and what each status receives."
+        "CentralDistribuicao": "How work reaches the people who handle it, in order: what counts as chat and as ticket, which groups each demand goes to, how much each agent can take and what each status receives.",
+        "CentralRelatorios": "The numbers: the indicators StayDesk computes (CSAT, times, queue, online time, acceptance) and the product reports."
       },
       "ITEM_HINTS": {
         "StaydeskLoadQueuesSettings": "What counts as chat and as ticket, by channel and by inbox. Statuses and capacity speak in work channels.",
@@ -552,7 +554,8 @@
         "StaydeskCapacityRulesSettings": "How many conversations of each channel an agent takes at once: the default rule and the ones assigned to agents.",
         "StaydeskAgentStatusesSettings": "What each status receives (chat, ticket), timeout, online time, and the who-gets-what diagnosis.",
         "StaydeskChannelsSettings": "The account channels grouped by type, with each one's settings. Every agent serves all of them.",
-        "Settings Inboxes": "The product list, not grouped by type."
+        "Settings Inboxes": "The product list, not grouped by type.",
+        "StaydeskKpis": "CSAT, reply and resolution time per work channel, waiting queue, online time and acceptance per agent, for the period you pick."
       }
     },
     "API_TOKENS": {
@@ -745,6 +748,33 @@
       "EMPTY": "No channels yet.",
       "COUNT": "{count} channel | {count} channels",
       "MEMBERS_NOTE": "Every agent of the account serves this channel."
+    },
+    "KPIS": {
+      "TITLE": "Operation indicators",
+      "DESCRIPTION": "The numbers StayDesk computes, for the chosen period. The dashboard and the MCP read the same figures.",
+      "SEE_ALL": "See all indicators",
+      "ACCEPTANCE": {
+        "TITLE": "Acceptance",
+        "HINT": "{accepted} accepted out of {offers} invites",
+        "OFFERS": "Invites",
+        "RATE": "Acceptance",
+        "ANSWER_TIME": "Time to accept",
+        "BREAKDOWN": "{offers} · {accepted} accepted · {declined} declined · {expired} expired"
+      },
+      "TIMES": {
+        "TITLE": "Times per work channel",
+        "HINT": "Period average. In parentheses, how many conversations counted and the average within business hours only.",
+        "CHANNEL": "Work channel",
+        "FIRST_REPLY": "First reply",
+        "REPLY": "Reply",
+        "RESOLUTION": "Resolution",
+        "SAMPLES": "({count}; {business} in business hours)",
+        "EMPTY": "No conversation measured in the period."
+      },
+      "AGENTS": {
+        "TITLE": "Agents",
+        "HINT": "Online time only counts the statuses marked for it. Acceptance: an expired or declined invite counts against the agent."
+      }
     }
   },
   "AUTOMATION": {

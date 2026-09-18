@@ -18,7 +18,8 @@ class Staydesk::KpiService
       tempos: tempos,
       fila: fila,
       agentes: agentes,
-      resumo_dos_agentes: resumo_dos_agentes
+      resumo_dos_agentes: resumo_dos_agentes,
+      aceitacao: aceitacao
     }
   end
 
@@ -107,14 +108,44 @@ class Staydesk::KpiService
       espera_mais_antiga_em_segundos: mais_antiga ? (Time.current - mais_antiga).round : nil }
   end
 
-  # Quem está online agora e quanto tempo cada um passou em cada status no período.
+  # Quem está online agora, quanto tempo cada um passou em cada status no
+  # período, como aceitou os convites e como foi avaliado.
   def agentes
     @agentes ||= begin
       online = conectados
+      csat_agente = csat[:por_agente].to_a.index_by { |linha| linha[:user_id] }
       Staydesk::Kpi::AgentTimeService.new(account: @account, since: @since, ate: @ate).perform.map do |linha|
         linha.merge(online: online.include?(linha[:user_id]))
+             .merge(aceitacao_de(linha[:user_id]))
+             .merge(csat_respostas: csat_agente.dig(linha[:user_id], :respostas) || 0,
+                    csat_percentual: csat_agente.dig(linha[:user_id], :percentual))
       end
     end
+  end
+
+  # Aceitação dos convites (SPEC-16): por agente e no total. A taxa é aceitos
+  # sobre oferecidos; vencido e recusado contam contra.
+  def aceitacao_por_agente
+    @aceitacao_por_agente ||= Staydesk::OfferStatsService.new(@account, since: @since, until_time: @ate).perform
+                                                         .index_by { |linha| linha[:user_id] }
+  end
+
+  def aceitacao_de(user_id)
+    linha = aceitacao_por_agente[user_id] || {}
+    { convites: linha[:offers] || 0, aceitos: linha[:accepted] || 0, recusados: linha[:declined] || 0,
+      vencidos: linha[:expired] || 0, aceitacao_percentual: linha[:acceptance_rate],
+      tempo_medio_aceite_segundos: linha[:average_answer_seconds] }
+  end
+
+  def aceitacao
+    linhas = aceitacao_por_agente.values
+    convites = linhas.sum { |linha| linha[:offers] }
+    aceitos = linhas.sum { |linha| linha[:accepted] }
+    {
+      convites: convites, aceitos: aceitos,
+      recusados: linhas.sum { |linha| linha[:declined] }, vencidos: linhas.sum { |linha| linha[:expired] },
+      percentual: convites.zero? ? nil : (aceitos * 100.0 / convites).round(1)
+    }
   end
 
   # O KPI de tempo online: média entre os agentes que tiveram algum tempo online

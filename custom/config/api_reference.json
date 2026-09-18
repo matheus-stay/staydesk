@@ -68,7 +68,7 @@
           "caminho": "staydesk/kpis",
           "titulo": "Ler os KPIs da operação",
           "resumo": "CSAT, tempos por fila, fila de espera e tempo de cada agente em cada status, no período pedido.",
-          "detalhes": "É o endpoint que alimenta a home da Central e o dashboard. Traz quatro blocos:\n\n**csat** — da pesquisa de satisfação, no período. Satisfeito é nota 4 ou 5; neutro é 3; insatisfeito é 1 ou 2. Vem o total, o percentual, a média e o recorte por agente responsável.\n\n**tempos** — por fila de carga (`chat`, `ticket`, ou o que a conta configurou), a média de `primeira_resposta`, `resposta` e `resolucao`, em segundos, com a versão só em horário comercial e quantas amostras entraram na média.\n\n**fila** — quantas conversas abertas estão sem responsável agora, por fila, e há quanto tempo espera a mais antiga.\n\n**agentes** — para cada pessoa: status atual, se está conectada agora, segundos em cada status dentro da janela e a soma do tempo em status que atendem. Período que começou antes da janela conta só o pedaço dentro dela.\n\n**resumo_dos_agentes** — o KPI de tempo online: quantos agentes tiveram tempo online no período, a média do tempo online entre eles e a média por dia trabalhado. Só conta o tempo nos status marcados como \"contabiliza tempo online\".",
+          "detalhes": "É o endpoint que alimenta a home da Central e o dashboard. Traz quatro blocos:\n\n**csat** — da pesquisa de satisfação, no período. Satisfeito é nota 4 ou 5; neutro é 3; insatisfeito é 1 ou 2. Vem o total, o percentual, a média e o recorte por agente responsável.\n\n**tempos** — por fila de carga (`chat`, `ticket`, ou o que a conta configurou), a média de `primeira_resposta`, `resposta` e `resolucao`, em segundos, com a versão só em horário comercial e quantas amostras entraram na média.\n\n**fila** — quantas conversas abertas estão sem responsável agora, por fila, e há quanto tempo espera a mais antiga.\n\n**agentes** — para cada pessoa: status atual, se está conectada agora, segundos em cada status dentro da janela e a soma do tempo em status que atendem. Período que começou antes da janela conta só o pedaço dentro dela.\n\n**resumo_dos_agentes** — o KPI de tempo online: quantos agentes tiveram tempo online no período, a média do tempo online entre eles e a média por dia trabalhado. Só conta o tempo nos status marcados como \"contabiliza tempo online\".\n\n`aceitacao` traz os convites do período no total (oferecidos, aceitos, recusados, vencidos e o percentual), e cada agente traz os dele (`convites`, `aceitos`, `recusados`, `vencidos`, `aceitacao_percentual`, `tempo_medio_aceite_segundos`) e o CSAT dele (`csat_respostas`, `csat_percentual`). É o que a página Indicadores da operação, na Central, mostra.",
           "escopo": "relatorios:leitura",
           "respostas": [
             {
@@ -168,13 +168,28 @@
                 "segundos_no_periodo": 26781,
                 "segundos_online": 26781,
                 "dias_online": 1,
-                "media_diaria_online_segundos": 26781
+                "media_diaria_online_segundos": 26781,
+                "convites": 12,
+                "aceitos": 11,
+                "recusados": 0,
+                "vencidos": 1,
+                "aceitacao_percentual": 91.7,
+                "tempo_medio_aceite_segundos": 6,
+                "csat_respostas": 5,
+                "csat_percentual": 100.0
               }
             ],
             "resumo_dos_agentes": {
               "agentes_com_tempo_online": 4,
               "tempo_online_medio_segundos": 26781,
               "media_diaria_online_segundos": 26781
+            },
+            "aceitacao": {
+              "convites": 42,
+              "aceitos": 37,
+              "recusados": 2,
+              "vencidos": 3,
+              "percentual": 88.1
             }
           }
         },

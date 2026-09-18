@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { usePolicy } from 'dashboard/composables/usePolicy';
-import { AREA, CONFIGURA } from '../routes';
+import { AREA, CONFIGURA, RELATORIOS } from '../routes';
 import { estaNaCentral } from '../helpers/central';
 import { useTeamViews } from './useTeamViews';
 import { useWorkspace } from './useWorkspace';
@@ -76,9 +76,18 @@ export const useStaydeskSidebar = () => {
 
   // Relatórios passam a morar na central de administração, junto do resto que se
   // configura; a barra de atendimento fica só com as visualizações.
+  const kpisEntry = () => ({
+    name: 'StaydeskKpis',
+    permissions: RELATORIOS,
+    label: t('STAYDESK.KPIS.TITLE'),
+    icon: 'i-lucide-gauge-circle',
+    activeOn: ['staydesk_kpis'],
+    to: accountScopedRoute('staydesk_kpis'),
+  });
+
   const reportsEntry = () => ({
     name: 'StaydeskReports',
-    permissions: ['administrator', 'report_manage', 'staydesk_report_own'],
+    permissions: RELATORIOS,
     label: t('SIDEBAR.REPORTS'),
     icon: 'i-lucide-chart-spline',
     activeOn: [
@@ -98,6 +107,12 @@ export const useStaydeskSidebar = () => {
   // Cada seção é um subgrupo; o que não estiver mapeado cai em "Outros", para
   // nenhuma tela do produto sumir quando o upstream acrescentar uma.
   const SECOES = [
+    {
+      name: 'CentralRelatorios',
+      label: () => t('STAYDESK.CENTRAL.SECTIONS.REPORTS'),
+      icon: 'i-lucide-chart-spline',
+      itens: ['StaydeskKpis', 'StaydeskReports'],
+    },
     {
       // Na ordem em que o trabalho chega a quem atende, como o encaminhamento
       // omnichannel do Zendesk: o que é chat e ticket, para quais grupos vai,
@@ -176,8 +191,8 @@ export const useStaydeskSidebar = () => {
     },
   ];
 
-  // Fora de seção, no topo: a home e os relatórios.
-  const SOLTOS = ['StaydeskCentralHome', 'StaydeskReports'];
+  // Fora de seção, no topo: só a home.
+  const SOLTOS = ['StaydeskCentralHome'];
 
   // Telas do produto que não fazem sentido na Central: o SLA do Chatwoot é
   // Enterprise, e o nosso motor de SLA já mora em Prazos; a lista de caixas do
@@ -242,6 +257,7 @@ export const useStaydeskSidebar = () => {
 
   const settingsItems = computed(() => [
     centralHomeEntry(),
+    kpisEntry(),
     reportsEntry(),
     {
       name: 'StaydeskTeamViewsSettings',

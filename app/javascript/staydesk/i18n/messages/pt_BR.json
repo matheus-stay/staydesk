@@ -510,7 +510,8 @@
         "RULES": "Regras e automação",
         "ACCOUNT": "Conta",
         "OTHER": "Outros",
-        "DISTRIBUTION": "Distribuição de trabalho"
+        "DISTRIBUTION": "Distribuição de trabalho",
+        "REPORTS": "Relatórios"
       },
       "DESCRIPTION": "Onde se configura e se acompanha a operação. O Hub é onde se atende.",
       "KPIS": {
@@ -544,7 +545,8 @@
         "CentralRegras": "O que roda sozinho e o que o agente reaproveita: automações, macros, respostas prontas, robôs, etiquetas e os campos do ticket.",
         "CentralConta": "A conta em si: dados gerais, a documentação da API, integrações, auditoria, segurança e cobrança.",
         "CentralOutros": "Telas do produto que ainda não têm seção própria.",
-        "CentralDistribuicao": "Como o trabalho chega a quem atende, na ordem: o que é chat e o que é ticket, para quais grupos cada demanda vai, quanto cada agente aguenta e o que cada status recebe."
+        "CentralDistribuicao": "Como o trabalho chega a quem atende, na ordem: o que é chat e o que é ticket, para quais grupos cada demanda vai, quanto cada agente aguenta e o que cada status recebe.",
+        "CentralRelatorios": "Os números: os indicadores que o StayDesk calcula (CSAT, tempos, fila, tempo online, aceitação) e os relatórios do produto."
       },
       "ITEM_HINTS": {
         "StaydeskQueuesSettings": "O que entra em cada fila e para quais grupos vai: principais, secundários, ordem de entrega e aceite.",
@@ -576,7 +578,8 @@
         "Settings Security": "Políticas de senha e de sessão.",
         "Settings Billing": "Plano e cobrança.",
         "StaydeskCapacityRulesSettings": "Quantas conversas de cada canal o agente aguenta ao mesmo tempo: a regra padrão e as atribuídas a agentes.",
-        "StaydeskChannelsSettings": "Os canais da conta agrupados por tipo, com a configuração de cada um. Todo agente atende todos."
+        "StaydeskChannelsSettings": "Os canais da conta agrupados por tipo, com a configuração de cada um. Todo agente atende todos.",
+        "StaydeskKpis": "CSAT, tempo de resposta e resolução por canal de trabalho, fila de espera, tempo online e aceitação por agente, no período que você escolher."
       }
     },
     "API_TOKENS": {
@@ -769,6 +772,33 @@
       "EMPTY": "Nenhum canal ainda.",
       "COUNT": "{count} canal | {count} canais",
       "MEMBERS_NOTE": "Todo agente da conta atende este canal."
+    },
+    "KPIS": {
+      "TITLE": "Indicadores da operação",
+      "DESCRIPTION": "Os números que o StayDesk calcula, no período escolhido. O dashboard e o MCP leem a mesma conta.",
+      "SEE_ALL": "Ver todos os indicadores",
+      "ACCEPTANCE": {
+        "TITLE": "Aceitação",
+        "HINT": "{accepted} aceitos de {offers} convites",
+        "OFFERS": "Convites",
+        "RATE": "Aceitação",
+        "ANSWER_TIME": "Tempo para aceitar",
+        "BREAKDOWN": "{offers} · {accepted} aceitos · {declined} recusados · {expired} vencidos"
+      },
+      "TIMES": {
+        "TITLE": "Tempos por canal de trabalho",
+        "HINT": "Média do período. Entre parênteses, quantas conversas entraram na conta e a média só em horário comercial.",
+        "CHANNEL": "Canal de trabalho",
+        "FIRST_REPLY": "Primeira resposta",
+        "REPLY": "Resposta",
+        "RESOLUTION": "Resolução",
+        "SAMPLES": "({count}; {business} no horário)",
+        "EMPTY": "Nenhuma conversa medida no período."
+      },
+      "AGENTS": {
+        "TITLE": "Agentes",
+        "HINT": "Tempo online só conta os status marcados para isso. Aceitação: convite vencido ou recusado conta contra o agente."
+      }
     }
   },
   "AUTOMATION": {

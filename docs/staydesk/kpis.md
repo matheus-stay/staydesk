@@ -61,6 +61,14 @@ período aberto conta até agora. `segundos_online` soma só os status marcados
 como "contabiliza tempo online", e `media_diaria_online_segundos` divide pelos
 dias em que houve algum tempo online.
 
+### Aceitação
+
+`aceitacao`: convites oferecidos, aceitos, recusados, vencidos e o percentual
+(aceitos sobre oferecidos), no total do período; cada agente traz os dele e o
+tempo médio para aceitar. Convite vencido ou recusado conta contra o agente,
+inclusive quando a mesma conversa volta para ele. Cada agente traz também o
+CSAT dele (`csat_respostas`, `csat_percentual`).
+
 ### Tempo online médio
 
 `resumo_dos_agentes` é o KPI da equipe: quantos agentes tiveram tempo online no
@@ -69,6 +77,11 @@ status diz se conta ou não: "Disponível" e "Só chat" contam, "Reunião" e
 "Almoço" não, e isso se marca na tela de status.
 
 ## Onde aparece
+
+Central › Relatórios › **Indicadores da operação** mostra tudo isto, com o
+período escolhido (7, 30 ou 90 dias): os cartões, os tempos por canal de
+trabalho, e a tabela de agentes com tempo online, aceitação e CSAT. A home da
+Central repete os cartões.
 
 Central › Início mostra CSAT, quantos esperam na fila, quantos agentes estão
 online e a primeira resposta de cada fila, com um seletor de 7, 30 ou 90 dias, e

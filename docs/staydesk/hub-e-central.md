@@ -32,7 +32,7 @@ dentro a barra lateral vira o menu da Central, agrupado por assunto:
 | Seção | O que tem |
 |---|---|
 | Início | A página inicial, com os números da operação |
-| Relatórios | Os relatórios do produto |
+| Relatórios | Indicadores da operação (os KPIs do StayDesk: CSAT, tempos, fila, tempo online, aceitação) e os relatórios do produto |
 | Distribuição de trabalho | Canais de trabalho, filas, regras de capacidade, status dos agentes — na ordem em que o trabalho chega a quem atende |
 | Atendimento | Status do ticket, visualizações por time, área de trabalho |
 | Prazos | Políticas de SLA, calendários |

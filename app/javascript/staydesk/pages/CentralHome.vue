@@ -78,7 +78,14 @@ onMounted(buscar);
             <h3 class="m-0 text-sm font-medium text-n-slate-12">
               {{ t('STAYDESK.CENTRAL.KPIS.TITLE') }}
             </h3>
-            <div class="flex gap-1">
+            <div class="flex items-center gap-1">
+              <button
+                type="button"
+                class="mr-2 text-xs text-n-brand hover:underline"
+                @click="abrir({ name: 'staydesk_kpis' })"
+              >
+                {{ t('STAYDESK.KPIS.SEE_ALL') }}
+              </button>
               <button
                 v-for="periodo in PERIODOS"
                 :key="periodo"

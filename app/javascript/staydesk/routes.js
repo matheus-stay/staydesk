@@ -18,6 +18,7 @@ import QueuesSettings from './pages/QueuesSettings.vue';
 import LoadQueuesSettings from './pages/LoadQueuesSettings.vue';
 import CapacityRulesSettings from './pages/CapacityRulesSettings.vue';
 import ChannelsSettings from './pages/ChannelsSettings.vue';
+import KpisPage from './pages/KpisPage.vue';
 import { teamViewFolderId } from './store/teamViews';
 
 // Quem abre cada área da central: o administrador, quem tem a permissão geral de
@@ -25,6 +26,12 @@ import { teamViewFolderId } from './store/teamViews';
 // servidor, nas policies (Staydesk::AreaDeConfiguracao), então esconder aqui não
 // é a única barreira. O catálogo de permissões fica em custom/config/permissions.json.
 export const CONFIGURA = ['administrator', 'staydesk_settings_manage'];
+// Quem vê os números: o mesmo critério dos relatórios do produto.
+export const RELATORIOS = [
+  'administrator',
+  'report_manage',
+  'staydesk_report_own',
+];
 export const AREA = {
   VIEWS: [...CONFIGURA, 'staydesk_views_manage'],
   ROLES: [...CONFIGURA, 'staydesk_roles_manage'],
@@ -210,6 +217,18 @@ const routes = [
         name: 'staydesk_load_queues_settings',
         component: LoadQueuesSettings,
         meta: { permissions: AREA.QUEUES },
+      },
+    ],
+  },
+  {
+    path: frontendURL('accounts/:accountId/settings/staydesk/kpis'),
+    component: WideSettingsWrapper,
+    children: [
+      {
+        path: '',
+        name: 'staydesk_kpis',
+        component: KpisPage,
+        meta: { permissions: RELATORIOS },
       },
     ],
   },
