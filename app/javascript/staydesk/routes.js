@@ -11,6 +11,7 @@ import CalendarsSettings from './pages/CalendarsSettings.vue';
 import AgentStatusesSettings from './pages/AgentStatusesSettings.vue';
 import TicketStatusesSettings from './pages/TicketStatusesSettings.vue';
 import QueuesSettings from './pages/QueuesSettings.vue';
+import LoadQueuesSettings from './pages/LoadQueuesSettings.vue';
 import { teamViewFolderId } from './store/teamViews';
 
 // Quem abre cada área da central: o administrador, quem tem a permissão geral de
@@ -161,6 +162,18 @@ const routes = [
         name: 'staydesk_ticket_statuses_settings',
         component: TicketStatusesSettings,
         meta: { permissions: AREA.STATUSES },
+      },
+    ],
+  },
+  {
+    path: frontendURL('accounts/:accountId/settings/staydesk/load-queues'),
+    component: SettingsWrapper,
+    children: [
+      {
+        path: '',
+        name: 'staydesk_load_queues_settings',
+        component: LoadQueuesSettings,
+        meta: { permissions: AREA.QUEUES },
       },
     ],
   },

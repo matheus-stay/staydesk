@@ -7,6 +7,8 @@ json.fallback_mode resource.fallback_mode
 json.fallback_team_ids resource.fallback_team_ids
 json.fallback_team_names resource.fallback_teams.pluck(:name)
 json.fallback_after_minutes resource.fallback_after_minutes
+json.channel_types resource.channel_types
+json.inbox_ids resource.inbox_ids
 json.conditions resource.conditions
 json.accept_required resource.accept_required
 json.accept_timeout_seconds resource.accept_timeout_seconds

@@ -390,7 +390,7 @@
       }
     },
     "QUEUES": {
-      "SETTINGS_TITLE": "Filas",
+      "SETTINGS_TITLE": "Filas de encaminhamento",
       "SETTINGS_DESCRIPTION": "A conversa que chega passa pelas filas na ordem e a primeira que casar entrega ao time dela. Quem, dentro do time, vai atender continua sendo decidido pelo status e pela carga do agente.",
       "EMPTY": "Nenhuma fila. Sem fila, a conversa chega sem time e a distribuição usa só a caixa de entrada.",
       "NEW": "Nova fila",
@@ -417,7 +417,13 @@
         "ACCEPT": "Aceite do agente",
         "ACCEPT_REQUIRED": "O agente precisa aceitar antes de a conversa virar dele",
         "ACCEPT_TIMEOUT": "Tempo para aceitar (segundos)",
-        "ACCEPT_HINT": "Sem aceite dentro do tempo, a conversa volta para a fila e é oferecida a outro agente disponível. Use em chat e WhatsApp; ticket normalmente não precisa."
+        "ACCEPT_HINT": "Sem aceite dentro do tempo, a conversa volta para a fila e é oferecida a outro agente disponível. Use em chat e WhatsApp; ticket normalmente não precisa.",
+        "INTAKE": "O que entra nesta fila",
+        "INTAKE_HINT": "Deixe vazio para a fila pegar o que as filas acima não pegaram. A ordem manda: a primeira que casar leva.",
+        "CHANNELS": "Canais",
+        "CHANNELS_PLACEHOLDER": "Todos os canais",
+        "INBOXES": "Caixas de entrada específicas",
+        "INBOXES_PLACEHOLDER": "Todas as caixas do canal"
       },
       "DELETE": {
         "BUTTON": "Excluir",
@@ -434,7 +440,8 @@
       "HELPS_ALWAYS": "com {team}",
       "ACCEPT_BADGE": "· exige aceite em {seconds}s",
       "FALLBACK_ALWAYS": "→ {teams} ajudam sempre",
-      "FALLBACK_WHEN_MISSING": "→ {teams} quando faltar gente"
+      "FALLBACK_WHEN_MISSING": "→ {teams} quando faltar gente",
+      "ALL_CHANNELS": "Todos os canais"
     },
     "OFFERS": {
       "TITLE": "Novo atendimento em {inbox}",
@@ -545,6 +552,33 @@
       "REQUIRED": "Obrigatório para resolver",
       "REQUIRED_HINT": "O agente não consegue resolver a conversa enquanto este campo estiver vazio. Automação, bot e resolução automática não travam.",
       "MISSING": "Falta preencher para resolver: {fields}"
+    },
+    "LOAD_QUEUES": {
+      "SETTINGS_TITLE": "Filas de carga",
+      "SETTINGS_DESCRIPTION": "Quantas conversas simultâneas o agente aguenta é contado por fila, e é a caixa que diz de qual fila a conversa é. O limite de cada uma fica no status do agente. Não confunda com as filas de encaminhamento, que decidem o grupo dono do trabalho.",
+      "NEW": "Nova fila de carga",
+      "CATCH_ALL": "o que ninguém reivindicou",
+      "NOTHING": "nada, por enquanto",
+      "FOOTNOTE": "Sem nenhuma fila configurada, vale o padrão do produto: chat pega tudo e e-mail é ticket.",
+      "FORM": {
+        "NAME": "Nome",
+        "KEY": "Chave",
+        "KEY_HINT": "A chave é o que aparece no limite de cada status do agente. Não muda depois de criada.",
+        "CHANNELS": "Canais",
+        "CHANNELS_PLACEHOLDER": "Nenhum canal",
+        "INBOXES": "Caixas específicas",
+        "INBOXES_PLACEHOLDER": "Nenhuma caixa",
+        "INBOXES_HINT": "A caixa vence o canal, para o mesmo tipo de canal servir a coisas diferentes.",
+        "CATCH_ALL": "Pega o que sobrar",
+        "CATCH_ALL_HINT": "Fica com as caixas que nenhuma outra fila reivindicou."
+      },
+      "TABLE": {
+        "NAME": "Fila",
+        "TAKES": "Pega"
+      },
+      "API": {
+        "SAVE_ERROR": "Não foi possível salvar a fila de carga"
+      }
     }
   },
   "AUTOMATION": {

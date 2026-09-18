@@ -104,14 +104,10 @@ class Staydesk::ConfigImportService
     end
   end
 
-  # Condições no formato do filtro avançado; `caixas` vira um filtro por caixa de entrada.
+  # Condições no formato do filtro avançado. Canal e caixa não entram aqui: são
+  # campos próprios da fila, porque é assim que a operação pensa a entrada.
   def condicoes(dados)
-    linhas = dados['condicoes'] || []
-    caixas = caixas_por_nome(dados['caixas'])
-    return linhas if caixas.empty?
-
-    [{ 'attribute_key' => 'inbox_id', 'filter_operator' => 'equal_to', 'values' => caixas,
-       'query_operator' => linhas.any? ? 'and' : nil }.compact] + linhas
+    dados['condicoes'] || []
   end
 
   def caixas_por_nome(nomes)
@@ -130,6 +126,7 @@ class Staydesk::ConfigImportService
         accept_required: dados.fetch('exige_aceite', false),
         accept_timeout_seconds: dados['segundos_para_aceitar'] || 30,
         fallback_after_minutes: dados['espera_minutos'],
+        channel_types: Array(dados['canais']), inbox_ids: caixas_por_nome(dados['caixas']),
         conditions: condicoes(dados), position: posicao, active: true
       )
       fila.name

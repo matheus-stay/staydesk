@@ -176,4 +176,38 @@ RSpec.describe Staydesk::QueueRouter do
         .not_to(change { conversation.reload.assignee_id })
     end
   end
+
+  describe 'canal e caixa da fila' do
+    let(:email) { create(:inbox, account: account, channel: create(:channel_email, account: account)) }
+
+    it 'pega pelo canal, sem precisar listar caixa por caixa' do
+      Staydesk::Queue.create!(account: account, name: 'Tickets', team: n2, position: 0,
+                              channel_types: ['Channel::Email'])
+      Staydesk::Queue.create!(account: account, name: 'Resto', team: n1, position: 1)
+
+      conversa_email = create(:conversation, account: account, inbox: email)
+      conversa_chat = create(:conversation, account: account, inbox: chat)
+
+      expect(conversa_email.reload.team).to eq(n2)
+      expect(conversa_chat.reload.team).to eq(n1)
+    end
+
+    it 'aceita a caixa avulsa, para o mesmo canal servir a coisas diferentes' do
+      api = create(:inbox, account: account, channel: create(:channel_api, account: account))
+      Staydesk::Queue.create!(account: account, name: 'Tickets', team: n2, position: 0,
+                              channel_types: ['Channel::Email'], inbox_ids: [api.id])
+      Staydesk::Queue.create!(account: account, name: 'Resto', team: n1, position: 1)
+
+      expect(create(:conversation, account: account, inbox: api).reload.team).to eq(n2)
+      expect(create(:conversation, account: account, inbox: chat).reload.team).to eq(n1)
+    end
+
+    it 'sem canal e sem caixa, a fila recolhe o que sobrou' do
+      Staydesk::Queue.create!(account: account, name: 'Tickets', team: n2, position: 0,
+                              channel_types: ['Channel::Email'])
+      Staydesk::Queue.create!(account: account, name: 'Resto', team: n1, position: 1)
+
+      expect(create(:conversation, account: account, inbox: chat).reload.team).to eq(n1)
+    end
+  end
 end

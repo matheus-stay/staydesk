@@ -16,7 +16,7 @@ O produto tem dois espaços, com nome próprio:
 | Documento | O que cobre |
 |---|---|
 | [hub-e-central.md](hub-e-central.md) | Os dois espaços, a navegação e a área de trabalho do agente |
-| [filas-e-distribuicao.md](filas-e-distribuicao.md) | Filas por grupo, transbordo, carga por status, aceite de chat e varredura da fila |
+| [filas-e-distribuicao.md](filas-e-distribuicao.md) | Filas de encaminhamento por canal e grupo, filas de carga, transbordo, aceite e varredura |
 | [campos-do-ticket.md](campos-do-ticket.md) | Campos personalizados da conversa e a regra de obrigatório para resolver |
 | [status-do-ticket.md](status-do-ticket.md) | Catálogo de status por cima dos quatro do Chatwoot |
 | [status-do-agente.md](status-do-agente.md) | Disponibilidade e limite de conversas simultâneas |

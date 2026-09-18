@@ -12,12 +12,19 @@ grupo dono não dá conta. Fica em Central › Atendimento › Filas.
 | Campo | O que faz |
 |---|---|
 | Time | O grupo dono. A conversa fica com ele e não troca |
-| Condições | Quando a fila casa. Sem condição, pega o que sobrar |
+| Canais | Quais canais entram nesta fila. Vazio é "todos" |
+| Caixas de entrada | Caixas específicas, para quando o canal não basta. A caixa vence o canal |
+| Condições | Afinam o resto (etiqueta, prioridade, campo do ticket). Opcional |
 | Times de transbordo | Quem entra na distribuição além do dono |
 | Modo | `sempre` (trabalham a fila junto) ou `quando_faltar` (só quando não há ninguém do dono) |
 | Espera | Minutos antes de liberar o transbordo, no modo `quando_faltar` |
 | Aceite | Se o agente precisa aceitar antes de a conversa virar dele |
 | Tempo para aceitar | Segundos até a conversa voltar para a fila |
+
+A entrada se configura por **canal** e por **caixa**, que é como a operação
+pensa: "chat e WhatsApp caem no N1, e-mail cai no N2". Deixar os dois vazios faz
+a fila recolher o que as filas acima não pegaram. As condições avançadas ficam
+para o que o canal não resolve, como etiqueta, prioridade ou campo do ticket.
 
 A ordem importa: a primeira fila que casar leva. A conversa recebe o grupo na
 criação e, se entrou sem grupo, a varredura a encaminha depois.
@@ -27,9 +34,12 @@ sendo do dono, e é isso que mantém o relatório por grupo honesto.
 
 ## Filas de carga
 
+São outra coisa, e o nome parecido confunde. A **fila de encaminhamento** decide
+o grupo dono do trabalho. A **fila de carga** decide em qual balde a conversa
+conta para o limite do agente. Ficam em Central › Atendimento › Filas de carga.
+
 Quantas conversas simultâneas o agente aguenta é contado **por fila de carga**, e
-é a caixa que diz de qual fila a conversa é. O mapa é da operação, não do
-produto: fica em Central e entra pelo arquivo de configuração.
+é a caixa que diz de qual fila a conversa é.
 
 ```yaml
 filas_de_carga:

@@ -20,6 +20,7 @@ import {
 } from '../helpers/teamViewQuery';
 import QueuesAPI from '../api/queues';
 import { fromSaveButton } from '../helpers/form';
+import { canaisDaConta, nomeDoCanal } from '../helpers/canais';
 
 // Filas de encaminhamento (SPEC-15), no modelo do Zendesk: a conversa que chega é
 // comparada com as filas em ordem e a primeira que casar entrega ao time dela.
@@ -44,6 +45,8 @@ const emptyForm = () => ({
   fallbackTeamIds: [],
   fallbackMode: 'quando_faltar',
   fallbackAfterMinutes: '',
+  channelTypes: [],
+  inboxIds: [],
   acceptRequired: false,
   acceptTimeoutSeconds: 30,
   active: true,
@@ -64,6 +67,22 @@ const modeOptions = computed(() =>
     label: t(`STAYDESK.QUEUES.FORM.MODE_OPTIONS.${value}`),
   }))
 );
+const canalOptions = computed(() => canaisDaConta(inboxes.value));
+const caixaOptions = computed(() =>
+  inboxes.value.map(caixa => ({ value: caixa.id, label: caixa.name }))
+);
+
+// Resumo do que a fila pega, na linguagem da operação.
+const oQuePega = queue => {
+  const canais = (queue.channel_types || []).map(nomeDoCanal);
+  const caixas = (queue.inbox_ids || [])
+    .map(id => inboxes.value.find(caixa => caixa.id === id)?.name)
+    .filter(Boolean);
+  const partes = [...canais, ...caixas];
+  if (!partes.length) return t('STAYDESK.QUEUES.ALL_CHANNELS');
+  return partes.join(', ');
+};
+
 const fallbackOptions = computed(() =>
   fallbackTeams.value.map(team => ({ value: team.id, label: team.name }))
 );
@@ -131,6 +150,8 @@ const startEdit = queue => {
         fallbackTeamIds: [...(queue.fallback_team_ids || [])],
         fallbackMode: queue.fallback_mode || 'quando_faltar',
         fallbackAfterMinutes: queue.fallback_after_minutes ?? '',
+        channelTypes: [...(queue.channel_types || [])],
+        inboxIds: [...(queue.inbox_ids || [])],
         acceptRequired: queue.accept_required || false,
         acceptTimeoutSeconds: queue.accept_timeout_seconds ?? 30,
         active: queue.active,
@@ -153,6 +174,8 @@ const save = async () => {
       fallback_team_ids: form.value.fallbackTeamIds,
       fallback_mode: form.value.fallbackMode,
       fallback_after_minutes: form.value.fallbackAfterMinutes || null,
+      channel_types: form.value.channelTypes,
+      inbox_ids: form.value.inboxIds,
       accept_required: form.value.acceptRequired,
       accept_timeout_seconds: Number(form.value.acceptTimeoutSeconds) || 30,
       active: form.value.active,
@@ -262,6 +285,34 @@ const aoEnviar = event => {
           v-model="form.description"
           :label="t('STAYDESK.QUEUES.FORM.DESCRIPTION')"
         />
+        <fieldset class="grid gap-3">
+          <legend class="text-sm text-n-slate-12">
+            {{ t('STAYDESK.QUEUES.FORM.INTAKE') }}
+          </legend>
+          <p class="m-0 text-xs text-n-slate-11">
+            {{ t('STAYDESK.QUEUES.FORM.INTAKE_HINT') }}
+          </p>
+          <label class="grid gap-1 text-sm text-n-slate-12">
+            <span>{{ t('STAYDESK.QUEUES.FORM.CHANNELS') }}</span>
+            <TagMultiSelectComboBox
+              v-model="form.channelTypes"
+              :options="canalOptions"
+              :placeholder="t('STAYDESK.QUEUES.FORM.CHANNELS_PLACEHOLDER')"
+              :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+              :empty-state="t('STAYDESK.PICKER.EMPTY')"
+            />
+          </label>
+          <label class="grid gap-1 text-sm text-n-slate-12">
+            <span>{{ t('STAYDESK.QUEUES.FORM.INBOXES') }}</span>
+            <TagMultiSelectComboBox
+              v-model="form.inboxIds"
+              :options="caixaOptions"
+              :placeholder="t('STAYDESK.QUEUES.FORM.INBOXES_PLACEHOLDER')"
+              :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
+              :empty-state="t('STAYDESK.PICKER.EMPTY')"
+            />
+          </label>
+        </fieldset>
         <fieldset class="grid gap-2">
           <legend class="text-sm text-n-slate-12">
             {{ t('STAYDESK.QUEUES.FORM.FALLBACK_TEAMS') }}
@@ -394,7 +445,15 @@ const aoEnviar = event => {
                 {{ queue.description }}
               </p>
             </td>
-            <td class="py-3 pr-4 text-n-slate-11">{{ resumo(queue) }}</td>
+            <td class="py-3 pr-4 text-n-slate-11">
+              <p class="m-0">{{ oQuePega(queue) }}</p>
+              <p
+                v-if="(queue.conditions || []).length"
+                class="m-0 text-xs text-n-slate-11"
+              >
+                {{ resumo(queue) }}
+              </p>
+            </td>
             <td class="py-3 pr-4 text-n-slate-12">
               {{ queue.team_name }}
               <span

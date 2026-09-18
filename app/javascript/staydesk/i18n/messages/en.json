@@ -390,7 +390,7 @@
       }
     },
     "QUEUES": {
-      "SETTINGS_TITLE": "Queues",
+      "SETTINGS_TITLE": "Routing queues",
       "SETTINGS_DESCRIPTION": "An incoming conversation goes through the queues in order and the first match hands it to that team. Who inside the team takes it is still decided by the agent status and load.",
       "EMPTY": "No queues. Without one, a conversation arrives with no team and distribution uses the inbox only.",
       "NEW": "New queue",
@@ -417,7 +417,13 @@
         "ACCEPT": "Agent acceptance",
         "ACCEPT_REQUIRED": "The agent must accept before the conversation becomes theirs",
         "ACCEPT_TIMEOUT": "Time to accept (seconds)",
-        "ACCEPT_HINT": "Without an answer in time, the conversation goes back to the queue and is offered to another available agent. Use it for chat and WhatsApp; tickets usually do not need it."
+        "ACCEPT_HINT": "Without an answer in time, the conversation goes back to the queue and is offered to another available agent. Use it for chat and WhatsApp; tickets usually do not need it.",
+        "INTAKE": "What comes into this queue",
+        "INTAKE_HINT": "Leave empty and the queue takes what the queues above did not. Order rules: the first match wins.",
+        "CHANNELS": "Channels",
+        "CHANNELS_PLACEHOLDER": "Every channel",
+        "INBOXES": "Specific inboxes",
+        "INBOXES_PLACEHOLDER": "Every inbox of the channel"
       },
       "DELETE": {
         "BUTTON": "Delete",
@@ -434,7 +440,8 @@
       "HELPS_ALWAYS": "with {team}",
       "ACCEPT_BADGE": "· acceptance required in {seconds}s",
       "FALLBACK_ALWAYS": "→ {teams} always help",
-      "FALLBACK_WHEN_MISSING": "→ {teams} when nobody is available"
+      "FALLBACK_WHEN_MISSING": "→ {teams} when nobody is available",
+      "ALL_CHANNELS": "Every channel"
     },
     "OFFERS": {
       "TITLE": "New conversation in {inbox}",
@@ -545,6 +552,33 @@
       "REQUIRED": "Required to resolve",
       "REQUIRED_HINT": "The agent cannot resolve the conversation while this field is empty. Automation, bots and auto-resolution are not blocked.",
       "MISSING": "Fill these to resolve: {fields}"
+    },
+    "LOAD_QUEUES": {
+      "SETTINGS_TITLE": "Load queues",
+      "SETTINGS_DESCRIPTION": "How many conversations at once an agent handles is counted per queue, and the inbox says which queue a conversation belongs to. The limit of each one lives in the agent status. Not to be confused with routing queues, which decide the group that owns the work.",
+      "NEW": "New load queue",
+      "CATCH_ALL": "whatever nobody claimed",
+      "NOTHING": "nothing yet",
+      "FOOTNOTE": "With no queue configured, the product default applies: chat takes everything and email is a ticket.",
+      "FORM": {
+        "NAME": "Name",
+        "KEY": "Key",
+        "KEY_HINT": "The key is what shows up in each agent status limit. It does not change after creation.",
+        "CHANNELS": "Channels",
+        "CHANNELS_PLACEHOLDER": "No channel",
+        "INBOXES": "Specific inboxes",
+        "INBOXES_PLACEHOLDER": "No inbox",
+        "INBOXES_HINT": "The inbox beats the channel, so one channel type can serve different things.",
+        "CATCH_ALL": "Takes the rest",
+        "CATCH_ALL_HINT": "Keeps the inboxes no other queue claimed."
+      },
+      "TABLE": {
+        "NAME": "Queue",
+        "TAKES": "Takes"
+      },
+      "API": {
+        "SAVE_ERROR": "Could not save the load queue"
+      }
     }
   },
   "AUTOMATION": {

@@ -39,6 +39,21 @@ class Staydesk::Queue < ApplicationRecord
 
   scope :with_fallback, -> { active.where.not(fallback_team_ids: []) }
 
+  # A fila pega esta conversa? Canal e caixa primeiro, porque é assim que a
+  # operação pensa; as condições avançadas afinam o resto. Campo vazio é "todos",
+  # então fila sem nada configurado recolhe o que sobrar.
+  def atende_canal?(inbox)
+    return false if inbox.blank?
+    return true if channel_types.empty? && inbox_ids.empty?
+    return true if inbox_ids.include?(inbox.id)
+
+    channel_types.include?(inbox.channel_type)
+  end
+
+  def canais_e_caixas_vazios?
+    channel_types.empty? && inbox_ids.empty?
+  end
+
   scope :ordered, -> { order(:position, :id) }
   scope :active, -> { where(active: true) }
 

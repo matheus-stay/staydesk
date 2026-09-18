@@ -95,6 +95,7 @@ export const useStaydeskSidebar = () => {
       icon: 'i-lucide-headset',
       itens: [
         'StaydeskQueuesSettings',
+        'StaydeskLoadQueuesSettings',
         'StaydeskTeamViewsSettings',
         'StaydeskWorkspaceSettings',
         'Settings Agent Assignment',
@@ -243,6 +244,14 @@ export const useStaydeskSidebar = () => {
       icon: 'i-lucide-list-ordered',
       activeOn: ['staydesk_queues_settings'],
       to: accountScopedRoute('staydesk_queues_settings'),
+    },
+    {
+      name: 'StaydeskLoadQueuesSettings',
+      permissions: AREA.QUEUES,
+      label: t('STAYDESK.LOAD_QUEUES.SETTINGS_TITLE'),
+      icon: 'i-lucide-gauge',
+      activeOn: ['staydesk_load_queues_settings'],
+      to: accountScopedRoute('staydesk_load_queues_settings'),
     },
     {
       name: 'StaydeskSlaSettings',

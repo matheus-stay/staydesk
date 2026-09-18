@@ -39,6 +39,6 @@ class Api::V1::Accounts::Staydesk::QueuesController < Api::V1::Accounts::Staydes
 
   def permitted_payload
     params.require(:queue).permit(:name, :description, :team_id, :fallback_mode, :fallback_after_minutes, :accept_required, :accept_timeout_seconds,
-                                  :position, :active, conditions: [{}], fallback_team_ids: [])
+                                  :position, :active, conditions: [{}], fallback_team_ids: [], channel_types: [], inbox_ids: [])
   end
 end

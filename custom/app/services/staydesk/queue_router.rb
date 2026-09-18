@@ -26,6 +26,7 @@ class Staydesk::QueueRouter
   private
 
   def matches?(fila)
+    return false unless fila.atende_canal?(@conversation.inbox)
     return true if fila.conditions.blank?
 
     shim = RuleShim.new(id: fila.id, account: fila.account, account_id: fila.account_id,
