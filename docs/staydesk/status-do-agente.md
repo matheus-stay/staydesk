@@ -3,8 +3,9 @@
 O agente escolhe no menu de disponibilidade o que atende agora (tudo, só chat, só tickets, ausente).
 A distribuição automática respeita o status e o dashboard soma o tempo em cada um.
 
-- `staydesk_agent_statuses`: catálogo da conta (nome, cor, `availability` = `online` ou `busy`, `inbox_ids`
-  que o status atende; vazio = todas). Configurações › Status dos agentes.
+- `staydesk_agent_statuses`: catálogo da conta (nome, cor, `availability` = `online` ou `busy`,
+  `work_channels` que o status recebe, `inbox_ids` que atende; vazio = todas). Central › Distribuição de
+  trabalho › Status dos agentes.
 - `staydesk_agent_status_periods`: início e fim de cada status por agente; o atual é o sem `ended_at`.
 - `Staydesk::AgentStatusService#change_to`: fecha o período aberto, abre o novo e alinha a disponibilidade
   do Chatwoot (`online` ou `busy`).
@@ -16,17 +17,38 @@ A distribuição automática respeita o status e o dashboard soma o tempo em cad
 - Front: `useAgentStatus` substitui a lista fixa do `SidebarProfileMenuStatus.vue` quando a conta tem status
   (dois ganchos: lista e troca); página `AgentStatusesSettings.vue`.
 
-## Carga de atendimento simultâneo (SPEC-11)
+## O que o status recebe, e quanto (SPEC-11)
 
-O Chatwoot community não limita quantas conversas a distribuição automática entrega a um agente: o limite por caixa de entrada é recurso Enterprise. Aqui o limite mora no status do agente, separado por fila.
+Como no Zendesk, são duas coisas separadas:
 
-- **Filas**: conversas de caixas de e-mail contam como `ticket`; todas as demais como `chat`. As duas contam separado, como no roteamento omnicanal do Zendesk.
-- **Limite**: cada status guarda `capacity`, por exemplo `{"chat": 4, "ticket": 12}`. Em branco é sem limite; `0` tira o agente daquela fila.
-- **Carga**: conta as conversas atribuídas ao agente com status base **aberto**, em todas as caixas daquela fila. O que está esperando o cliente (pendente, adiado) ou resolvido não ocupa vaga.
-- **Onde entra**: `Custom::Inbox#member_ids_with_assignment_capacity` (distribuição legada, a padrão) e `Custom::InboxAgentAvailability#available_agents` (distribuição nova, atrás do recurso `assignment_v2`). Os dois usam `Staydesk::AgentLoadService`, e os dois já eram ganchos do upstream: nenhum toque novo no núcleo.
-- **Limite conhecido**: vale só para a distribuição automática. Atribuição manual por um administrador não é bloqueada.
+- **O status diz o que o agente recebe agora**, por canal de trabalho:
+  `work_channels` guarda as chaves dos canais (`chat`, `ticket`, o que a
+  operação definir em Canais de trabalho). "Só chat" recebe `chat`; "Reunião"
+  não recebe nada. Lista vazia é não receber.
+- **A regra de capacidade diz quanto**: `Staydesk::CapacityRule`, com `limits`
+  por canal (`{"chat": 4, "ticket": 3}`), uma regra **padrão** da conta e regras
+  **atribuídas a agentes** (`user_ids`; cada agente tem uma só). Chave ausente é
+  sem limite; zero é não receber. Sem regra padrão, não há teto. Fica em
+  Central › Distribuição de trabalho › Regras de capacidade.
 
-O painel **Carga agora**, no fim da página de status, mostra cada agente com o status atual e a carga contra o limite nas duas filas. API: `GET staydesk/agent_loads` (administrador).
+O Chatwoot community não limita quantas conversas a distribuição entrega a um
+agente: o limite por caixa é Enterprise. Aqui `Staydesk::AgentLoadService` cruza
+os dois: o teto do agente numa fila é **zero se o status atual não recebe aquele
+canal**, senão o da regra dele. A carga conta as conversas atribuídas com status
+base **aberto**, em todas as caixas daquele canal; o que está esperando o
+cliente (pendente, adiado) ou resolvido não ocupa vaga.
+
+- **Onde entra**: `Custom::Inbox#member_ids_with_assignment_capacity` (distribuição
+  legada, a padrão) e `Custom::InboxAgentAvailability#available_agents` (distribuição
+  nova, atrás do recurso `assignment_v2`). Os dois já eram ganchos do upstream.
+- **Limite conhecido**: vale só para a distribuição automática. Atribuição
+  manual por um administrador não é bloqueada.
+
+O painel **Carga agora**, no fim da página de status, mostra cada agente com o
+status atual, a regra e a carga contra o teto em cada canal. API:
+`GET staydesk/agent_loads`, `staydesk/capacity_rules` (CRUD). No arquivo de
+configuração: `recebe: [chat, ticket]` em cada status e a seção
+`regras_de_capacidade`.
 
 ## Tempo limite do status
 

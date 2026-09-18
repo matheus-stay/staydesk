@@ -37,11 +37,11 @@ RSpec.describe Staydesk::LoadQueue do
       expect(service.load_by_user('chat', [agent.id])).to eq(agent.id => 1)
     end
 
-    it 'keeps only the capacity of queues the account knows' do
+    it 'keeps only the work channels the account knows, in queue order' do
       status = Staydesk::AgentStatus.create!(account: account, name: 'Disponível', availability: 'online',
-                                             capacity: { 'chat' => 5, 'ticket' => 10, 'voz' => 3 })
+                                             work_channels: %w[voz ticket chat])
 
-      expect(status.reload.capacity).to eq('chat' => 5, 'ticket' => 10)
+      expect(status.reload.work_channels).to eq(%w[chat ticket])
     end
   end
 end

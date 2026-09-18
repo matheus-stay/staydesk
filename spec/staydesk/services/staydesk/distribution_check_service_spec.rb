@@ -9,8 +9,9 @@ RSpec.describe Staydesk::DistributionCheckService do
 
   before do
     Staydesk::Queue.create!(account: account, name: 'Tickets', team: n2, channel_types: ['Channel::Email'], position: 0)
+    Staydesk::CapacityRule.create!(account: account, name: 'Padrão', is_default: true, limits: { 'ticket' => 20 })
     so_tickets = Staydesk::AgentStatus.create!(account: account, name: 'Só tickets', availability: 'online',
-                                               capacity: { 'chat' => 0, 'ticket' => 20 })
+                                               work_channels: %w[ticket])
     Staydesk::AgentStatusService.new(account_user).change_to(so_tickets)
     allow(OnlineStatusTracker).to receive(:get_available_users).and_return({ agent.id.to_s => 'online' })
   end
@@ -22,7 +23,8 @@ RSpec.describe Staydesk::DistributionCheckService do
   it 'names what is missing for an agent who is online but outside the group and the inbox' do
     checks = fila_do_agente[:checks]
 
-    expect(checks).to include(connected: true, available: true, has_capacity: true, in_group: false, inbox_member: false)
+    expect(checks).to include(connected: true, available: true, receives_channel: true, has_capacity: true,
+                              in_group: false, inbox_member: false)
     expect(fila_do_agente[:receives]).to be(false)
   end
 
@@ -31,17 +33,25 @@ RSpec.describe Staydesk::DistributionCheckService do
     create(:inbox_member, inbox: email, user: agent)
 
     expect(fila_do_agente[:receives]).to be(true)
-    expect(fila_do_agente).to include(load_queue: 'ticket', capacity: 20)
+    expect(fila_do_agente).to include(load_queue: 'ticket', capacity: 20, load: 0)
   end
 
-  it 'flags the limit when the status does not take that queue' do
+  it 'flags the channel when the status does not take that queue' do
     create(:team_member, team: n2, user: agent)
     create(:inbox_member, inbox: email, user: agent)
-    so_chat = Staydesk::AgentStatus.create!(account: account, name: 'Só chat', availability: 'online',
-                                            capacity: { 'chat' => 6, 'ticket' => 0 })
+    so_chat = Staydesk::AgentStatus.create!(account: account, name: 'Só chat', availability: 'online', work_channels: %w[chat])
     Staydesk::AgentStatusService.new(account_user).change_to(so_chat)
 
-    expect(fila_do_agente[:checks][:has_capacity]).to be(false)
+    expect(fila_do_agente[:checks]).to include(receives_channel: false, has_capacity: true)
     expect(fila_do_agente[:receives]).to be(false)
+  end
+
+  it 'flags the capacity when the rule is full' do
+    create(:team_member, team: n2, user: agent)
+    create(:inbox_member, inbox: email, user: agent)
+    20.times { create(:conversation, account: account, inbox: email, assignee: agent, status: 'open') }
+
+    expect(fila_do_agente[:checks]).to include(receives_channel: true, has_capacity: false)
+    expect(fila_do_agente).to include(capacity: 20, load: 20)
   end
 end

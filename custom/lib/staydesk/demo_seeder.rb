@@ -202,15 +202,17 @@ class Staydesk::DemoSeeder # rubocop:disable Metrics/ClassLength
   def semear_status_de_agente
     chats = [@caixas[:chat_site].id, @caixas[:whatsapp].id]
     tickets = [@caixas[:email_suporte].id, @caixas[:email_financeiro].id]
+    regra = Staydesk::CapacityRule.find_or_initialize_by(account: @account, name: 'Padrão')
+    regra.update!(limits: { 'chat' => 5, 'ticket' => 15 }, is_default: true)
     [
-      ['Disponível', 'online', [], { 'chat' => 5, 'ticket' => 15 }, '#1a9f63'],
-      ['Só chat', 'online', chats, { 'chat' => 6, 'ticket' => 0 }, '#545DFF'],
-      ['Só tickets', 'online', tickets, { 'chat' => 0, 'ticket' => 20 }, '#0ea5e9'],
-      ['Reunião', 'busy', [], { 'chat' => 0, 'ticket' => 0 }, '#f59e0b'],
-      ['Almoço', 'busy', [], { 'chat' => 0, 'ticket' => 0 }, '#64748b']
-    ].each_with_index.to_h do |(nome, disponibilidade, caixas, capacidade, cor), indice|
+      ['Disponível', 'online', [], %w[chat ticket], '#1a9f63'],
+      ['Só chat', 'online', chats, %w[chat], '#545DFF'],
+      ['Só tickets', 'online', tickets, %w[ticket], '#0ea5e9'],
+      ['Reunião', 'busy', [], [], '#f59e0b'],
+      ['Almoço', 'busy', [], [], '#64748b']
+    ].each_with_index.to_h do |(nome, disponibilidade, caixas, canais, cor), indice|
       status = Staydesk::AgentStatus.find_or_initialize_by(account: @account, name: nome)
-      status.update!(availability: disponibilidade, inbox_ids: caixas, capacity: capacidade, color: cor, position: indice)
+      status.update!(availability: disponibilidade, inbox_ids: caixas, work_channels: canais, color: cor, position: indice)
       [nome, status]
     end
   end

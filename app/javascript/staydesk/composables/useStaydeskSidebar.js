@@ -99,27 +99,35 @@ export const useStaydeskSidebar = () => {
   // nenhuma tela do produto sumir quando o upstream acrescentar uma.
   const SECOES = [
     {
+      // Na ordem em que o trabalho chega a quem atende, como o encaminhamento
+      // omnichannel do Zendesk: o que é chat e ticket, para quais grupos vai,
+      // quanto cada agente aguenta e o que cada status recebe.
+      name: 'CentralDistribuicao',
+      label: () => t('STAYDESK.CENTRAL.SECTIONS.DISTRIBUTION'),
+      icon: 'i-lucide-route',
+      itens: [
+        'StaydeskLoadQueuesSettings',
+        'StaydeskQueuesSettings',
+        'StaydeskCapacityRulesSettings',
+        'StaydeskAgentStatusesSettings',
+        'Settings Agent Assignment',
+      ],
+    },
+    {
       name: 'CentralAtendimento',
       label: () => t('STAYDESK.CENTRAL.SECTIONS.WORK'),
       icon: 'i-lucide-headset',
       itens: [
-        'StaydeskQueuesSettings',
-        'StaydeskLoadQueuesSettings',
+        'StaydeskTicketStatusesSettings',
         'StaydeskTeamViewsSettings',
         'StaydeskWorkspaceSettings',
-        'Settings Agent Assignment',
       ],
     },
     {
       name: 'CentralPrazos',
       label: () => t('STAYDESK.CENTRAL.SECTIONS.SERVICE_LEVEL'),
       icon: 'i-lucide-timer',
-      itens: [
-        'StaydeskTicketStatusesSettings',
-        'StaydeskAgentStatusesSettings',
-        'StaydeskSlaSettings',
-        'StaydeskCalendarsSettings',
-      ],
+      itens: ['StaydeskSlaSettings', 'StaydeskCalendarsSettings'],
     },
     {
       name: 'CentralPessoas',
@@ -285,9 +293,17 @@ export const useStaydeskSidebar = () => {
       name: 'StaydeskLoadQueuesSettings',
       permissions: AREA.QUEUES,
       label: t('STAYDESK.LOAD_QUEUES.SETTINGS_TITLE'),
-      icon: 'i-lucide-gauge',
+      icon: 'i-lucide-split',
       activeOn: ['staydesk_load_queues_settings'],
       to: accountScopedRoute('staydesk_load_queues_settings'),
+    },
+    {
+      name: 'StaydeskCapacityRulesSettings',
+      permissions: AREA.QUEUES,
+      label: t('STAYDESK.CAPACITY_RULES.SETTINGS_TITLE'),
+      icon: 'i-lucide-gauge',
+      activeOn: ['staydesk_capacity_rules_settings'],
+      to: accountScopedRoute('staydesk_capacity_rules_settings'),
     },
     {
       name: 'StaydeskSlaSettings',

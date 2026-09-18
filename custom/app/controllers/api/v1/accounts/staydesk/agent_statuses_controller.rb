@@ -34,7 +34,7 @@ class Api::V1::Accounts::Staydesk::AgentStatusesController < Api::V1::Accounts::
     params.require(:agent_status).permit(
       :name, :color, :availability, :position,
       :offline_after_seconds, :offline_to_status_id, :counts_as_online, :active,
-      inbox_ids: [], capacity: {}
+      inbox_ids: [], work_channels: []
     )
   end
 end

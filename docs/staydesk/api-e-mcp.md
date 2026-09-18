@@ -55,7 +55,7 @@ curl -H "api_access_token: SEU_TOKEN" \
 
 | Endpoint | O que devolve |
 |---|---|
-| `GET staydesk/kpis` | CSAT (respostas, satisfeitos, percentual, média e por agente), tempos de primeira resposta, resposta e resolução **por fila de carga**, quem está esperando na fila e há quanto tempo, e o tempo de cada agente em cada status com quem está conectado agora. Aceita `since` e `until` em ISO 8601; sem eles, os últimos 7 dias. |
+| `GET staydesk/kpis` | CSAT (respostas, satisfeitos, percentual, média e por agente), tempos de primeira resposta, resposta e resolução **por canal de trabalho**, quem está esperando na fila e há quanto tempo, e o tempo de cada agente em cada status com quem está conectado agora. Aceita `since` e `until` em ISO 8601; sem eles, os últimos 7 dias. |
 | `GET staydesk/agent_loads` | Quantas conversas cada agente atende agora em cada fila, contra o limite do status dele. |
 | `GET staydesk/offer_stats` | Aceitação de chat e WhatsApp por agente: oferecidos, aceitos, recusados, expirados, taxa e tempo médio de resposta. |
 | `GET staydesk/events` | Linha do tempo das conversas: mudanças de status, responsável, grupo e prioridade. |

@@ -42,30 +42,40 @@ transbordo clássico, para quando o principal está sem gente. O canal que cada
 agente recebe continua vindo do status dele: um agente do N2 em "Só tickets" não
 recebe chat mesmo que o N2 seja principal da fila de chat.
 
-## Filas de carga
+## Canais de trabalho
 
-São outra coisa, e o nome parecido confunde. A **fila de encaminhamento** decide
-o grupo dono do trabalho. A **fila de carga** decide em qual balde a conversa
-conta para o limite do agente. Ficam em Central › Atendimento › Filas de carga.
+São outra coisa, e vale separar. A **fila de encaminhamento** decide para quais
+grupos o trabalho vai. O **canal de trabalho** decide se a conversa é chat ou
+ticket: é a caixa (ou o tipo de canal) que diz. É por canal de trabalho que o
+status do agente diz o que ele recebe e a regra de capacidade diz quanto, como
+os canais Mensagens e E-mail do Zendesk. Ficam em Central › Distribuição de
+trabalho › Canais de trabalho; na API e no arquivo continuam sendo
+`load_queues` / `filas_de_carga`.
 
-Quantas conversas simultâneas o agente aguenta é contado **por fila de carga**, e
-é a caixa que diz de qual fila a conversa é.
+| Campo | O que faz |
+|---|---|
+| Chave | `chat`, `ticket`, o que a operação definir. É o que aparece no status e na regra de capacidade |
+| Canais | Tipos de canal que contam neste canal de trabalho |
+| Caixas | Caixas específicas. A caixa vence o canal |
+| Pega o que sobrar | O canal coringa: fica com as caixas que nenhum outro pegou |
 
-```yaml
-filas_de_carga:
-  - { chave: chat, nome: Chat e WhatsApp, coringa: true, canais: [] }
-  - { chave: ticket, nome: Tickets, canais: ['Channel::Email'], caixas: ['WHMCS'] }
-```
+Sem nenhum configurado, vale o padrão do produto: chat pega tudo e e-mail é
+ticket.
 
-Uma fila reivindica **canais** e **caixas**; a caixa vence o canal, porque o
-mesmo tipo de canal serve a coisas diferentes (a API atende tanto WhatsApp quanto
-chamado aberto por integração). A fila marcada como coringa fica com o que
-ninguém reivindicou. Sem nenhuma configurada, vale o padrão: chat pega tudo,
-e-mail é ticket.
+## Regras de capacidade
 
-Os limites de cada fila moram no [status do agente](status-do-agente.md): o
-status "Só chat" pode ter 6 de chat e 0 de ticket, e aí a distribuição não
-entrega ticket para quem está nele.
+Quantas conversas de cada canal de trabalho o agente aguenta ao mesmo tempo,
+como no Zendesk: uma regra **padrão** da conta e regras **atribuídas a
+agentes** (cada agente tem uma só; entrar numa tira das outras). Chave ausente é
+sem limite; zero é não receber. Ficam em Central › Distribuição de trabalho ›
+Regras de capacidade; API `staydesk/capacity_rules`; no arquivo, a seção
+`regras_de_capacidade`.
+
+A conta é: o agente recebe uma conversa se o **status** dele recebe aquele canal,
+a **regra de capacidade** dele ainda tem vaga nesse canal, ele está num **grupo**
+da fila (principal, ou secundário liberado), é **membro da caixa** e está
+**conectado**. Grupo decide de quem é o trabalho; status decide que tipo ele
+pega agora; capacidade decide quanto.
 
 ## Quem pode receber agora
 
@@ -73,17 +83,18 @@ A conta é, nesta ordem:
 
 1. Quem é membro da caixa.
 2. Quem está **conectado de verdade**, não só marcado como online no banco.
-3. Quem ainda tem vaga na fila de carga daquela caixa, pelo status atual.
-4. Quem é de um grupo principal da fila. Faltando gente, entram os grupos
+3. Quem está num status que **recebe** o canal de trabalho daquela caixa.
+4. Quem ainda tem vaga nesse canal pela **regra de capacidade** dele.
+5. Quem é de um grupo principal da fila. Faltando gente, entram os grupos
    secundários, depois da espera configurada.
 
 O passo 2 existe porque sem ele o grupo principal parece cheio de gente, os
 secundários nunca entram e a conversa espera por quem não está atendendo.
 
-Quando alguém "coloca online e não cai nada", a resposta está em Central › Status
-dos agentes › **Quem recebe o quê**: para cada agente e cada fila, se a
-distribuição entrega e, se não, qual condição falta (conexão, status, vaga,
-grupo ou caixa). Pela API é `GET staydesk/distribution_checks`. Nove em dez vezes
+Quando alguém "coloca online e não cai nada", a resposta está em Central ›
+Distribuição de trabalho › Status dos agentes › **Quem recebe o quê**: para cada
+agente e cada fila, se a distribuição entrega e, se não, qual condição falta
+(conexão, status, canal, vaga, grupo ou caixa). Pela API é `GET staydesk/distribution_checks`. Nove em dez vezes
 é grupo ou caixa: o agente precisa estar num grupo principal ou secundário da
 fila **e** ser membro de uma caixa que a fila pega.
 
@@ -117,6 +128,7 @@ transbordo por tempo.
 | Endpoint | O que faz |
 |---|---|
 | `GET staydesk/queues` | Lista as filas de encaminhamento |
+| `staydesk/capacity_rules` | Regras de capacidade (CRUD) |
 | `POST/PATCH/DELETE staydesk/queues` | Cria, altera e remove |
 | `GET staydesk/load_queues` | Lista as filas de carga |
 | `PATCH staydesk/load_queues/:id` | Altera canais e caixas de uma fila de carga |

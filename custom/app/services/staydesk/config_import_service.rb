@@ -21,6 +21,7 @@ class Staydesk::ConfigImportService
       status_do_ticket: importar_status_do_ticket,
       filas_de_carga: importar_filas_de_carga,
       status_do_agente: importar_status_do_agente,
+      regras_de_capacidade: importar_regras_de_capacidade,
       calendario: importar_calendario&.name,
       politicas_de_sla: importar_politicas,
       filas: importar_filas,

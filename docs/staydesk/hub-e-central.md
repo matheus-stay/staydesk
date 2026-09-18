@@ -33,8 +33,9 @@ dentro a barra lateral vira o menu da Central, agrupado por assunto:
 |---|---|
 | Início | A página inicial, com os números da operação |
 | Relatórios | Os relatórios do produto |
-| Atendimento | Filas, visualizações por time, área de trabalho |
-| Status e prazos | Status do ticket, status do agente, políticas de SLA, calendários |
+| Distribuição de trabalho | Canais de trabalho, filas, regras de capacidade, status dos agentes — na ordem em que o trabalho chega a quem atende |
+| Atendimento | Status do ticket, visualizações por time, área de trabalho |
+| Prazos | Políticas de SLA, calendários |
 | Pessoas | Agentes, times, papéis, tokens de API |
 | Canais | Caixas de entrada, modelos |
 | Regras e automação | Automações, macros, respostas prontas, robôs, etiquetas, campos |
@@ -47,7 +48,7 @@ conta, no navegador.
 
 O que sobrar de novo no produto cai numa seção "Outros", para nenhuma tela sumir
 quando o upstream acrescentar uma. O SLA do Chatwoot, que é Enterprise, fica de
-fora de propósito: o motor de SLA do StayDesk mora em Status e prazos.
+fora de propósito: o motor de SLA do StayDesk mora em Prazos.
 
 A barra lateral nasce com 264 pixels de largura, para os títulos da Central
 caberem, e compacta para os ícones pelo botão do rodapé, que fica fixo fora da

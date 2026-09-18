@@ -42,7 +42,7 @@ module Staydesk::ConfigImport::Catalogo
       status.update!(
         availability: dados['disponibilidade'] || 'online',
         inbox_ids: caixas_por_nome(dados['caixas']),
-        capacity: dados['carga'] || {},
+        work_channels: canais_do_status(dados),
         offline_after_seconds: dados.key?('desconexao_segundos') ? dados['desconexao_segundos'] : 300,
         counts_as_online: dados.key?('conta_tempo_online') ? dados['conta_tempo_online'] : (dados['disponibilidade'] || 'online') == 'online',
         color: dados['cor'], position: posicao, active: true
@@ -50,6 +50,33 @@ module Staydesk::ConfigImport::Catalogo
       status.name
     end
     ligar_destinos_de_desconexao
+  end
+
+  # `recebe` lista os canais de trabalho do status. O `carga` do arquivo antigo
+  # vira isso: limite acima de zero, ou sem limite, recebe.
+  def canais_do_status(dados)
+    return Array(dados['recebe']).map(&:to_s) if dados.key?('recebe')
+
+    carga = dados['carga'] || {}
+    Staydesk::LoadQueue.keys_for(@account).select { |chave| carga[chave].nil? || carga[chave].to_i.positive? }
+  end
+
+  # Regras de capacidade: quanto de cada canal, a padrão e as atribuídas por e-mail.
+  def importar_regras_de_capacidade
+    secao('regras_de_capacidade').each_with_index.map do |dados, posicao|
+      regra = Staydesk::CapacityRule.find_or_initialize_by(account: @account, name: dados.fetch('nome'))
+      regra.update!(
+        description: dados['descricao'], limits: dados['limites'] || {},
+        is_default: dados['padrao'] || false, user_ids: agentes_por_email(dados['agentes']), position: posicao
+      )
+      regra.name
+    end
+  end
+
+  def agentes_por_email(emails)
+    return [] if emails.blank?
+
+    @account.users.where(email: emails).ids
   end
 
   # O destino só existe depois de todos os status estarem criados.

@@ -1,10 +1,11 @@
 # Carga de atendimento simultâneo por fila (SPEC-11).
 #
 # O Chatwoot community não tem limite de conversas por agente: a distribuição
-# automática entrega enquanto houver agente online. Aqui o limite vem do status
-# do agente, separado por fila: conversas de caixas de e-mail contam como
-# ticket, as demais como chat. Conta só o que está de fato em atendimento
-# (status base aberto), então o que está esperando o cliente libera vaga.
+# automática entrega enquanto houver agente online. Aqui, como no Zendesk, o
+# status do agente diz que canais de trabalho ele recebe agora e a regra de
+# capacidade dele diz quantas de cada um ao mesmo tempo. Conta só o que está de
+# fato em atendimento (status base aberto), então o que está esperando o
+# cliente libera vaga.
 class Staydesk::AgentLoadService
   # A fila de uma caixa vem da configuração da conta (Staydesk::LoadQueue).
   def self.queue_for(inbox)
@@ -24,11 +25,14 @@ class Staydesk::AgentLoadService
     user_ids - over_capacity(inbox, user_ids)
   end
 
-  # Quem já bateu o limite do próprio status para a fila desta caixa.
+  # Quem não recebe da fila desta caixa agora: o status não pega esse canal, ou
+  # a regra de capacidade já está cheia.
   def over_capacity(inbox, user_ids)
     return [] if user_ids.blank?
 
     queue = self.class.queue_for(inbox)
+    return [] if queue.nil?
+
     limits = capacity_by_user(queue, user_ids)
     return [] if limits.empty?
 
@@ -45,26 +49,38 @@ class Staydesk::AgentLoadService
             .group(:assignee_id).count
   end
 
-  # Painel de carga: status atual, carga e limite de cada agente, nas duas filas.
+  # Painel de carga: status atual, regra, carga e teto de cada agente, por fila.
   def summary(user_ids)
     statuses = statuses_by_user(user_ids)
+    regras = Staydesk::CapacityRule.by_user(@account, user_ids)
     loads = queues.index_with { |queue| load_by_user(queue, user_ids) }
 
     user_ids.index_with do |user_id|
       status = statuses[user_id]
       {
-        status: status,
+        status: status, rule: regras[user_id],
         load: queues.index_with { |queue| loads[queue].fetch(user_id, 0) },
-        capacity: queues.index_with { |queue| status&.capacity_for(queue) }
+        capacity: queues.index_with { |queue| limit_for(status, regras[user_id], queue) }
       }
     end
+  end
+
+  # O teto do agente numa fila: zero se o status atual não recebe esse canal;
+  # senão o da regra de capacidade dele (nil = sem limite). Sem status
+  # personalizado vale só a regra.
+  def limit_for(status, rule, queue)
+    return 0 if status && !status.receives?(queue)
+
+    rule&.limit_for(queue)
   end
 
   private
 
   def capacity_by_user(queue, user_ids)
-    statuses_by_user(user_ids).filter_map do |user_id, status|
-      limit = status&.capacity_for(queue)
+    statuses = statuses_by_user(user_ids)
+    regras = Staydesk::CapacityRule.by_user(@account, user_ids)
+    user_ids.filter_map do |user_id|
+      limit = limit_for(statuses[user_id], regras[user_id], queue)
       [user_id, limit] if limit
     end.to_h
   end

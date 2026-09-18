@@ -288,7 +288,7 @@
     },
     "AGENT_STATUS": {
       "SETTINGS_TITLE": "Agent statuses",
-      "SETTINGS_DESCRIPTION": "What an agent handles right now: everything, only chat, only tickets, or away. Agents pick it in the availability menu; automatic assignment only hands out conversations from the inboxes the status serves.",
+      "SETTINGS_DESCRIPTION": "What the agent receives right now, per work channel: everything, chat only, tickets only or nothing. The agent picks it in the availability menu; how much of each channel comes from the capacity rule.",
       "NEW": "New status",
       "EDIT": "Edit status",
       "EMPTY": "No custom status yet. Create statuses like Available, Chat only, Tickets only and Away.",
@@ -304,11 +304,9 @@
         "INBOXES": "Serves these inboxes",
         "INBOXES_HINT": "None selected means every inbox.",
         "ACTIVE": "Active",
-        "CAPACITY_CHAT": "Concurrent chats",
-        "CAPACITY_TICKET": "Concurrent tickets",
-        "CAPACITY_HINT": "How many conversations automatic distribution hands over at once in this status. Blank means no limit; zero takes the agent out of that queue. Email inboxes count as tickets, everything else as chat, and only what is being handled counts.",
         "INBOXES_PLACEHOLDER": "Every inbox",
-        "CAPACITY_QUEUE": "{queue} limit"
+        "CHANNELS": "Receives",
+        "CHANNELS_HINT": "Which work channels this status receives. How many at once comes from the agent's capacity rule."
       },
       "API": {
         "SAVE_SUCCESS": "Status saved",
@@ -320,21 +318,16 @@
         "BUTTON": "Delete",
         "CONFIRM": "Delete the status \"{name}\"? Its history is removed too."
       },
-      "CAPACITY": {
-        "COLUMN": "Concurrent load",
-        "UNLIMITED": "No limit",
-        "NONE": "Receives none",
-        "CHAT": "Chats",
-        "TICKET": "Tickets"
-      },
       "LOAD": {
         "TITLE": "Load right now",
-        "DESCRIPTION": "Conversations being handled right now, per queue, against the limit of each agent's current status.",
+        "DESCRIPTION": "Conversations being handled right now, per work channel, against each agent's ceiling: their capacity rule, and zero where the current status does not receive.",
         "AGENT": "Agent",
         "STATUS": "Status",
         "NO_STATUS": "No custom status",
         "REFRESH": "Refresh",
-        "EMPTY": "Nobody is handling anything right now."
+        "EMPTY": "Nobody is handling anything right now.",
+        "RULE": "Rule",
+        "NO_RULE": "no rule"
       },
       "ACCEPTANCE": {
         "TITLE": "Offer acceptance",
@@ -361,10 +354,11 @@
         "AWAY": "away",
         "CHECKS": {
           "connected": "not connected",
-          "available": "status is away",
-          "has_capacity": "no room in the status",
+          "available": "status away",
+          "has_capacity": "capacity full",
           "in_group": "not in the group",
-          "inbox_member": "not in the inbox"
+          "inbox_member": "not in the inbox",
+          "receives_channel": "status does not receive the channel"
         }
       },
       "TIMEOUT": {
@@ -381,6 +375,13 @@
         "LABEL": "Counts as online time",
         "HINT": "Time in this status goes into the agent's online time, the KPI in Central. Meetings and lunch usually do not.",
         "NOT_COUNTED": "does not count as online time"
+      },
+      "CHANNELS": {
+        "NONE": "Receives nothing"
+      },
+      "CAPACITY": {
+        "UNLIMITED": "no limit",
+        "NONE": "does not receive"
       }
     },
     "TICKET_STATUS": {
@@ -500,12 +501,13 @@
       "TITLE": "Central",
       "SECTIONS": {
         "WORK": "Service",
-        "SERVICE_LEVEL": "Statuses and targets",
+        "SERVICE_LEVEL": "Deadlines",
         "PEOPLE": "People",
         "CHANNELS": "Channels",
         "RULES": "Rules and automation",
         "ACCOUNT": "Account",
-        "OTHER": "Other"
+        "OTHER": "Other",
+        "DISTRIBUTION": "Work distribution"
       },
       "DESCRIPTION": "Where the operation is set up and watched. The Hub is where work happens.",
       "KPIS": {
@@ -532,15 +534,21 @@
       },
       "SECTION_NOT_FOUND": "This section does not exist or you cannot access it.",
       "SECTION_HINTS": {
-        "CentralAtendimento": "How work arrives and how the agent sees it: who receives each request, which bucket it counts in, and what shows on the screen of whoever handles it.",
-        "CentralPrazos": "Ticket and agent states, and deadlines: the status catalog, availability and limits, SLA policies and business hours.",
+        "CentralAtendimento": "The screen and the states of whoever handles work: the ticket status catalog, each group's views and the workspace.",
+        "CentralPrazos": "Deadlines: SLA policies and the business hours that pause them.",
         "CentralPessoas": "Who works in the account and what each one can do: agents, groups, roles with granular permissions and integration keys.",
         "CentralCanais": "Where the customer comes in: the inboxes of each channel and message templates.",
         "CentralRegras": "What runs on its own and what the agent reuses: automations, macros, canned responses, bots, labels and ticket fields.",
         "CentralConta": "The account itself: general data, API documentation, integrations, audit, security and billing.",
-        "CentralOutros": "Product screens without a section of their own yet."
+        "CentralOutros": "Product screens without a section of their own yet.",
+        "CentralDistribuicao": "How work reaches the people who handle it, in order: what counts as chat and as ticket, which groups each demand goes to, how much each agent can take and what each status receives."
       },
-      "ITEM_HINTS": {}
+      "ITEM_HINTS": {
+        "StaydeskLoadQueuesSettings": "What counts as chat and as ticket, by channel and by inbox. Statuses and capacity speak in work channels.",
+        "StaydeskQueuesSettings": "What enters each queue and which groups it goes to: primary, secondary, delivery order and acceptance.",
+        "StaydeskCapacityRulesSettings": "How many conversations of each channel an agent takes at once: the default rule and the ones assigned to agents.",
+        "StaydeskAgentStatusesSettings": "What each status receives (chat, ticket), timeout, online time, and the who-gets-what diagnosis."
+      }
     },
     "API_TOKENS": {
       "SETTINGS_TITLE": "API tokens",
@@ -601,38 +609,38 @@
       "MISSING": "Fill these to resolve: {fields}"
     },
     "LOAD_QUEUES": {
-      "SETTINGS_TITLE": "Load queues",
-      "SETTINGS_DESCRIPTION": "How many conversations at once an agent handles is counted per queue, and the inbox says which queue a conversation belongs to. The limit of each one lives in the agent status. Not to be confused with routing queues, which decide which groups the work goes to.",
-      "NEW": "New load queue",
-      "CATCH_ALL": "whatever the other queues do not take",
+      "SETTINGS_TITLE": "Work channels",
+      "SETTINGS_DESCRIPTION": "What counts as chat and as ticket, by channel and by inbox. Work channels are what the agent status uses to say what it receives and the capacity rule to say how much.",
+      "NEW": "New work channel",
+      "CATCH_ALL": "whatever the other channels do not take",
       "NOTHING": "nothing yet",
-      "FOOTNOTE": "With no queue configured, the product default applies: chat takes everything and email is a ticket.",
+      "FOOTNOTE": "With none configured, the product default applies: chat takes everything and email is a ticket.",
       "FORM": {
         "NAME": "Name",
         "KEY": "Key",
-        "KEY_HINT": "The key is what shows up in each agent status limit. It does not change after creation.",
+        "KEY_HINT": "The key identifies the channel in the agent status and in the capacity rule. It does not change after creation.",
         "CHANNELS": "Channels",
         "CHANNELS_PLACEHOLDER": "No channel",
         "INBOXES": "Specific inboxes",
         "INBOXES_PLACEHOLDER": "No inbox",
         "INBOXES_HINT": "The inbox beats the channel, so one channel type can serve different things.",
         "CATCH_ALL": "Takes the rest",
-        "CATCH_ALL_HINT": "Keeps the inboxes no other load queue took."
+        "CATCH_ALL_HINT": "Keeps the inboxes no other work channel took."
       },
       "TABLE": {
-        "NAME": "Queue",
+        "NAME": "Work channel",
         "TAKES": "Takes"
       },
       "API": {
-        "SAVE_ERROR": "Could not save the load queue",
-        "SAVE_SUCCESS": "Load queue saved",
-        "DELETE_SUCCESS": "Load queue deleted",
-        "DELETE_ERROR": "Could not delete the load queue"
+        "SAVE_ERROR": "Could not save the work channel",
+        "SAVE_SUCCESS": "Work channel saved",
+        "DELETE_SUCCESS": "Work channel deleted",
+        "DELETE_ERROR": "Could not delete the work channel"
       },
       "EDIT": "Edit",
       "DELETE": {
         "BUTTON": "Delete",
-        "CONFIRM": "Delete the load queue \"{name}\"? Its limit disappears from the agent statuses and its inboxes move to the queue that takes the rest."
+        "CONFIRM": "Delete the work channel \"{name}\"? It disappears from statuses and capacity rules, and its inboxes move to the channel that takes the rest."
       }
     },
     "API_DOCS": {
@@ -687,6 +695,44 @@
       "RESUME": "Pick up",
       "LOADING": "Loading…",
       "NOTHING_WITH_ME": "Nothing with you right now. Pick a view on the side."
+    },
+    "CAPACITY_RULES": {
+      "SETTINGS_TITLE": "Capacity rules",
+      "SETTINGS_DESCRIPTION": "How many conversations of each work channel an agent handles at once, as in Zendesk. The status says what they receive now; the rule says how much. One rule is the default; the others are assigned to agents.",
+      "NEW": "New rule",
+      "EDIT": "Edit",
+      "EMPTY": "No rules yet. Without one, nobody has a ceiling: distribution delivers as long as the status receives.",
+      "DEFAULT_BADGE": "Default",
+      "DEFAULT_AGENTS": "everyone without a rule of their own",
+      "NO_AGENTS": "nobody",
+      "UNLIMITED": "no limit",
+      "NONE": "does not receive",
+      "FOOTNOTE": "Each agent has one rule; whoever has none uses the default. Without a default rule, agents without their own have no ceiling.",
+      "TABLE": {
+        "RULE": "Rule",
+        "AGENTS": "Agents"
+      },
+      "FORM": {
+        "NAME": "Name",
+        "DESCRIPTION": "Description (optional)",
+        "LIMITS": "Conversations at once",
+        "LIMITS_HINT": "Per work channel. Blank means no limit; zero does not receive.",
+        "IS_DEFAULT": "Account default rule",
+        "IS_DEFAULT_HINT": "Applies to whoever is in no rule. Only one per account: marking this one unmarks the other.",
+        "AGENTS": "Agents with this rule",
+        "AGENTS_PLACEHOLDER": "Pick the agents",
+        "AGENTS_HINT": "Each agent has one rule only: joining this one leaves the others."
+      },
+      "DELETE": {
+        "BUTTON": "Delete",
+        "CONFIRM": "Delete the rule \"{name}\"? Its agents fall back to the default rule."
+      },
+      "API": {
+        "SAVE_SUCCESS": "Rule saved",
+        "SAVE_ERROR": "Could not save the rule",
+        "DELETE_SUCCESS": "Rule deleted",
+        "DELETE_ERROR": "Could not delete the rule"
+      }
     }
   },
   "AUTOMATION": {

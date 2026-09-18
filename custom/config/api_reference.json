@@ -182,8 +182,8 @@
           "metodo": "GET",
           "caminho": "staydesk/agent_loads",
           "titulo": "Ler a carga dos agentes agora",
-          "resumo": "Quantas conversas cada agente atende neste momento em cada fila de carga, contra o limite do status dele.",
-          "detalhes": "É a foto do momento, não do período: quem está com quantas conversas, e qual o teto de cada um pelo status em que está. Limite nulo é sem limite; zero é que o status não recebe daquela fila. Serve para um painel de sala e para decidir quem está sobrecarregado.",
+          "resumo": "Quantas conversas cada agente atende neste momento em cada canal de trabalho, contra o teto dele.",
+          "detalhes": "É a foto do momento, não do período: quem está com quantas conversas, e qual o teto de cada um. O teto sai da regra de capacidade do agente (`rule`) e do status em que ele está: nulo é sem limite; zero é que o status atual não recebe aquele canal.",
           "escopo": "relatorios:leitura",
           "respostas": [
             {
@@ -209,11 +209,8 @@
                 "name": "Só chat",
                 "color": "#545DFF"
               },
+              "rule": "Regras para Atribuição - StayCloud",
               "load": {
-                "chat": 6,
-                "ticket": 0
-              },
-              "capacity": {
                 "chat": 6,
                 "ticket": 0
               }
@@ -225,7 +222,7 @@
           "caminho": "staydesk/distribution_checks",
           "titulo": "Diagnosticar a distribuição",
           "resumo": "Para cada agente e cada fila de encaminhamento, se ele recebe trabalho dela e, se não, qual condição falta.",
-          "detalhes": "Responde à pergunta \"coloquei online e não caiu nada\". A distribuição só entrega a quem passa em cinco condições, e o diagnóstico mostra cada uma com sim ou não:\n\n`connected` — tem conexão viva agora, não só o status marcado no banco.\n`available` — o status atual é de disponibilidade `online`.\n`has_capacity` — o status tem limite acima de zero para a fila de carga daquela fila.\n`in_group` — está num grupo principal ou secundário da fila.\n`inbox_member` — é membro de ao menos uma caixa que a fila pega.\n\n`receives` é o E lógico das cinco. A condição que falta é o que corrigir: normalmente é grupo ou caixa.",
+          "detalhes": "Responde à pergunta \"coloquei online e não caiu nada\". A distribuição só entrega a quem passa em seis condições, e o diagnóstico mostra cada uma com sim ou não:\n\n`connected` — tem conexão viva agora, não só o status marcado no banco.\n`available` — o status atual é de disponibilidade `online`.\n`receives_channel` — o status atual recebe o canal de trabalho daquela fila (chat, ticket).\n`has_capacity` — a regra de capacidade ainda tem vaga nesse canal (`load` abaixo de `capacity`).\n`in_group` — está num grupo principal ou secundário da fila.\n`inbox_member` — é membro de ao menos uma caixa que a fila pega.\n\n`receives` é o E lógico das seis. A condição que falta é o que corrigir: normalmente é grupo ou caixa.",
           "escopo": "relatorios:leitura",
           "mcp": "staydesk_diagnostico_da_distribuicao",
           "respostas": [
@@ -256,9 +253,11 @@
                   "team": "suporte n2",
                   "load_queue": "ticket",
                   "capacity": 20,
+                  "load": 3,
                   "checks": {
                     "connected": true,
                     "available": true,
+                    "receives_channel": true,
                     "has_capacity": true,
                     "in_group": false,
                     "inbox_member": false
@@ -717,7 +716,7 @@
     {
       "chave": "filas",
       "titulo": "Filas",
-      "texto": "Há duas filas, e o nome parecido confunde.\n\nA **fila de encaminhamento** decide para quais grupos o trabalho vai, pelo canal e pela caixa de entrada: \"chat e WhatsApp caem no N1, e-mail cai no N2\". Primeiro os grupos principais; sem ninguém disponível neles, os secundários. A conversa entra no primeiro principal na criação e, quando alguém pega, fica no grupo desse agente, como no Zendesk.\n\nA **fila de carga** decide em qual balde a conversa conta para o limite do agente. É a caixa que diz de qual fila de carga a conversa é, e o limite de cada uma fica no status do agente.",
+      "texto": "Há filas e canais de trabalho, e é bom separar.\n\nA **fila de encaminhamento** decide para quais grupos o trabalho vai, pelo canal e pela caixa de entrada: \"chat e WhatsApp caem no N1, e-mail cai no N2\". Primeiro os grupos principais; sem ninguém disponível neles, os secundários. A conversa entra no primeiro principal na criação e, quando alguém pega, fica no grupo desse agente, como no Zendesk.\n\nO **canal de trabalho** (`load_queues` na API) decide se a conversa é chat ou ticket, pela caixa e pelo canal. É por ele que o status do agente diz o que recebe e a **regra de capacidade** diz quanto ao mesmo tempo, como no Zendesk.",
       "endpoints": [
         {
           "metodo": "GET",
@@ -1395,6 +1394,293 @@
         },
         {
           "metodo": "GET",
+          "caminho": "staydesk/capacity_rules",
+          "titulo": "Listar regras de capacidade",
+          "resumo": "Quantas conversas de cada canal de trabalho o agente aguenta ao mesmo tempo: a regra padrão e as atribuídas a agentes.",
+          "detalhes": "Como no Zendesk, a capacidade é separada do status. O status do agente diz **o que** ele recebe agora (chat, ticket); a regra diz **quanto**. Quem não está em nenhuma regra usa a padrão (`is_default`); sem regra padrão, não há teto. `limits` usa as chaves dos canais de trabalho (`load_queues`).",
+          "escopo": "operacao:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo. O corpo traz o que foi pedido."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Token inválido, suspenso ou vencido, ou o papel de quem chama não alcança este recurso."
+            },
+            {
+              "codigo": 403,
+              "descricao": "O token de API não tem o escopo exigido. A mensagem diz qual."
+            }
+          ],
+          "mcp": "staydesk_regras_de_capacidade_listar",
+          "resposta": [
+            {
+              "id": 1,
+              "name": "Regras para Atribuição - StayCloud",
+              "description": "A regra de quem atende no dia a dia",
+              "limits": {
+                "chat": 4,
+                "ticket": 3
+              },
+              "is_default": true,
+              "user_ids": [
+                2,
+                5
+              ],
+              "user_names": [
+                "Ana Ribeiro",
+                "John"
+              ],
+              "position": 0
+            }
+          ]
+        },
+        {
+          "metodo": "POST",
+          "caminho": "staydesk/capacity_rules",
+          "titulo": "Criar regra de capacidade",
+          "resumo": "Cria uma regra de capacidade e, se quiser, já atribui agentes.",
+          "detalhes": "Chave de canal que a conta não conhece é descartada. Marcar `is_default` desmarca a regra padrão anterior. Agente listado em `user_ids` sai de qualquer outra regra em que estivesse.",
+          "escopo": "operacao:escrita",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Criado. O corpo traz o registro completo, com o id."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Token inválido, suspenso ou vencido, ou o papel de quem chama não alcança este recurso."
+            },
+            {
+              "codigo": 403,
+              "descricao": "O token de API não tem o escopo exigido. A mensagem diz qual."
+            },
+            {
+              "codigo": 422,
+              "descricao": "Validação falhou. `message` explica o campo."
+            }
+          ],
+          "mcp": "staydesk_regras_de_capacidade_criar",
+          "corpo": [
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome da regra, único na conta.",
+              "obrigatorio": true,
+              "exemplo": "Regras para Atribuição - StayCloud"
+            },
+            {
+              "nome": "description",
+              "tipo": "texto",
+              "descricao": "Para que a regra serve.",
+              "exemplo": "A regra de quem atende no dia a dia"
+            },
+            {
+              "nome": "limits",
+              "tipo": "objeto",
+              "descricao": "Quantas conversas de cada canal de trabalho ao mesmo tempo. A chave é a chave do canal (`load_queues`); chave ausente é sem limite; zero é não receber.",
+              "exemplo": {
+                "chat": 4,
+                "ticket": 3
+              }
+            },
+            {
+              "nome": "is_default",
+              "tipo": "booleano",
+              "descricao": "A regra de quem não tem regra própria. Só uma por conta: marcar esta desmarca a outra.",
+              "exemplo": true
+            },
+            {
+              "nome": "user_ids",
+              "tipo": "lista de inteiro",
+              "descricao": "Agentes com esta regra. Cada agente tem uma regra só: entrar nesta tira das outras.",
+              "exemplo": [
+                2,
+                5
+              ]
+            }
+          ],
+          "payload": {
+            "capacity_rule": {
+              "name": "Regras para Atribuição - StayCloud",
+              "limits": {
+                "chat": 4,
+                "ticket": 3
+              },
+              "is_default": true,
+              "user_ids": [
+                2,
+                5
+              ]
+            }
+          },
+          "resposta": {
+            "id": 1,
+            "name": "Regras para Atribuição - StayCloud",
+            "description": "A regra de quem atende no dia a dia",
+            "limits": {
+              "chat": 4,
+              "ticket": 3
+            },
+            "is_default": true,
+            "user_ids": [
+              2,
+              5
+            ],
+            "user_names": [
+              "Ana Ribeiro",
+              "John"
+            ],
+            "position": 0
+          }
+        },
+        {
+          "metodo": "PATCH",
+          "caminho": "staydesk/capacity_rules/{id}",
+          "titulo": "Alterar regra de capacidade",
+          "resumo": "Muda limites, agentes ou a marcação de padrão.",
+          "detalhes": "Manda só o que muda. `user_ids` substitui a lista inteira.",
+          "escopo": "operacao:escrita",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo. O corpo traz o que foi pedido."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Token inválido, suspenso ou vencido, ou o papel de quem chama não alcança este recurso."
+            },
+            {
+              "codigo": 403,
+              "descricao": "O token de API não tem o escopo exigido. A mensagem diz qual."
+            },
+            {
+              "codigo": 404,
+              "descricao": "O id não existe nesta conta."
+            },
+            {
+              "codigo": 422,
+              "descricao": "Validação falhou. `message` explica o campo."
+            }
+          ],
+          "mcp": "staydesk_regras_de_capacidade_atualizar",
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da regra.",
+              "obrigatorio": true,
+              "exemplo": 1
+            }
+          ],
+          "corpo": [
+            {
+              "nome": "name",
+              "tipo": "texto",
+              "descricao": "Nome da regra, único na conta.",
+              "obrigatorio": false,
+              "exemplo": "Regras para Atribuição - StayCloud"
+            },
+            {
+              "nome": "description",
+              "tipo": "texto",
+              "descricao": "Para que a regra serve.",
+              "exemplo": "A regra de quem atende no dia a dia",
+              "obrigatorio": false
+            },
+            {
+              "nome": "limits",
+              "tipo": "objeto",
+              "descricao": "Quantas conversas de cada canal de trabalho ao mesmo tempo. A chave é a chave do canal (`load_queues`); chave ausente é sem limite; zero é não receber.",
+              "exemplo": {
+                "chat": 4,
+                "ticket": 3
+              },
+              "obrigatorio": false
+            },
+            {
+              "nome": "is_default",
+              "tipo": "booleano",
+              "descricao": "A regra de quem não tem regra própria. Só uma por conta: marcar esta desmarca a outra.",
+              "exemplo": true,
+              "obrigatorio": false
+            },
+            {
+              "nome": "user_ids",
+              "tipo": "lista de inteiro",
+              "descricao": "Agentes com esta regra. Cada agente tem uma regra só: entrar nesta tira das outras.",
+              "exemplo": [
+                2,
+                5
+              ],
+              "obrigatorio": false
+            }
+          ],
+          "payload": {
+            "capacity_rule": {
+              "limits": {
+                "chat": 6
+              }
+            }
+          },
+          "resposta": {
+            "id": 1,
+            "name": "Regras para Atribuição - StayCloud",
+            "description": "A regra de quem atende no dia a dia",
+            "limits": {
+              "chat": 6,
+              "ticket": 3
+            },
+            "is_default": true,
+            "user_ids": [
+              2,
+              5
+            ],
+            "user_names": [
+              "Ana Ribeiro",
+              "John"
+            ],
+            "position": 0
+          }
+        },
+        {
+          "metodo": "DELETE",
+          "caminho": "staydesk/capacity_rules/{id}",
+          "titulo": "Remover regra de capacidade",
+          "resumo": "Apaga a regra. Os agentes dela passam a usar a padrão.",
+          "detalhes": "Apagar a padrão deixa a conta sem teto para quem não tem regra própria.",
+          "escopo": "operacao:escrita",
+          "respostas": [
+            {
+              "codigo": 204,
+              "descricao": "Removido. Sem corpo."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Token inválido, suspenso ou vencido, ou o papel de quem chama não alcança este recurso."
+            },
+            {
+              "codigo": 403,
+              "descricao": "O token de API não tem o escopo exigido. A mensagem diz qual."
+            },
+            {
+              "codigo": 404,
+              "descricao": "O id não existe nesta conta."
+            }
+          ],
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id da regra.",
+              "obrigatorio": true,
+              "exemplo": 1
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
           "caminho": "staydesk/offers",
           "titulo": "Listar convites pendentes",
           "resumo": "Os convites de atendimento pendentes de quem está chamando.",
@@ -1877,7 +2163,7 @@
           "caminho": "staydesk/agent_statuses",
           "titulo": "Listar status do agente",
           "resumo": "Os status de agente da conta e qual é o atual de quem chama.",
-          "detalhes": "Cada status traz disponibilidade, limite por fila de carga e as caixas que atende. `current_status_id` é o de quem está chamando.\n\nCada status traz também o **tempo limite**: `offline_after_seconds` e `offline_to_status_id`. Quem fecha a aba e passa desse tempo cai do status sozinho, e o tempo online para de contar.",
+          "detalhes": "Cada status traz disponibilidade, os canais de trabalho que recebe (`work_channels`) e as caixas que atende. Quanto recebe é da regra de capacidade (`capacity_rules`). `current_status_id` é o de quem está chamando.\n\nCada status traz também o **tempo limite**: `offline_after_seconds` e `offline_to_status_id`. Quem fecha a aba e passa desse tempo cai do status sozinho, e o tempo online para de contar.",
           "escopo": "operacao:leitura",
           "respostas": [
             {
@@ -1900,11 +2186,10 @@
                 "id": 3,
                 "name": "Só chat",
                 "availability": "online",
+                "work_channels": [
+                  "chat"
+                ],
                 "color": "#545DFF",
-                "capacity": {
-                  "chat": 6,
-                  "ticket": 0
-                },
                 "inbox_ids": [],
                 "position": 1,
                 "active": true
@@ -1918,7 +2203,7 @@
           "caminho": "staydesk/agent_statuses",
           "titulo": "Criar status do agente",
           "resumo": "Cria um status de agente.",
-          "detalhes": "O limite é por chave de fila de carga. Chave ausente é sem limite; zero é que o status não recebe daquela fila. Um status `busy` com todos os limites em zero é o \"em reunião\" da operação.",
+          "detalhes": "`work_channels` diz o que o status recebe, pelas chaves dos canais de trabalho. Lista vazia é o \"em reunião\" da operação. O quanto vem da regra de capacidade do agente.",
           "escopo": "operacao:escrita",
           "respostas": [
             {
@@ -1955,13 +2240,12 @@
               "exemplo": "online"
             },
             {
-              "nome": "capacity",
-              "tipo": "objeto",
-              "descricao": "Limite de conversas simultâneas por fila de carga. Chave é a chave da fila; valor é o teto. `0` não recebe daquela fila; chave ausente é sem limite.",
-              "exemplo": {
-                "chat": 6,
-                "ticket": 0
-              }
+              "nome": "work_channels",
+              "tipo": "lista de texto",
+              "descricao": "Canais de trabalho que este status recebe, pelas chaves de `load_queues`. Lista vazia não recebe nada (o \"em reunião\" da operação). Quanto recebe de cada um vem da regra de capacidade do agente.",
+              "exemplo": [
+                "chat"
+              ]
             },
             {
               "nome": "inbox_ids",
@@ -2004,10 +2288,9 @@
             "agent_status": {
               "name": "Só chat",
               "availability": "online",
-              "capacity": {
-                "chat": 6,
-                "ticket": 0
-              },
+              "work_channels": [
+                "chat"
+              ],
               "color": "#545DFF"
             }
           }
@@ -2067,13 +2350,12 @@
               "exemplo": "online"
             },
             {
-              "nome": "capacity",
-              "tipo": "objeto",
-              "descricao": "Limite de conversas simultâneas por fila de carga. Chave é a chave da fila; valor é o teto. `0` não recebe daquela fila; chave ausente é sem limite.",
-              "exemplo": {
-                "chat": 6,
-                "ticket": 0
-              }
+              "nome": "work_channels",
+              "tipo": "lista de texto",
+              "descricao": "Canais de trabalho que este status recebe, pelas chaves de `load_queues`. Lista vazia não recebe nada (o \"em reunião\" da operação). Quanto recebe de cada um vem da regra de capacidade do agente.",
+              "exemplo": [
+                "chat"
+              ]
             },
             {
               "nome": "inbox_ids",

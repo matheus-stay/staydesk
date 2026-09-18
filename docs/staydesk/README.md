@@ -16,10 +16,10 @@ O produto tem dois espaços, com nome próprio:
 | Documento | O que cobre |
 |---|---|
 | [hub-e-central.md](hub-e-central.md) | Os dois espaços, a navegação e a área de trabalho do agente |
-| [filas-e-distribuicao.md](filas-e-distribuicao.md) | Filas de encaminhamento por canal e grupo, filas de carga, transbordo, aceite e varredura |
+| [filas-e-distribuicao.md](filas-e-distribuicao.md) | Filas por canal com grupos principais e secundários, canais de trabalho, regras de capacidade, aceite e varredura |
 | [campos-do-ticket.md](campos-do-ticket.md) | Campos personalizados da conversa e a regra de obrigatório para resolver |
 | [status-do-ticket.md](status-do-ticket.md) | Catálogo de status por cima dos quatro do Chatwoot |
-| [status-do-agente.md](status-do-agente.md) | Disponibilidade e limite de conversas simultâneas |
+| [status-do-agente.md](status-do-agente.md) | O que cada status recebe, regras de capacidade, tempo limite e tempo online |
 | [sla.md](sla.md) | Motor de SLA próprio, calendário e alertas |
 | [views-por-time.md](views-por-time.md) | Visualizações por grupo, o que cada um vê na fila |
 | [area-de-trabalho.md](area-de-trabalho.md) | Menus, colunas, campos e painéis por time e por papel |

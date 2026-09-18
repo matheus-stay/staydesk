@@ -5,7 +5,7 @@
 #  id           :bigint           not null, primary key
 #  active       :boolean          default(TRUE), not null
 #  availability :string           default("online"), not null   (online | busy)
-#  capacity     :jsonb            default({}), not null  ({"chat" => 5, "ticket" => 12}; ausente = sem limite)
+#  work_channels :string          default([]), not null, is an Array  (chaves das filas de carga que o status recebe)
 #  color        :string
 #  inbox_ids    :bigint           default([]), not null, is an Array  (vazio = todas as caixas)
 #  name         :string           not null
@@ -14,8 +14,9 @@
 #  updated_at   :datetime         not null
 #  account_id   :bigint           not null
 #
-# Status personalizado do agente: o que ele atende agora. A distribuição automática
-# só entrega conversas das caixas que o status atende.
+# Status personalizado do agente: o que ele atende agora, por canal de trabalho,
+# como no Zendesk. A distribuição automática só entrega conversas dos canais e
+# das caixas que o status atende; quanto entrega é da regra de capacidade.
 class Staydesk::AgentStatus < ApplicationRecord
   self.table_name = 'staydesk_agent_statuses'
 
@@ -30,11 +31,10 @@ class Staydesk::AgentStatus < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { scope: :account_id }
   validates :availability, inclusion: { in: AVAILABILITIES }
-  validate :capacity_must_be_whole_numbers
   validates :offline_after_seconds, numericality: { greater_than_or_equal_to: 30 }, allow_nil: true
   validate :offline_target_is_another_status_of_the_account
 
-  before_validation :normalize_capacity
+  before_validation :normalize_work_channels
 
   scope :ordered, -> { order(:position, :id) }
   scope :active, -> { where(active: true) }
@@ -43,23 +43,16 @@ class Staydesk::AgentStatus < ApplicationRecord
     inbox_ids.empty? || inbox_ids.include?(inbox_id)
   end
 
-  # Quantas conversas simultâneas desta fila o agente aceita neste status.
-  # nil = sem limite; 0 = não recebe distribuição automática desta fila.
-  def capacity_for(queue)
-    value = (capacity || {})[queue.to_s]
-    return nil if value.blank? && value != 0
-
-    value.to_i
+  # Este status recebe conversas deste canal de trabalho (chave da fila de carga)?
+  def receives?(queue)
+    work_channels.include?(queue.to_s)
   end
 
   private
 
-  def normalize_capacity
-    self.capacity = (capacity || {}).slice(*filas_de_carga).filter_map do |queue, value|
-      next if value.nil? || value.to_s.strip.empty?
-
-      [queue, value.to_i]
-    end.to_h
+  # Só chaves que a conta conhece, na ordem das filas de carga.
+  def normalize_work_channels
+    self.work_channels = filas_de_carga & Array(work_channels).map(&:to_s)
   end
 
   # Sem conta ainda (registro novo em validação), vale o padrão do produto.
@@ -72,11 +65,5 @@ class Staydesk::AgentStatus < ApplicationRecord
 
     errors.add(:offline_to_status_id, 'não pode ser o próprio status') if offline_to_status_id == id
     errors.add(:offline_to_status_id, 'precisa ser um status desta conta') if offline_to_status.account_id != account_id
-  end
-
-  def capacity_must_be_whole_numbers
-    return if (capacity || {}).values.all? { |value| value.is_a?(Integer) && value >= 0 }
-
-    errors.add(:capacity, 'deve ter números inteiros a partir de zero')
   end
 end

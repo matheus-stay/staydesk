@@ -25,10 +25,10 @@ Da pesquisa de satisfação do produto, no período.
 
 A régua de "satisfeito é 4 ou 5" é a da operação.
 
-### Tempos, por fila de carga
+### Tempos, por canal de trabalho
 
 Chat e ticket não se comparam, então os tempos vêm separados pela
-[fila de carga](filas-e-distribuicao.md) da caixa:
+[canal de trabalho](filas-e-distribuicao.md) da caixa:
 
 | Métrica | O que mede |
 |---|---|

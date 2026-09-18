@@ -3,7 +3,7 @@ json.name resource.name
 json.color resource.color
 json.availability resource.availability
 json.inbox_ids resource.inbox_ids
-json.capacity resource.capacity
+json.work_channels resource.work_channels
 json.position resource.position
 json.active resource.active
 json.offline_after_seconds resource.offline_after_seconds

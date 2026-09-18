@@ -38,6 +38,7 @@ Rails.application.routes.draw do
             resources :agent_loads, only: [:index]
             resources :distribution_checks, only: [:index]
             resources :load_queues, only: [:index, :create, :update, :destroy]
+            resources :capacity_rules, only: [:index, :create, :update, :destroy]
             resources :kpis, only: [:index]
             resources :api_tokens, only: [:index, :create, :update, :destroy]
             resources :ticket_fields, only: [:index]

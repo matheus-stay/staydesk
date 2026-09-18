@@ -15,7 +15,9 @@ import { useAgentStatusStore } from '../store/agentStatus';
 import { emDuracao } from '../helpers/duracao';
 import { fromSaveButton } from '../helpers/form';
 
-// Configurações › Status dos agentes: o catálogo que aparece no menu de disponibilidade.
+// Central › Distribuição de trabalho › Status dos agentes: o catálogo do menu de
+// disponibilidade. Cada status diz que canais de trabalho recebe, como no
+// Zendesk; quanto recebe é da regra de capacidade.
 const { t } = useI18n();
 const store = useAgentStatusStore();
 const inboxes = useMapGetter('inboxes/getInboxes');
@@ -29,7 +31,7 @@ const emptyForm = () => ({
   availability: 'online',
   inboxIds: [],
   active: true,
-  capacity: {},
+  workChannels: [],
   offlineAfterSeconds: 300,
   offlineToStatusId: null,
   countsAsOnline: true,
@@ -37,8 +39,13 @@ const emptyForm = () => ({
 const form = ref(emptyForm());
 
 const statuses = computed(() => store.statuses);
-// Os limites seguem as filas de carga configuradas, não uma lista fixa no código.
+// Os canais de trabalho da conta: é deles que saem os interruptores de "recebe".
 const loadQueues = computed(() => store.loadQueues);
+const channelOn = key => form.value.workChannels.includes(key);
+const setChannel = (key, on) => {
+  const sem = form.value.workChannels.filter(item => item !== key);
+  form.value.workChannels = on ? [...sem, key] : sem;
+};
 const destinoOptions = computed(() => [
   { value: null, label: t('STAYDESK.AGENT_STATUS.TIMEOUT.NO_TARGET') },
   ...statuses.value
@@ -62,6 +69,7 @@ const distributionChecks = computed(() => store.distributionChecks);
 const CHECKS = [
   'connected',
   'available',
+  'receives_channel',
   'has_capacity',
   'in_group',
   'inbox_member',
@@ -97,13 +105,12 @@ const startEdit = status => {
         availability: status.availability,
         inboxIds: [...(status.inbox_ids || [])],
         active: status.active,
-        // Os limites seguem as filas de carga da conta, não uma lista fixa.
-        capacity: { ...(status.capacity || {}) },
+        workChannels: [...(status.work_channels || [])],
         offlineAfterSeconds: status.offline_after_seconds ?? '',
         offlineToStatusId: status.offline_to_status_id || null,
         countsAsOnline: status.counts_as_online !== false,
       }
-    : emptyForm();
+    : { ...emptyForm(), workChannels: loadQueues.value.map(fila => fila.key) };
 };
 
 const inboxOptions = computed(() =>
@@ -125,10 +132,7 @@ const save = async () => {
       offline_to_status_id: form.value.offlineToStatusId || null,
       counts_as_online: form.value.countsAsOnline,
       active: form.value.active,
-      capacity: {
-        chat: form.value.capacity.chat,
-        ticket: form.value.capacity.ticket,
-      },
+      work_channels: form.value.workChannels,
     });
     useAlert(t('STAYDESK.AGENT_STATUS.API.SAVE_SUCCESS'));
     editing.value = null;
@@ -162,14 +166,14 @@ const capacityLabel = value => {
   return String(value);
 };
 
-const capacitySummary = status => {
-  const definidos = loadQueues.value.filter(
-    fila => status.capacity?.[fila.key] !== undefined
-  );
-  if (!definidos.length) return t('STAYDESK.AGENT_STATUS.CAPACITY.UNLIMITED');
-  return definidos
-    .map(fila => `${fila.name}: ${capacityLabel(status.capacity[fila.key])}`)
-    .join(' · ');
+// O que o status recebe, pelos nomes dos canais de trabalho.
+const channelsSummary = status => {
+  const nomes = loadQueues.value
+    .filter(fila => (status.work_channels || []).includes(fila.key))
+    .map(fila => fila.name);
+  return nomes.length
+    ? nomes.join(' · ')
+    : t('STAYDESK.AGENT_STATUS.CHANNELS.NONE');
 };
 
 const loadLabel = (entry, queue) =>
@@ -236,30 +240,27 @@ const aoEnviar = event => {
             />
           </label>
         </div>
-        <div class="grid gap-4 md:grid-cols-2">
-          <label
-            v-for="fila in loadQueues"
-            :key="fila.key"
-            class="grid gap-1 text-sm text-n-slate-12"
-          >
-            <span>
-              {{
-                t('STAYDESK.AGENT_STATUS.FORM.CAPACITY_QUEUE', {
-                  queue: fila.name,
-                })
-              }}
-            </span>
-            <input
-              v-model="form.capacity[fila.key]"
-              type="number"
-              min="0"
-              class="h-9 w-full rounded-lg border border-n-weak bg-n-alpha-1 px-3 text-sm text-n-slate-12"
-            />
-          </label>
-        </div>
-        <p class="text-xs text-n-slate-11">
-          {{ t('STAYDESK.AGENT_STATUS.FORM.CAPACITY_HINT') }}
-        </p>
+        <fieldset class="grid gap-3">
+          <legend class="text-sm text-n-slate-12">
+            {{ t('STAYDESK.AGENT_STATUS.FORM.CHANNELS') }}
+          </legend>
+          <p class="m-0 text-xs text-n-slate-11">
+            {{ t('STAYDESK.AGENT_STATUS.FORM.CHANNELS_HINT') }}
+          </p>
+          <div class="flex flex-wrap gap-6">
+            <label
+              v-for="fila in loadQueues"
+              :key="fila.key"
+              class="flex items-center gap-2 text-sm text-n-slate-12"
+            >
+              <Switch
+                :model-value="channelOn(fila.key)"
+                @update:model-value="valor => setChannel(fila.key, valor)"
+              />
+              {{ fila.name }}
+            </label>
+          </div>
+        </fieldset>
         <label class="flex items-start gap-2 text-sm text-n-slate-12">
           <Switch v-model="form.countsAsOnline" />
           <span class="grid gap-0.5">
@@ -355,7 +356,7 @@ const aoEnviar = event => {
             </td>
             <td class="py-3 pr-4 text-n-slate-11">{{ inboxNames(status) }}</td>
             <td class="py-3 pr-4 text-n-slate-11">
-              <p class="m-0">{{ capacitySummary(status) }}</p>
+              <p class="m-0">{{ channelsSummary(status) }}</p>
               <p class="m-0 text-xs text-n-slate-10">
                 {{ resumoDoLimite(status) }}
                 <template v-if="status.counts_as_online === false">
@@ -412,6 +413,9 @@ const aoEnviar = event => {
               <th class="py-2 pr-4 font-medium">
                 {{ t('STAYDESK.AGENT_STATUS.LOAD.STATUS') }}
               </th>
+              <th class="py-2 pr-4 font-medium">
+                {{ t('STAYDESK.AGENT_STATUS.LOAD.RULE') }}
+              </th>
               <th
                 v-for="fila in loadQueues"
                 :key="fila.key"
@@ -440,6 +444,9 @@ const aoEnviar = event => {
                 <span v-else>
                   {{ t('STAYDESK.AGENT_STATUS.LOAD.NO_STATUS') }}
                 </span>
+              </td>
+              <td class="py-2 pr-4 text-n-slate-11">
+                {{ entry.rule || t('STAYDESK.AGENT_STATUS.LOAD.NO_RULE') }}
               </td>
               <td
                 v-for="fila in loadQueues"

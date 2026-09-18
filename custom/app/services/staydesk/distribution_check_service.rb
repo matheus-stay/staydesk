@@ -39,11 +39,12 @@ class Staydesk::DistributionCheckService
   def por_fila(fila, status, times, caixas, usuario)
     caixas_da_fila = caixas_que_a_fila_pega(fila)
     carga = Staydesk::LoadQueue.for_inbox(caixas_da_fila.first)&.key if caixas_da_fila.any?
-    limite = status&.capacity_for(carga) if carga
-    agente = { status: status, times: times, caixas: caixas, id: usuario.id, limite: limite }
+    limite = regras[usuario.id]&.limit_for(carga) if carga
+    em_uso = carga ? cargas(carga).fetch(usuario.id, 0) : 0
+    agente = { status: status, times: times, caixas: caixas, id: usuario.id, carga: carga, limite: limite, em_uso: em_uso }
     checks = checks_de(fila, caixas_da_fila, agente)
     { queue_id: fila.id, queue: fila.name, team: fila.team.name, load_queue: carga,
-      capacity: limite, checks: checks, receives: checks.values.all? }
+      capacity: limite, load: em_uso, checks: checks, receives: checks.values.all? }
   end
 
   def checks_de(fila, caixas_da_fila, agente)
@@ -51,10 +52,25 @@ class Staydesk::DistributionCheckService
     {
       connected: conectados.include?(agente[:id]),
       available: status.present? && status.availability == 'online',
-      has_capacity: agente[:limite].nil? ? status.present? : agente[:limite].positive?,
+      receives_channel: status.present? && (agente[:carga].nil? || status.receives?(agente[:carga])),
+      has_capacity: agente[:limite].nil? || agente[:em_uso] < agente[:limite],
       in_group: (fila.team_ids + fila.fallback_team_ids).intersect?(agente[:times]),
       inbox_member: caixas_da_fila.map(&:id).intersect?(agente[:caixas])
     }
+  end
+
+  def regras
+    @regras ||= Staydesk::CapacityRule.by_user(@account, ids_dos_agentes)
+  end
+
+  # Conversas em atendimento agora por agente, uma consulta por canal de trabalho.
+  def cargas(carga)
+    @cargas ||= {}
+    @cargas[carga] ||= Staydesk::AgentLoadService.new(@account).load_by_user(carga, ids_dos_agentes)
+  end
+
+  def ids_dos_agentes
+    @ids_dos_agentes ||= @account.account_users.pluck(:user_id)
   end
 
   # As caixas que a fila pega, pelo canal e pela caixa, uma vez por fila.

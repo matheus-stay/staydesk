@@ -6,8 +6,11 @@ RSpec.describe 'StayDesk agent statuses' do
   let(:ticket_inbox) { create(:inbox, account: account) }
   let(:agent) { create(:user, account: account, role: :agent) }
   let(:account_user) { account.account_users.find_by(user: agent) }
-  let!(:chat_only) { Staydesk::AgentStatus.create!(account: account, name: 'Só chat', availability: 'online', inbox_ids: [chat_inbox.id]) }
-  let!(:away) { Staydesk::AgentStatus.create!(account: account, name: 'Ausente', availability: 'busy') }
+  let!(:chat_only) do
+    Staydesk::AgentStatus.create!(account: account, name: 'Só chat', availability: 'online', work_channels: %w[chat ticket],
+                                  inbox_ids: [chat_inbox.id])
+  end
+  let!(:away) { Staydesk::AgentStatus.create!(account: account, name: 'Ausente', availability: 'busy', work_channels: %w[chat ticket]) }
 
   before do
     create(:inbox_member, inbox: chat_inbox, user: agent)

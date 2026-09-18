@@ -288,7 +288,7 @@
     },
     "AGENT_STATUS": {
       "SETTINGS_TITLE": "Status dos agentes",
-      "SETTINGS_DESCRIPTION": "O que o agente atende agora: tudo, só chat, só tickets ou ausente. O agente escolhe no menu de disponibilidade; a distribuição automática só entrega conversas das caixas que o status atende.",
+      "SETTINGS_DESCRIPTION": "O que o agente recebe agora, por canal de trabalho: tudo, só chat, só tickets ou nada. O agente escolhe no menu de disponibilidade; quanto ele recebe de cada canal vem da regra de capacidade.",
       "NEW": "Novo status",
       "EDIT": "Editar status",
       "EMPTY": "Nenhum status personalizado ainda. Crie status como Disponível, Só chat, Só tickets e Ausente.",
@@ -304,11 +304,9 @@
         "INBOXES": "Atende estas caixas",
         "INBOXES_HINT": "Nenhuma marcada significa todas as caixas.",
         "ACTIVE": "Ativo",
-        "CAPACITY_CHAT": "Chats simultâneos",
-        "CAPACITY_TICKET": "Tickets simultâneos",
-        "CAPACITY_HINT": "Quantas conversas a distribuição automática entrega ao mesmo tempo neste status. Em branco é sem limite; zero tira o agente daquela fila. Conversas de caixas de e-mail contam como ticket, as demais como chat, e só conta o que está em atendimento.",
         "INBOXES_PLACEHOLDER": "Todas as caixas",
-        "CAPACITY_QUEUE": "Limite de {queue}"
+        "CHANNELS": "Recebe",
+        "CHANNELS_HINT": "Que canais de trabalho este status recebe. Quantos de cada um ao mesmo tempo vem da regra de capacidade do agente."
       },
       "API": {
         "SAVE_SUCCESS": "Status salvo",
@@ -320,21 +318,16 @@
         "BUTTON": "Excluir",
         "CONFIRM": "Excluir o status \"{name}\"? O histórico dele também é removido."
       },
-      "CAPACITY": {
-        "COLUMN": "Carga simultânea",
-        "UNLIMITED": "Sem limite",
-        "NONE": "Não recebe",
-        "CHAT": "Chats",
-        "TICKET": "Tickets"
-      },
       "LOAD": {
         "TITLE": "Carga agora",
-        "DESCRIPTION": "Conversas em atendimento neste momento, por fila, contra o limite do status em que cada agente está.",
+        "DESCRIPTION": "Conversas em atendimento neste momento, por canal de trabalho, contra o teto de cada agente: a regra de capacidade dele, e zero onde o status atual não recebe.",
         "AGENT": "Agente",
         "STATUS": "Status",
         "NO_STATUS": "Sem status personalizado",
         "REFRESH": "Atualizar",
-        "EMPTY": "Ninguém em atendimento agora."
+        "EMPTY": "Ninguém em atendimento agora.",
+        "RULE": "Regra",
+        "NO_RULE": "sem regra"
       },
       "ACCEPTANCE": {
         "TITLE": "Aceitação dos convites",
@@ -362,9 +355,10 @@
         "CHECKS": {
           "connected": "sem conexão",
           "available": "status ausente",
-          "has_capacity": "sem vaga no status",
+          "has_capacity": "capacidade cheia",
           "in_group": "fora do grupo",
-          "inbox_member": "fora da caixa"
+          "inbox_member": "fora da caixa",
+          "receives_channel": "status não recebe o canal"
         }
       },
       "TIMEOUT": {
@@ -381,6 +375,13 @@
         "LABEL": "Contabiliza tempo online",
         "HINT": "O tempo neste status entra no tempo online do agente, que é o KPI da Central. Reunião e almoço normalmente não entram.",
         "NOT_COUNTED": "não conta como tempo online"
+      },
+      "CHANNELS": {
+        "NONE": "Não recebe nada"
+      },
+      "CAPACITY": {
+        "UNLIMITED": "sem limite",
+        "NONE": "não recebe"
       }
     },
     "TICKET_STATUS": {
@@ -500,12 +501,13 @@
       "TITLE": "Central",
       "SECTIONS": {
         "WORK": "Atendimento",
-        "SERVICE_LEVEL": "Status e prazos",
+        "SERVICE_LEVEL": "Prazos",
         "PEOPLE": "Pessoas",
         "CHANNELS": "Canais",
         "RULES": "Regras e automação",
         "ACCOUNT": "Conta",
-        "OTHER": "Outros"
+        "OTHER": "Outros",
+        "DISTRIBUTION": "Distribuição de trabalho"
       },
       "DESCRIPTION": "Onde se configura e se acompanha a operação. O Hub é onde se atende.",
       "KPIS": {
@@ -532,21 +534,22 @@
       },
       "SECTION_NOT_FOUND": "Esta seção não existe ou você não tem acesso a ela.",
       "SECTION_HINTS": {
-        "CentralAtendimento": "Como o trabalho chega e como o agente o vê: quem recebe cada demanda, em qual balde ela conta e o que aparece na tela de quem atende.",
-        "CentralPrazos": "Os estados do ticket e do agente, e os prazos: o catálogo de status, a disponibilidade e o limite de cada um, as políticas de SLA e o horário comercial.",
+        "CentralAtendimento": "A tela e os estados de quem atende: o catálogo de status do ticket, as visualizações de cada grupo e a área de trabalho.",
+        "CentralPrazos": "Os prazos: as políticas de SLA e o horário comercial que faz o prazo parar.",
         "CentralPessoas": "Quem trabalha na conta e o que cada um pode: agentes, grupos, papéis com permissão granular e as chaves de integração.",
         "CentralCanais": "Por onde o cliente chega: as caixas de entrada de cada canal e os modelos de mensagem.",
         "CentralRegras": "O que roda sozinho e o que o agente reaproveita: automações, macros, respostas prontas, robôs, etiquetas e os campos do ticket.",
         "CentralConta": "A conta em si: dados gerais, a documentação da API, integrações, auditoria, segurança e cobrança.",
-        "CentralOutros": "Telas do produto que ainda não têm seção própria."
+        "CentralOutros": "Telas do produto que ainda não têm seção própria.",
+        "CentralDistribuicao": "Como o trabalho chega a quem atende, na ordem: o que é chat e o que é ticket, para quais grupos cada demanda vai, quanto cada agente aguenta e o que cada status recebe."
       },
       "ITEM_HINTS": {
-        "StaydeskQueuesSettings": "Para qual grupo cada demanda vai, por canal e por caixa, com transbordo e aceite.",
-        "StaydeskLoadQueuesSettings": "Em qual balde a conversa conta para o limite do agente: chat, ticket, ou o que a operação definir.",
+        "StaydeskQueuesSettings": "O que entra em cada fila e para quais grupos vai: principais, secundários, ordem de entrega e aceite.",
+        "StaydeskLoadQueuesSettings": "O que é chat e o que é ticket, por canal e por caixa. É por canal de trabalho que o status e a capacidade falam.",
         "StaydeskTeamViewsSettings": "As filas que cada grupo vê no Hub, com filtro, colunas e ordem.",
         "StaydeskWorkspaceSettings": "O que aparece para quem atende: menus, colunas, campos do painel e aplicativos, por time e por papel.",
         "StaydeskTicketStatusesSettings": "O catálogo de status por cima dos quatro do Chatwoot, com o padrão de cada base e o que assume ao atribuir.",
-        "StaydeskAgentStatusesSettings": "Disponibilidade e limite de conversas simultâneas por fila, e a carga de cada agente agora.",
+        "StaydeskAgentStatusesSettings": "O que cada status recebe (chat, ticket), tempo limite, tempo online, e o diagnóstico de quem recebe o quê.",
         "StaydeskSlaSettings": "Alvos de resposta e resolução por prioridade, com pausa, aviso e horário comercial.",
         "StaydeskCalendarsSettings": "Horário comercial por dia da semana e feriados, para o prazo parar fora do expediente.",
         "StaydeskAgentRolesSettings": "Papéis com permissão granular, concedidos e revogados na hora, e o entrar como outro agente.",
@@ -568,7 +571,8 @@
         "Settings Integrations": "Slack, webhooks, aplicativos no painel e outras integrações.",
         "Settings Audit Logs": "Quem fez o quê na conta.",
         "Settings Security": "Políticas de senha e de sessão.",
-        "Settings Billing": "Plano e cobrança."
+        "Settings Billing": "Plano e cobrança.",
+        "StaydeskCapacityRulesSettings": "Quantas conversas de cada canal o agente aguenta ao mesmo tempo: a regra padrão e as atribuídas a agentes."
       }
     },
     "API_TOKENS": {
@@ -630,38 +634,38 @@
       "MISSING": "Falta preencher para resolver: {fields}"
     },
     "LOAD_QUEUES": {
-      "SETTINGS_TITLE": "Filas de carga",
-      "SETTINGS_DESCRIPTION": "Quantas conversas simultâneas o agente aguenta é contado por fila, e é a caixa que diz de qual fila a conversa é. O limite de cada uma fica no status do agente. Não confunda com as filas de encaminhamento, que decidem para quais grupos o trabalho vai.",
-      "NEW": "Nova fila de carga",
-      "CATCH_ALL": "o que as outras filas não pegam",
+      "SETTINGS_TITLE": "Canais de trabalho",
+      "SETTINGS_DESCRIPTION": "O que é chat e o que é ticket, por canal e por caixa. É por canal de trabalho que o status do agente diz o que ele recebe e a regra de capacidade diz quanto.",
+      "NEW": "Novo canal de trabalho",
+      "CATCH_ALL": "o que os outros canais não pegam",
       "NOTHING": "nada, por enquanto",
-      "FOOTNOTE": "Sem nenhuma fila configurada, vale o padrão do produto: chat pega tudo e e-mail é ticket.",
+      "FOOTNOTE": "Sem nenhum configurado, vale o padrão do produto: chat pega tudo e e-mail é ticket.",
       "FORM": {
         "NAME": "Nome",
         "KEY": "Chave",
-        "KEY_HINT": "A chave é o que aparece no limite de cada status do agente. Não muda depois de criada.",
+        "KEY_HINT": "A chave identifica o canal no status do agente e na regra de capacidade. Não muda depois de criada.",
         "CHANNELS": "Canais",
         "CHANNELS_PLACEHOLDER": "Nenhum canal",
         "INBOXES": "Caixas específicas",
         "INBOXES_PLACEHOLDER": "Nenhuma caixa",
         "INBOXES_HINT": "A caixa vence o canal, para o mesmo tipo de canal servir a coisas diferentes.",
         "CATCH_ALL": "Pega o que sobrar",
-        "CATCH_ALL_HINT": "Fica com as caixas que nenhuma outra fila de carga pegou."
+        "CATCH_ALL_HINT": "Fica com as caixas que nenhum outro canal de trabalho pegou."
       },
       "TABLE": {
-        "NAME": "Fila",
+        "NAME": "Canal de trabalho",
         "TAKES": "Pega"
       },
       "API": {
-        "SAVE_ERROR": "Não foi possível salvar a fila de carga",
-        "SAVE_SUCCESS": "Fila de carga salva",
-        "DELETE_SUCCESS": "Fila de carga excluída",
-        "DELETE_ERROR": "Não foi possível excluir a fila de carga"
+        "SAVE_ERROR": "Não foi possível salvar o canal de trabalho",
+        "SAVE_SUCCESS": "Canal de trabalho salvo",
+        "DELETE_SUCCESS": "Canal de trabalho excluído",
+        "DELETE_ERROR": "Não foi possível excluir o canal de trabalho"
       },
       "EDIT": "Editar",
       "DELETE": {
         "BUTTON": "Excluir",
-        "CONFIRM": "Excluir a fila de carga \"{name}\"? O limite dela some dos status dos agentes e as caixas dela passam para a fila que pega o que sobrar."
+        "CONFIRM": "Excluir o canal de trabalho \"{name}\"? Ele some dos status e das regras de capacidade, e as caixas dele passam para o canal que pega o que sobrar."
       }
     },
     "API_DOCS": {
@@ -716,6 +720,44 @@
       "RESUME": "Retomar",
       "LOADING": "Carregando…",
       "NOTHING_WITH_ME": "Nada com você agora. Escolha uma visualização ao lado."
+    },
+    "CAPACITY_RULES": {
+      "SETTINGS_TITLE": "Regras de capacidade",
+      "SETTINGS_DESCRIPTION": "Quantas conversas de cada canal de trabalho o agente aguenta ao mesmo tempo, como no Zendesk. O status diz o que ele recebe agora; a regra diz quanto. Uma regra é a padrão; as outras são atribuídas a agentes.",
+      "NEW": "Nova regra",
+      "EDIT": "Editar",
+      "EMPTY": "Nenhuma regra ainda. Sem regra, ninguém tem teto: a distribuição entrega enquanto o status receber.",
+      "DEFAULT_BADGE": "Padrão",
+      "DEFAULT_AGENTS": "todo mundo sem regra própria",
+      "NO_AGENTS": "ninguém",
+      "UNLIMITED": "sem limite",
+      "NONE": "não recebe",
+      "FOOTNOTE": "Cada agente tem uma regra só; quem não tem usa a padrão. Sem regra padrão, quem não tem regra própria não tem teto.",
+      "TABLE": {
+        "RULE": "Regra",
+        "AGENTS": "Agentes"
+      },
+      "FORM": {
+        "NAME": "Nome",
+        "DESCRIPTION": "Descrição (opcional)",
+        "LIMITS": "Conversas ao mesmo tempo",
+        "LIMITS_HINT": "Por canal de trabalho. Em branco é sem limite; zero não recebe.",
+        "IS_DEFAULT": "Regra padrão da conta",
+        "IS_DEFAULT_HINT": "Vale para quem não está em nenhuma regra. Só uma por conta: marcar esta desmarca a outra.",
+        "AGENTS": "Agentes com esta regra",
+        "AGENTS_PLACEHOLDER": "Escolha os agentes",
+        "AGENTS_HINT": "Cada agente tem uma regra só: entrar nesta tira das outras."
+      },
+      "DELETE": {
+        "BUTTON": "Excluir",
+        "CONFIRM": "Excluir a regra \"{name}\"? Os agentes dela passam a usar a regra padrão."
+      },
+      "API": {
+        "SAVE_SUCCESS": "Regra salva",
+        "SAVE_ERROR": "Não foi possível salvar a regra",
+        "DELETE_SUCCESS": "Regra excluída",
+        "DELETE_ERROR": "Não foi possível excluir a regra"
+      }
     }
   },
   "AUTOMATION": {

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_18_500000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_18_600000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1493,10 +1493,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_18_500000) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.jsonb "capacity", default: {}, null: false
     t.integer "offline_after_seconds", default: 300
     t.bigint "offline_to_status_id"
     t.boolean "counts_as_online", default: true, null: false
+    t.string "work_channels", default: [], null: false, array: true
     t.index ["account_id", "name"], name: "index_staydesk_agent_statuses_on_account_id_and_name", unique: true
     t.index ["account_id"], name: "index_staydesk_agent_statuses_on_account_id"
   end
@@ -1553,6 +1553,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_18_500000) do
     t.datetime "updated_at", null: false
     t.index ["account_id", "name"], name: "index_staydesk_calendars_on_account_id_and_name", unique: true
     t.index ["account_id"], name: "index_staydesk_calendars_on_account_id"
+  end
+
+  create_table "staydesk_capacity_rules", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.string "description"
+    t.jsonb "limits", default: {}, null: false
+    t.boolean "is_default", default: false, null: false
+    t.bigint "user_ids", default: [], null: false, array: true
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "name"], name: "index_staydesk_capacity_rules_on_account_id_and_name", unique: true
+    t.index ["account_id"], name: "index_staydesk_capacity_rules_on_account_id"
   end
 
   create_table "staydesk_conversation_events", force: :cascade do |t|
