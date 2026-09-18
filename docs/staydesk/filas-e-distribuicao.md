@@ -14,8 +14,7 @@ Fica em Central › Atendimento › Filas.
 | Campo | O que faz |
 |---|---|
 | Grupos principais | Quem recebe primeiro. A conversa entra no primeiro da lista e, quando alguém pega, fica no grupo desse agente |
-| Tipo de canal | Quais tipos entram nesta fila (WhatsApp, e-mail…). Vazio é "todos" |
-| Canal | Canais específicos, para quando o tipo não basta (o número StayCloud WPP, o e-mail do financeiro). O canal vence o tipo |
+| Canais | Um campo só: o canal de trabalho pelo nome ("Chat e WhatsApp"), o tipo inteiro ("Todo WhatsApp") ou canais específicos (o número StayCloud WPP). Vazio é "todos" |
 | Condições | Afinam o resto (etiqueta, prioridade, campo do ticket). Opcional |
 | Grupos secundários | Só entram quando nenhum principal tem alguém disponível. Opcional |
 | Espera | Minutos sem ninguém disponível nos principais antes de os secundários entrarem. Em branco, na hora |
@@ -23,8 +22,11 @@ Fica em Central › Atendimento › Filas.
 | Aceite | Se o agente precisa aceitar antes de a conversa virar dele |
 | Tempo para aceitar | Segundos até a conversa voltar para a fila |
 
-A entrada se configura por **tipo de canal** e por **canal**, como a fila do
-Zendesk (*Canal é WhatsApp*, *Nome do canal é StayCloud WPP*). Deixar os dois
+A entrada se configura num campo só de **canais**: o canal de trabalho pelo
+nome ("Chat e WhatsApp" junta chat do site e WhatsApp, que é como o N1 pensa),
+o tipo inteiro ou o canal específico, como a fila do Zendesk (*Canal é
+WhatsApp*, *Nome do canal é StayCloud WPP*). No arquivo: `canais_de_trabalho`,
+`canais` e `caixas`. Deixar os dois
 vazios faz a fila recolher o que as filas acima não pegaram. As condições avançadas ficam
 para o que o canal não resolve, como etiqueta, prioridade ou campo do ticket.
 
@@ -55,8 +57,7 @@ trabalho › Canais de trabalho; na API e no arquivo continuam sendo
 | Campo | O que faz |
 |---|---|
 | Chave | `chat`, `ticket`, o que a operação definir. É o que aparece no status e na regra de capacidade |
-| Tipo de canal | Tipos que contam neste canal de trabalho |
-| Canal | Canais específicos. O canal vence o tipo |
+| Canais | O tipo inteiro ou canais específicos, no mesmo campo. O canal específico vence o tipo |
 | Pega o que sobrar | O coringa: fica com os canais que nenhum outro pegou |
 
 Sem nenhum configurado, vale o padrão do produto: chat pega tudo e e-mail é
@@ -85,8 +86,8 @@ WhatsApp, o e-mail do suporte, o chat do site) e exige que o agente seja
 está no grupo atende o canal que a fila mandar. O StayDesk segue o Zendesk:
 
 - Na tela tudo se chama **canal**: a lista de canais fica agrupada por tipo em
-  Central › Canais, e nas filas e canais de trabalho os campos são *Tipo de
-  canal* e *Canal*.
+  Central › Canais, e nas filas e canais de trabalho há um campo só, *Canais*,
+  com o tipo inteiro e cada canal.
 - **Todo agente atende todos os canais**, sempre. Agente novo entra em todos;
   canal novo nasce com todos (`Staydesk::ChannelMembership`, ganchos em
   `AccountUser` e `Inbox`; a importação e uma migração fecham o que faltava). A

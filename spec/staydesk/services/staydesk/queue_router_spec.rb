@@ -54,6 +54,18 @@ RSpec.describe Staydesk::QueueRouter do
     expect(conversation.assignee).to be_nil.or be_present
   end
 
+  describe 'por canal de trabalho' do
+    it 'entrega pelo nome do canal de trabalho, sem listar canal por canal' do
+      Staydesk::LoadQueue.create!(account: account, key: 'chat', name: 'Chat e WhatsApp', catch_all: true, position: 0)
+      Staydesk::LoadQueue.create!(account: account, key: 'ticket', name: 'Tickets', channel_types: ['Channel::Email'], position: 1)
+      Staydesk::Queue.create!(account: account, name: 'Tickets', team: n2, load_queue_keys: %w[ticket], position: 0)
+      Staydesk::Queue.create!(account: account, name: 'Chat', team: n1, load_queue_keys: %w[chat], position: 1)
+
+      expect(conversa(inbox: email).reload.team).to eq(n2)
+      expect(conversa.reload.team).to eq(n1)
+    end
+  end
+
   describe 'transbordo' do
     # A caixa só devolve quem está conectado: aqui todo mundo da conta está.
     before do

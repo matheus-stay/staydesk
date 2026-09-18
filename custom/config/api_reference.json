@@ -753,6 +753,9 @@
                 "suporte n1"
               ],
               "team_name": "suporte n1",
+              "load_queue_keys": [
+                "chat"
+              ],
               "channel_types": [
                 "Channel::WebWidget",
                 "Channel::Whatsapp"
@@ -823,6 +826,14 @@
               "tipo": "texto",
               "descricao": "Para que a fila serve, na linguagem do time.",
               "exemplo": "Todo chat nasce no N1"
+            },
+            {
+              "nome": "load_queue_keys",
+              "tipo": "lista de texto",
+              "descricao": "Canais de trabalho que entram nesta fila, pelas chaves de `load_queues` (`chat`, `ticket`). É o jeito de dizer \"tudo que é chat\" sem listar canal por canal.",
+              "exemplo": [
+                "chat"
+              ]
             },
             {
               "nome": "channel_types",
@@ -896,6 +907,9 @@
               ],
               "team_id": 3,
               "description": "Todo chat nasce no N1",
+              "load_queue_keys": [
+                "chat"
+              ],
               "channel_types": [
                 "Channel::WebWidget",
                 "Channel::Whatsapp"
@@ -921,6 +935,9 @@
               "suporte n1"
             ],
             "team_name": "suporte n1",
+            "load_queue_keys": [
+              "chat"
+            ],
             "channel_types": [
               "Channel::WebWidget",
               "Channel::Whatsapp"
@@ -1005,6 +1022,14 @@
               "exemplo": "Todo chat nasce no N1"
             },
             {
+              "nome": "load_queue_keys",
+              "tipo": "lista de texto",
+              "descricao": "Canais de trabalho que entram nesta fila, pelas chaves de `load_queues` (`chat`, `ticket`). É o jeito de dizer \"tudo que é chat\" sem listar canal por canal.",
+              "exemplo": [
+                "chat"
+              ]
+            },
+            {
               "nome": "channel_types",
               "tipo": "lista de texto",
               "descricao": "Tipos de canal que entram nesta fila (`Channel::Whatsapp`, `Channel::Email`…). Vazio é todos.",
@@ -1085,6 +1110,9 @@
               "suporte n1"
             ],
             "team_name": "suporte n1",
+            "load_queue_keys": [
+              "chat"
+            ],
             "channel_types": [
               "Channel::WebWidget",
               "Channel::Whatsapp"

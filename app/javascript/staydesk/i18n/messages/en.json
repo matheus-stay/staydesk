@@ -445,11 +445,9 @@
         "ACCEPT_TIMEOUT": "Time to accept (seconds)",
         "ACCEPT_HINT": "Without an answer in time, the conversation goes back to the queue and is offered to another available agent. Use it for chat and WhatsApp; tickets usually do not need it.",
         "INTAKE": "What comes into this queue",
-        "INTAKE_HINT": "By channel type (every WhatsApp) or by channel (the StayCloud WPP number), as in the Zendesk queue. Leave empty and the queue takes what the queues above did not. Order rules: the first match wins.",
-        "CHANNELS": "Channel type",
-        "CHANNELS_PLACEHOLDER": "Every type",
-        "INBOXES": "Channel",
-        "INBOXES_PLACEHOLDER": "Every channel of the type",
+        "INTAKE_HINT": "Pick a whole type (every WhatsApp) or a specific channel (the StayCloud WPP number), as in the Zendesk queue. Empty, the queue takes what the queues above did not. Order rules: the first match wins.",
+        "CHANNELS": "Channels",
+        "CHANNELS_PLACEHOLDER": "Every channel",
         "PRIORITY": "Delivery order",
         "PRIORITY_HINT": "By arrival, the oldest goes first. By SLA, whoever is closest to breaching goes first, even if it just came in; anything without SLA goes after, by arrival.",
         "PRIORITY_OPTIONS": {
@@ -486,7 +484,8 @@
     },
     "PICKER": {
       "SEARCH": "Search...",
-      "EMPTY": "Nothing found"
+      "EMPTY": "Nothing found",
+      "ALL_OF_TYPE": "All {type}"
     },
     "SIDEBAR": {
       "COLLAPSE": "Collapse sidebar",
@@ -621,13 +620,11 @@
         "NAME": "Name",
         "KEY": "Key",
         "KEY_HINT": "The key identifies the channel in the agent status and in the capacity rule. It does not change after creation.",
-        "CHANNELS": "Channel type",
-        "CHANNELS_PLACEHOLDER": "No type",
-        "INBOXES": "Specific channels",
-        "INBOXES_PLACEHOLDER": "No channel",
-        "INBOXES_HINT": "The channel beats the type, so one channel type can serve different things (API is both WhatsApp and WHMCS tickets).",
+        "CHANNELS": "Channels",
+        "CHANNELS_PLACEHOLDER": "No channel",
         "CATCH_ALL": "Takes the rest",
-        "CATCH_ALL_HINT": "Keeps the channels no other work channel took."
+        "CATCH_ALL_HINT": "Keeps the channels no other work channel took.",
+        "CHANNELS_HINT": "A whole type (every email) or a specific channel. The specific channel beats the type: API is both WhatsApp and WHMCS tickets, and only the channel tells them apart."
       },
       "TABLE": {
         "NAME": "Work channel",

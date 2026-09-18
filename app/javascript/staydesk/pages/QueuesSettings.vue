@@ -19,8 +19,14 @@ import {
   rowsToQuery,
 } from '../helpers/teamViewQuery';
 import QueuesAPI from '../api/queues';
+import LoadQueuesAPI from '../api/loadQueues';
 import { fromSaveButton } from '../helpers/form';
-import { canaisDaConta, nomeDoCanal } from '../helpers/canais';
+import {
+  juntarCanais,
+  nomeDoCanal,
+  opcoesDeCanais,
+  separarCanais,
+} from '../helpers/canais';
 
 // Filas de encaminhamento (SPEC-15), no modelo do Zendesk: a conversa que chega é
 // comparada com as filas em ordem e a primeira que casar entrega aos grupos
@@ -34,6 +40,7 @@ const inboxes = useMapGetter('inboxes/getInboxes');
 const { filterTypes, attributeFilterTypes } = useConversationFilterContext();
 
 const queues = ref([]);
+const filasDeCarga = ref([]);
 const isLoading = ref(false);
 const isSaving = ref(false);
 const editing = ref(null);
@@ -47,8 +54,7 @@ const emptyForm = () => ({
   fallbackTeamIds: [],
   priorityMode: 'chegada',
   fallbackAfterMinutes: '',
-  channelTypes: [],
-  inboxIds: [],
+  canais: [],
   acceptRequired: false,
   acceptTimeoutSeconds: 30,
   active: true,
@@ -64,18 +70,25 @@ const teamOptions = computed(() =>
 const secondaryOptions = computed(() =>
   teamOptions.value.filter(option => !form.value.teamIds.includes(option.value))
 );
-const canalOptions = computed(() => canaisDaConta(inboxes.value));
-const caixaOptions = computed(() =>
-  inboxes.value.map(caixa => ({ value: caixa.id, label: caixa.name }))
+// Tipo inteiro ou canal específico, num campo só.
+const canalOptions = computed(() =>
+  opcoesDeCanais(
+    inboxes.value,
+    nome => t('STAYDESK.PICKER.ALL_OF_TYPE', { type: nome }),
+    filasDeCarga.value
+  )
 );
 
 // Resumo do que a fila pega, na linguagem da operação.
 const oQuePega = queue => {
+  const trabalho = (queue.load_queue_keys || []).map(
+    chave => filasDeCarga.value.find(fila => fila.key === chave)?.name || chave
+  );
   const canais = (queue.channel_types || []).map(nomeDoCanal);
   const caixas = (queue.inbox_ids || [])
     .map(id => inboxes.value.find(caixa => caixa.id === id)?.name)
     .filter(Boolean);
-  const partes = [...canais, ...caixas];
+  const partes = [...trabalho, ...canais, ...caixas];
   if (!partes.length) return t('STAYDESK.QUEUES.ALL_CHANNELS');
   return partes.join(', ');
 };
@@ -130,8 +143,12 @@ const resumo = queue => {
 const load = async () => {
   isLoading.value = true;
   try {
-    const { data } = await QueuesAPI.get();
+    const [{ data }, filas] = await Promise.all([
+      QueuesAPI.get(),
+      LoadQueuesAPI.list(),
+    ]);
     queues.value = data;
+    filasDeCarga.value = filas.data.load_queues || [];
   } finally {
     isLoading.value = false;
   }
@@ -148,8 +165,11 @@ const startEdit = queue => {
         fallbackTeamIds: [...(queue.fallback_team_ids || [])],
         priorityMode: queue.priority_mode || 'chegada',
         fallbackAfterMinutes: queue.fallback_after_minutes ?? '',
-        channelTypes: [...(queue.channel_types || [])],
-        inboxIds: [...(queue.inbox_ids || [])],
+        canais: juntarCanais(
+          queue.channel_types,
+          queue.inbox_ids,
+          queue.load_queue_keys
+        ),
         acceptRequired: queue.accept_required || false,
         acceptTimeoutSeconds: queue.accept_timeout_seconds ?? 30,
         active: queue.active,
@@ -176,8 +196,7 @@ const save = async () => {
         ? form.value.fallbackAfterMinutes || null
         : null,
       priority_mode: form.value.priorityMode,
-      channel_types: form.value.channelTypes,
-      inbox_ids: form.value.inboxIds,
+      ...separarCanais(form.value.canais),
       accept_required: form.value.acceptRequired,
       accept_timeout_seconds: Number(form.value.acceptTimeoutSeconds) || 30,
       active: form.value.active,
@@ -293,19 +312,9 @@ const aoEnviar = event => {
           <label class="grid gap-1 text-sm text-n-slate-12">
             <span>{{ t('STAYDESK.QUEUES.FORM.CHANNELS') }}</span>
             <TagMultiSelectComboBox
-              v-model="form.channelTypes"
+              v-model="form.canais"
               :options="canalOptions"
               :placeholder="t('STAYDESK.QUEUES.FORM.CHANNELS_PLACEHOLDER')"
-              :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
-              :empty-state="t('STAYDESK.PICKER.EMPTY')"
-            />
-          </label>
-          <label class="grid gap-1 text-sm text-n-slate-12">
-            <span>{{ t('STAYDESK.QUEUES.FORM.INBOXES') }}</span>
-            <TagMultiSelectComboBox
-              v-model="form.inboxIds"
-              :options="caixaOptions"
-              :placeholder="t('STAYDESK.QUEUES.FORM.INBOXES_PLACEHOLDER')"
               :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
               :empty-state="t('STAYDESK.PICKER.EMPTY')"
             />

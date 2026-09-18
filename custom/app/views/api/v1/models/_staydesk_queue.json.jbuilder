@@ -10,6 +10,7 @@ json.fallback_team_ids resource.fallback_team_ids
 json.fallback_team_names resource.fallback_teams.pluck(:name)
 json.fallback_after_minutes resource.fallback_after_minutes
 json.priority_mode resource.priority_mode
+json.load_queue_keys resource.load_queue_keys
 json.channel_types resource.channel_types
 json.inbox_ids resource.inbox_ids
 json.conditions resource.conditions

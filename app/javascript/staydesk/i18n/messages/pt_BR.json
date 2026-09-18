@@ -445,11 +445,9 @@
         "ACCEPT_TIMEOUT": "Tempo para aceitar (segundos)",
         "ACCEPT_HINT": "Sem aceite dentro do tempo, a conversa volta para a fila e é oferecida a outro agente disponível. Use em chat e WhatsApp; ticket normalmente não precisa.",
         "INTAKE": "O que entra nesta fila",
-        "INTAKE_HINT": "Por tipo de canal (todo WhatsApp) ou por canal (o número StayCloud WPP), como na fila do Zendesk. Deixe vazio para a fila pegar o que as filas acima não pegaram. A ordem manda: a primeira que casar leva.",
-        "CHANNELS": "Tipo de canal",
-        "CHANNELS_PLACEHOLDER": "Todos os tipos",
-        "INBOXES": "Canal",
-        "INBOXES_PLACEHOLDER": "Todos os canais do tipo",
+        "INTAKE_HINT": "Escolha um tipo inteiro (todo WhatsApp) ou um canal específico (o número StayCloud WPP), como na fila do Zendesk. Vazio, a fila pega o que as filas acima não pegaram. A ordem manda: a primeira que casar leva.",
+        "CHANNELS": "Canais",
+        "CHANNELS_PLACEHOLDER": "Todos os canais",
         "PRIORITY": "Ordem de entrega",
         "PRIORITY_HINT": "Por chegada, o mais antigo sai primeiro. Por SLA, sai primeiro quem está mais perto de vencer, mesmo que tenha acabado de entrar; o que não tem SLA vai depois, por chegada.",
         "PRIORITY_OPTIONS": {
@@ -486,7 +484,8 @@
     },
     "PICKER": {
       "SEARCH": "Buscar...",
-      "EMPTY": "Nada encontrado"
+      "EMPTY": "Nada encontrado",
+      "ALL_OF_TYPE": "Todo {type}"
     },
     "SIDEBAR": {
       "COLLAPSE": "Compactar barra",
@@ -645,13 +644,11 @@
         "NAME": "Nome",
         "KEY": "Chave",
         "KEY_HINT": "A chave identifica o canal no status do agente e na regra de capacidade. Não muda depois de criada.",
-        "CHANNELS": "Tipo de canal",
-        "CHANNELS_PLACEHOLDER": "Nenhum tipo",
-        "INBOXES": "Canais específicos",
-        "INBOXES_PLACEHOLDER": "Nenhum canal",
-        "INBOXES_HINT": "O canal vence o tipo, para o mesmo tipo de canal servir a coisas diferentes (a API é tanto WhatsApp quanto chamado do WHMCS).",
+        "CHANNELS": "Canais",
+        "CHANNELS_PLACEHOLDER": "Nenhum canal",
         "CATCH_ALL": "Pega o que sobrar",
-        "CATCH_ALL_HINT": "Fica com os canais que nenhum outro canal de trabalho pegou."
+        "CATCH_ALL_HINT": "Fica com os canais que nenhum outro canal de trabalho pegou.",
+        "CHANNELS_HINT": "Um tipo inteiro (todo e-mail) ou um canal específico. O canal específico vence o tipo: a API é tanto WhatsApp quanto chamado do WHMCS, e só pelo canal dá pra separar."
       },
       "TABLE": {
         "NAME": "Canal de trabalho",

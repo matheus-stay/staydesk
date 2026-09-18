@@ -15,8 +15,9 @@
 #  team_ids               :bigint   default([]), not null, is an Array  (grupos principais)
 #  fallback_team_ids      :bigint   default([]), not null, is an Array  (grupos secundários)
 #  fallback_after_minutes :integer  (nulo = secundários entram na hora; com valor, esperam esses minutos)
-#  channel_types          :string   default([]), not null, is an Array
-#  inbox_ids              :bigint   default([]), not null, is an Array
+#  channel_types          :string   default([]), not null, is an Array  (tipos de canal que entram)
+#  inbox_ids              :bigint   default([]), not null, is an Array  (canais específicos que entram)
+#  load_queue_keys        :string   default([]), not null, is an Array  (canais de trabalho que entram: chat, ticket…)
 #  priority_mode          :string   default("chegada"), not null   (chegada | sla)
 #
 # Fila de encaminhamento (SPEC-15), no modelo do Zendesk: a conversa que chega é
@@ -63,19 +64,20 @@ class Staydesk::Queue < ApplicationRecord
     TeamMember.where(team_id: team_ids).distinct.pluck(:user_id)
   end
 
-  # A fila pega esta conversa? Canal e caixa primeiro, porque é assim que a
-  # operação pensa; as condições avançadas afinam o resto. Campo vazio é "todos",
-  # então fila sem nada configurado recolhe o que sobrar.
+  # A fila pega esta conversa? Pelo canal de trabalho ("Chat e WhatsApp"), pelo
+  # tipo de canal ou pelo canal específico, que é como a operação pensa; as
+  # condições avançadas afinam o resto. Tudo vazio é "todos", então fila sem
+  # nada configurado recolhe o que sobrar.
   def atende_canal?(inbox)
     return false if inbox.blank?
-    return true if channel_types.empty? && inbox_ids.empty?
-    return true if inbox_ids.include?(inbox.id)
+    return true if canais_e_caixas_vazios?
+    return true if inbox_ids.include?(inbox.id) || channel_types.include?(inbox.channel_type)
 
-    channel_types.include?(inbox.channel_type)
+    load_queue_keys.any? && load_queue_keys.include?(Staydesk::LoadQueue.for_inbox(inbox)&.key)
   end
 
   def canais_e_caixas_vazios?
-    channel_types.empty? && inbox_ids.empty?
+    channel_types.empty? && inbox_ids.empty? && load_queue_keys.empty?
   end
 
   # Os grupos principais, na ordem configurada.

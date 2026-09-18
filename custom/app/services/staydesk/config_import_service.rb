@@ -129,6 +129,7 @@ class Staydesk::ConfigImportService
   def atributos_da_fila(dados)
     {
       description: dados['descricao'],
+      load_queue_keys: Array(dados['canais_de_trabalho']).map(&:to_s),
       channel_types: Array(dados['canais']), inbox_ids: caixas_por_nome(dados['caixas']),
       conditions: condicoes(dados)
     }.merge(entrega_da_fila(dados))

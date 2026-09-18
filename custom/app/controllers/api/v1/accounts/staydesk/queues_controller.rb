@@ -41,7 +41,8 @@ class Api::V1::Accounts::Staydesk::QueuesController < Api::V1::Accounts::Staydes
     payload = params.require(:queue).permit(
       :name, :description, :team_id,
       :priority_mode, :fallback_after_minutes, :accept_required, :accept_timeout_seconds,
-      :position, :active, conditions: [{}], team_ids: [], fallback_team_ids: [], channel_types: [], inbox_ids: []
+      :position, :active, conditions: [{}], team_ids: [], fallback_team_ids: [], channel_types: [], inbox_ids: [],
+                          load_queue_keys: []
     )
     # Quem manda só `team_id` quer aquele grupo como o único principal.
     payload[:team_ids] = [payload.delete(:team_id)] if payload.key?(:team_id) && !payload.key?(:team_ids)

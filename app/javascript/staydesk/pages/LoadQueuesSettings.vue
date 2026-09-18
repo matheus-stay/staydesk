@@ -11,7 +11,12 @@ import Switch from 'dashboard/components-next/switch/Switch.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
 import LoadQueuesAPI from '../api/loadQueues';
-import { canaisDaConta, nomeDoCanal } from '../helpers/canais';
+import {
+  juntarCanais,
+  nomeDoCanal,
+  opcoesDeCanais,
+  separarCanais,
+} from '../helpers/canais';
 import { fromSaveButton } from '../helpers/form';
 
 // Central › Filas de carga: quantas conversas simultâneas o agente aguenta é
@@ -30,15 +35,16 @@ const deleteDialog = useTemplateRef('deleteDialog');
 const vazio = () => ({
   key: '',
   name: '',
-  channelTypes: [],
-  inboxIds: [],
+  canais: [],
   catchAll: false,
 });
 const form = ref(vazio());
 
-const canalOptions = computed(() => canaisDaConta(inboxes.value));
-const caixaOptions = computed(() =>
-  inboxes.value.map(caixa => ({ value: caixa.id, label: caixa.name }))
+// Tipo inteiro ou canal específico, num campo só.
+const canalOptions = computed(() =>
+  opcoesDeCanais(inboxes.value, nome =>
+    t('STAYDESK.PICKER.ALL_OF_TYPE', { type: nome })
+  )
 );
 
 const buscar = async () => {
@@ -57,8 +63,7 @@ const editar = fila => {
     ? {
         key: fila.key,
         name: fila.name,
-        channelTypes: [...(fila.channel_types || [])],
-        inboxIds: [...(fila.inbox_ids || [])],
+        canais: juntarCanais(fila.channel_types, fila.inbox_ids),
         catchAll: fila.catch_all,
       }
     : vazio();
@@ -70,8 +75,8 @@ const salvar = async evento => {
   const payload = {
     key: form.value.key.trim(),
     name: form.value.name.trim(),
-    channel_types: form.value.channelTypes,
-    inbox_ids: form.value.inboxIds,
+    channel_types: separarCanais(form.value.canais).channel_types,
+    inbox_ids: separarCanais(form.value.canais).inbox_ids,
     catch_all: form.value.catchAll,
   };
   isSaving.value = true;
@@ -163,24 +168,14 @@ onMounted(() => {
         <label class="grid gap-1 text-sm text-n-slate-12">
           <span>{{ t('STAYDESK.LOAD_QUEUES.FORM.CHANNELS') }}</span>
           <TagMultiSelectComboBox
-            v-model="form.channelTypes"
+            v-model="form.canais"
             :options="canalOptions"
             :placeholder="t('STAYDESK.LOAD_QUEUES.FORM.CHANNELS_PLACEHOLDER')"
             :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
             :empty-state="t('STAYDESK.PICKER.EMPTY')"
           />
-        </label>
-        <label class="grid gap-1 text-sm text-n-slate-12">
-          <span>{{ t('STAYDESK.LOAD_QUEUES.FORM.INBOXES') }}</span>
-          <TagMultiSelectComboBox
-            v-model="form.inboxIds"
-            :options="caixaOptions"
-            :placeholder="t('STAYDESK.LOAD_QUEUES.FORM.INBOXES_PLACEHOLDER')"
-            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
-            :empty-state="t('STAYDESK.PICKER.EMPTY')"
-          />
           <span class="text-xs text-n-slate-11">
-            {{ t('STAYDESK.LOAD_QUEUES.FORM.INBOXES_HINT') }}
+            {{ t('STAYDESK.LOAD_QUEUES.FORM.CHANNELS_HINT') }}
           </span>
         </label>
         <label class="flex items-start gap-2 text-sm text-n-slate-12">
