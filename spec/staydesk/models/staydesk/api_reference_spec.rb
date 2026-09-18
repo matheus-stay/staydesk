@@ -7,7 +7,7 @@ RSpec.describe Staydesk::ApiReference do
   def rotas_do_staydesk
     Rails.application.routes.routes.filter_map do |rota|
       controller = rota.defaults[:controller]
-      next unless controller&.start_with?('api/v1/accounts/staydesk')
+      next unless controller&.start_with?('api/v1/accounts/staydesk', 'staydesk/zendesk')
 
       rota.verb.to_s.split('|').map do |verbo|
         [verbo.gsub(/[^A-Z]/, ''), rota.path.spec.to_s.sub('(.:format)', '')]

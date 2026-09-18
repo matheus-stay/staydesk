@@ -48,10 +48,11 @@ watch(
 
 const caminho = computed(() => {
   if (!props.endpoint) return '';
-  let resultadoCaminho = `${props.base}/${props.endpoint.caminho}`.replace(
-    '{account_id}',
-    accountId.value
-  );
+  let resultadoCaminho =
+    `${props.endpoint.base || props.base}/${props.endpoint.caminho}`.replace(
+      '{account_id}',
+      accountId.value
+    );
   (props.endpoint.path || []).forEach(param => {
     resultadoCaminho = resultadoCaminho.replace(
       `{${param.nome}}`,

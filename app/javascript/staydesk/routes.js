@@ -222,7 +222,7 @@ const routes = [
   },
   {
     path: frontendURL('accounts/:accountId/settings/staydesk/kpis'),
-    component: WideSettingsWrapper,
+    component: SettingsWrapper,
     children: [
       {
         path: '',

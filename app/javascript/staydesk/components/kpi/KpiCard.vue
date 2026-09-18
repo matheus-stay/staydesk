@@ -26,10 +26,10 @@ const setaDoDesvio = computed(() => {
 
 <template>
   <article
-    class="flex h-full flex-col gap-2 rounded-xl border border-n-weak bg-n-solid-1 p-4"
+    class="flex h-full flex-col gap-1 rounded-xl border border-n-weak bg-n-solid-1 p-4"
   >
     <p
-      class="m-0 flex items-start justify-between gap-2 text-xs font-medium uppercase tracking-wider text-n-slate-11"
+      class="m-0 flex items-start justify-between gap-2 text-sm text-n-slate-11"
     >
       <span class="line-clamp-2">{{ label }}</span>
       <span
@@ -38,7 +38,7 @@ const setaDoDesvio = computed(() => {
         class="i-lucide-info size-3.5 shrink-0 text-n-slate-10"
       />
     </p>
-    <p class="m-0 text-2xl font-medium tabular-nums text-n-slate-12">
+    <p class="m-0 text-xl font-medium tabular-nums text-n-slate-12">
       {{ value }}
     </p>
     <p v-if="helper" class="m-0 text-xs text-n-slate-11">{{ helper }}</p>

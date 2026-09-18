@@ -3,6 +3,7 @@
 # separado por fila de carga, porque chat e ticket não se comparam.
 class Staydesk::KpiService
   include Staydesk::Kpi::Recortes
+  include Staydesk::Kpi::Producao
 
   TEMPOS = { 'first_response' => :primeira_resposta, 'reply_time' => :resposta,
              'conversation_resolved' => :resolucao }.freeze
@@ -27,6 +28,8 @@ class Staydesk::KpiService
       agentes: agentes,
       resumo_dos_agentes: resumo_dos_agentes,
       aceitacao: aceitacao,
+      volumes: volume_service.volumes,
+      sla: volume_service.sla,
       por_dia: por_dia
     }
   end
@@ -35,7 +38,8 @@ class Staydesk::KpiService
   # a lista de agentes.
   def resumo
     { periodo: { de: @since, ate: @ate }, csat: csat.except(:por_agente), tempos: tempos,
-      resumo_dos_agentes: resumo_dos_agentes, aceitacao: aceitacao }
+      resumo_dos_agentes: resumo_dos_agentes, aceitacao: aceitacao,
+      volumes: volume_service.volumes, sla: volume_service.sla }
   end
 
   private
@@ -76,13 +80,16 @@ class Staydesk::KpiService
     eventos = recortar(ReportingEvent.where(account_id: @account.id, name: TEMPOS.keys, created_at: periodo), agente: :user_id)
               .group(:name, :inbox_id)
               .pluck(Arel.sql('name, inbox_id, AVG(value), AVG(value_in_business_hours), COUNT(*)'))
+    com_distribuicao(agrupar_por_fila(eventos).transform_values { |metricas| metricas.transform_values { |m| fechar(m) } })
+  end
+
+  def agrupar_por_fila(eventos)
     resultado = Hash.new { |hash, chave| hash[chave] = {} }
     eventos.each do |nome, inbox_id, media, media_comercial, quantidade|
-      fila = fila_da_caixa(inbox_id)
-      atual = resultado[fila][TEMPOS[nome]] ||= { segundos: 0.0, segundos_no_horario: 0.0, amostras: 0 }
+      atual = resultado[fila_da_caixa(inbox_id)][TEMPOS[nome]] ||= { segundos: 0.0, segundos_no_horario: 0.0, amostras: 0 }
       acumular(atual, media, media_comercial, quantidade)
     end
-    resultado.transform_values { |metricas| metricas.transform_values { |m| fechar(m) } }
+    resultado
   end
 
   def acumular(atual, media, media_comercial, quantidade)
@@ -123,6 +130,14 @@ class Staydesk::KpiService
       espera_mais_antiga_em_segundos: mais_antiga ? (Time.current - mais_antiga).round : nil }
   end
 
+  def enriquecer(linha, online:, producao:, csat:)
+    id = linha[:user_id]
+    linha.merge(online: online.include?(id))
+         .merge(aceitacao_de(id))
+         .merge(producao.fetch(id, resolvidas: 0, primeira_resposta_segundos: nil, resolucao_segundos: nil))
+         .merge(csat_respostas: csat.dig(id, :respostas) || 0, csat_percentual: csat.dig(id, :percentual))
+  end
+
   # Quem está online agora, quanto tempo cada um passou em cada status no
   # período, como aceitou os convites e como foi avaliado.
   def agentes
@@ -131,13 +146,13 @@ class Staydesk::KpiService
       csat_agente = csat[:por_agente].to_a.index_by { |linha| linha[:user_id] }
       linhas = Staydesk::Kpi::AgentTimeService.new(account: @account, since: @since, ate: @ate).perform
       linhas = linhas.select { |linha| linha[:user_id] == agente_filtrado } if agente_filtrado
-      linhas.map do |linha|
-        linha.merge(online: online.include?(linha[:user_id]))
-             .merge(aceitacao_de(linha[:user_id]))
-             .merge(csat_respostas: csat_agente.dig(linha[:user_id], :respostas) || 0,
-                    csat_percentual: csat_agente.dig(linha[:user_id], :percentual))
-      end
+      producao = producao_por_agente
+      linhas.map { |linha| enriquecer(linha, online: online, producao: producao, csat: csat_agente) }
     end
+  end
+
+  def volume_service
+    @volume_service ||= Staydesk::Kpi::VolumeService.new(account: @account, since: @since, ate: @ate, filtros: @filtros)
   end
 
   # Aceitação dos convites (SPEC-16): por agente e no total. A taxa é aceitos

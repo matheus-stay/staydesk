@@ -580,7 +580,8 @@
         "StaydeskCapacityRulesSettings": "Quantas conversas de cada canal o agente aguenta ao mesmo tempo: a regra padrão e as atribuídas a agentes.",
         "StaydeskChannelsSettings": "Os canais da conta agrupados por tipo, com a configuração de cada um. Todo agente atende todos.",
         "StaydeskKpis": "CSAT, tempo de resposta e resolução por canal de trabalho, fila de espera, tempo online e aceitação por agente, no período que você escolher."
-      }
+      },
+      "SHORTCUTS": "Atalhos"
     },
     "API_TOKENS": {
       "SETTINGS_TITLE": "Tokens de API",
@@ -804,7 +805,10 @@
       },
       "AGENTS": {
         "TITLE": "Agentes",
-        "HINT": "Tempo online só conta os status marcados para isso. A bolinha da aceitação: verde de 90%, âmbar de 70%, vermelha abaixo."
+        "HINT": "Tempo online só conta os status marcados para isso. A bolinha da aceitação: verde de 90%, âmbar de 70%, vermelha abaixo.",
+        "RESOLVED": "Resolvidas",
+        "TIMES": "1ª resposta · resolução",
+        "TIMES_CELL": "{first} · {resolution}"
       },
       "COMPARE": "Comparar com o período anterior",
       "PREVIOUS": "vs. {days} dias anteriores",
@@ -826,7 +830,18 @@
         "INVITES": "Convites oferecidos",
         "INVITES_HELPER": "{accepted} aceitos · {declined} recusados · {expired} vencidos",
         "CSAT_ANSWERS": "Respostas de CSAT",
-        "CSAT_HELPER": "{good} satisfeitos · {bad} insatisfeitos"
+        "CSAT_HELPER": "{good} satisfeitos · {bad} insatisfeitos",
+        "CREATED": "Conversas criadas",
+        "RESOLVED": "Conversas resolvidas",
+        "RESOLVED_HELPER": "{resolved} resolvidas no período",
+        "BACKLOG": "Abertas agora",
+        "BACKLOG_HELPER": "{waiting} esperando o suporte · {overdue} com SLA vencido",
+        "REOPENED": "Reabertas",
+        "FCR": "Resolvidas de primeira (FCR)",
+        "SLA_FIRST_REPLY": "Primeira resposta no SLA",
+        "SLA_RESOLUTION": "Resolução no SLA",
+        "SLA_RESOLUTION_HELPER": "resolução no SLA: {pct}",
+        "BASE": "sobre {base}"
       },
       "TIPS": {
         "CSAT": "Notas 4 e 5 sobre todas as respostas de satisfação do período.",
@@ -834,7 +849,13 @@
         "QUEUE": "Conversas abertas sem responsável neste momento, em qualquer canal.",
         "ONLINE": "Agentes com conexão viva agora (aba aberta), independentemente do status.",
         "TIMES": "Média dos tempos registrados no período, agrupados pelo canal de trabalho da caixa. O valor entre parênteses desconta o que ficou fora do horário comercial.",
-        "ONLINE_TIME": "Entre os agentes com algum tempo online no período, a média do tempo por dia trabalhado nos status marcados como 'contabiliza tempo online'."
+        "ONLINE_TIME": "Entre os agentes com algum tempo online no período, a média do tempo por dia trabalhado nos status marcados como 'contabiliza tempo online'.",
+        "CREATED": "Conversas que entraram no período, em qualquer canal.",
+        "RESOLVED": "Resoluções registradas no período (uma conversa reaberta e resolvida de novo conta duas vezes).",
+        "BACKLOG": "A fila real, sem recorte de data: tudo que está aberto, pendente ou adiado agora. 'Esperando o suporte' é o que está aberto; 'vencido' é o que já passou do prazo do SLA.",
+        "REOPENED": "Conversas que saíram de resolvida para aberta no período.",
+        "FCR": "Das resolvidas no período, quantas foram resolvidas com uma resposta só do agente e sem reabrir.",
+        "SLA": "Das conversas com prazo e atendidas no período, quantas foram atendidas dentro do prazo."
       },
       "FILTERS": {
         "AGENT": "Agente",

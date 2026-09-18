@@ -556,7 +556,8 @@
         "StaydeskChannelsSettings": "The account channels grouped by type, with each one's settings. Every agent serves all of them.",
         "Settings Inboxes": "The product list, not grouped by type.",
         "StaydeskKpis": "CSAT, reply and resolution time per work channel, waiting queue, online time and acceptance per agent, for the period you pick."
-      }
+      },
+      "SHORTCUTS": "Shortcuts"
     },
     "API_TOKENS": {
       "SETTINGS_TITLE": "API tokens",
@@ -780,7 +781,10 @@
       },
       "AGENTS": {
         "TITLE": "Agents",
-        "HINT": "Online time only counts the statuses marked for it. Acceptance dot: green from 90%, amber from 70%, red below."
+        "HINT": "Online time only counts the statuses marked for it. Acceptance dot: green from 90%, amber from 70%, red below.",
+        "RESOLVED": "Resolved",
+        "TIMES": "1st reply · resolution",
+        "TIMES_CELL": "{first} · {resolution}"
       },
       "COMPARE": "Compare with the previous period",
       "PREVIOUS": "vs. previous {days} days",
@@ -802,7 +806,18 @@
         "INVITES": "Invites offered",
         "INVITES_HELPER": "{accepted} accepted · {declined} declined · {expired} expired",
         "CSAT_ANSWERS": "CSAT answers",
-        "CSAT_HELPER": "{good} satisfied · {bad} unsatisfied"
+        "CSAT_HELPER": "{good} satisfied · {bad} unsatisfied",
+        "CREATED": "Conversations created",
+        "RESOLVED": "Conversations resolved",
+        "RESOLVED_HELPER": "{resolved} resolved in the period",
+        "BACKLOG": "Open right now",
+        "BACKLOG_HELPER": "{waiting} waiting for support · {overdue} past the SLA",
+        "REOPENED": "Reopened",
+        "FCR": "Resolved on first contact (FCR)",
+        "SLA_FIRST_REPLY": "First reply within SLA",
+        "SLA_RESOLUTION": "Resolution within SLA",
+        "SLA_RESOLUTION_HELPER": "resolution within SLA: {pct}",
+        "BASE": "out of {base}"
       },
       "TIPS": {
         "CSAT": "Ratings 4 and 5 over every satisfaction answer in the period.",
@@ -810,7 +825,13 @@
         "QUEUE": "Open conversations with no assignee right now, in any channel.",
         "ONLINE": "Agents with a live connection now (tab open), whatever their status.",
         "TIMES": "Average of the times recorded in the period, grouped by the inbox's work channel. The value in parentheses discounts what fell outside business hours.",
-        "ONLINE_TIME": "Among agents with any online time in the period, the average time per worked day in statuses marked as counting online time."
+        "ONLINE_TIME": "Among agents with any online time in the period, the average time per worked day in statuses marked as counting online time.",
+        "CREATED": "Conversations that came in during the period, in any channel.",
+        "RESOLVED": "Resolutions recorded in the period (a conversation reopened and resolved again counts twice).",
+        "BACKLOG": "The real queue, no date cut: everything open, pending or snoozed right now. 'Waiting for support' is what is open; 'past the SLA' is what already missed the deadline.",
+        "REOPENED": "Conversations that went from resolved back to open in the period.",
+        "FCR": "Of the ones resolved in the period, how many were resolved with a single agent reply and no reopening.",
+        "SLA": "Of the conversations with a deadline that were answered in the period, how many were answered in time."
       },
       "FILTERS": {
         "AGENT": "Agent",

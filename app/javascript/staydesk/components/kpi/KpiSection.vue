@@ -11,7 +11,7 @@ defineProps({
   <section class="grid gap-3">
     <header class="flex flex-wrap items-end justify-between gap-2">
       <div>
-        <h3 class="m-0 text-base font-medium text-n-slate-12">{{ title }}</h3>
+        <h3 class="m-0 text-sm font-medium text-n-slate-12">{{ title }}</h3>
         <p v-if="subtitle" class="m-0 text-xs text-n-slate-11">
           {{ subtitle }}
         </p>

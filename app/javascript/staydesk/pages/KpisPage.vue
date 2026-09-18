@@ -28,6 +28,14 @@ const carregando = ref(true);
 const PERIODOS = [7, 30, 90];
 const dias = ref(7);
 const comparar = ref(true);
+// Datas livres: preenchidas, valem em vez do atalho de dias.
+const datas = ref({ de: '', ate: '' });
+const diasDoRecorte = computed(() => {
+  if (!datas.value.de || !datas.value.ate) return dias.value;
+  const de = new Date(datas.value.de);
+  const ate = new Date(datas.value.ate);
+  return Math.max(1, Math.round((ate - de) / 86400000) + 1);
+});
 // Recortes: agente, canal de trabalho e grupo. Vazio é "todos".
 const filtros = ref({ userId: null, loadQueue: null, teamId: null });
 const canaisDeTrabalho = ref([]);
@@ -35,9 +43,16 @@ const canaisDeTrabalho = ref([]);
 const buscar = async () => {
   carregando.value = true;
   try {
-    const desde = new Date(Date.now() - dias.value * 86400000).toISOString();
+    const livre = datas.value.de && datas.value.ate;
+    const desde = livre
+      ? new Date(`${datas.value.de}T00:00:00`).toISOString()
+      : new Date(Date.now() - dias.value * 86400000).toISOString();
+    const ate = livre
+      ? new Date(`${datas.value.ate}T23:59:59`).toISOString()
+      : undefined;
     const { data } = await KpisAPI.show({
       since: desde,
+      until: ate,
       compare: comparar.value ? 1 : undefined,
       user_id: filtros.value.userId || undefined,
       load_queue: filtros.value.loadQueue || undefined,
@@ -102,7 +117,12 @@ const cheio = (entrada, chave) => {
 };
 const trocarPeriodo = valor => {
   dias.value = valor;
+  datas.value = { de: '', ate: '' };
   buscar();
+};
+const trocarDatas = (chave, valor) => {
+  datas.value = { ...datas.value, [chave]: valor };
+  if (datas.value.de && datas.value.ate) buscar();
 };
 const trocarComparacao = valor => {
   comparar.value = valor;
@@ -111,7 +131,9 @@ const trocarComparacao = valor => {
 
 const anterior = computed(() => kpis.value?.anterior || null);
 const rotuloAnterior = computed(() =>
-  anterior.value ? t('STAYDESK.KPIS.PREVIOUS', { days: dias.value }) : ''
+  anterior.value
+    ? t('STAYDESK.KPIS.PREVIOUS', { days: diasDoRecorte.value })
+    : ''
 );
 const onlineAgora = computed(
   () => (kpis.value?.agentes || []).filter(agente => agente.online).length
@@ -204,6 +226,21 @@ onBeforeUnmount(() => clearInterval(relogio));
                 {{ t('STAYDESK.CENTRAL.KPIS.DAYS', { days: periodo }) }}
               </button>
             </div>
+            <label class="flex items-center gap-1 text-xs text-n-slate-11">
+              <input
+                :value="datas.de"
+                type="date"
+                class="h-8 rounded-lg border border-n-weak bg-n-alpha-1 px-2 text-xs text-n-slate-12"
+                @change="trocarDatas('de', $event.target.value)"
+              />
+              –
+              <input
+                :value="datas.ate"
+                type="date"
+                class="h-8 rounded-lg border border-n-weak bg-n-alpha-1 px-2 text-xs text-n-slate-12"
+                @change="trocarDatas('ate', $event.target.value)"
+              />
+            </label>
             <label class="flex items-center gap-2 text-xs text-n-slate-11">
               <Switch
                 :model-value="comparar"
@@ -216,8 +253,8 @@ onBeforeUnmount(() => clearInterval(relogio));
       </BaseSettingsHeader>
     </template>
     <template #body>
-      <div class="mb-6 grid gap-3 md:grid-cols-3">
-        <label class="grid gap-1 text-xs text-n-slate-11">
+      <div class="mb-6 flex flex-wrap gap-3">
+        <label class="grid w-56 gap-1 text-xs text-n-slate-11">
           {{ t('STAYDESK.KPIS.FILTERS.AGENT') }}
           <Select
             :model-value="filtros.userId"
@@ -225,7 +262,7 @@ onBeforeUnmount(() => clearInterval(relogio));
             @update:model-value="valor => filtrar('userId', valor)"
           />
         </label>
-        <label class="grid gap-1 text-xs text-n-slate-11">
+        <label class="grid w-56 gap-1 text-xs text-n-slate-11">
           {{ t('STAYDESK.KPIS.FILTERS.CHANNEL') }}
           <Select
             :model-value="filtros.loadQueue"
@@ -233,7 +270,7 @@ onBeforeUnmount(() => clearInterval(relogio));
             @update:model-value="valor => filtrar('loadQueue', valor)"
           />
         </label>
-        <label class="grid gap-1 text-xs text-n-slate-11">
+        <label class="grid w-56 gap-1 text-xs text-n-slate-11">
           {{ t('STAYDESK.KPIS.FILTERS.TEAM') }}
           <Select
             :model-value="filtros.teamId"
@@ -256,9 +293,10 @@ onBeforeUnmount(() => clearInterval(relogio));
           >
             <span
               class="inline-block size-3 shrink-0 rounded-full"
-              :style="{
-                backgroundColor: entrada.status?.color || 'var(--slate-8)',
-              }"
+              :class="entrada.status ? '' : 'bg-n-slate-8'"
+              :style="
+                entrada.status ? { backgroundColor: entrada.status.color } : {}
+              "
             />
             <div class="min-w-0 flex-1">
               <p class="m-0 truncate text-sm font-medium text-n-slate-12">
@@ -299,7 +337,7 @@ onBeforeUnmount(() => clearInterval(relogio));
       <div v-if="kpis" class="grid gap-8">
         <KpiSection
           :title="t('STAYDESK.KPIS.HERO_TITLE')"
-          :subtitle="t('STAYDESK.KPIS.HERO_SUBTITLE', { days: dias })"
+          :subtitle="t('STAYDESK.KPIS.HERO_SUBTITLE', { days: diasDoRecorte })"
         >
           <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <KpiHero
@@ -371,11 +409,109 @@ onBeforeUnmount(() => clearInterval(relogio));
           :title="t('STAYDESK.KPIS.DETAIL_TITLE')"
           :subtitle="
             anterior
-              ? t('STAYDESK.KPIS.DETAIL_SUBTITLE_COMPARED', { days: dias })
-              : t('STAYDESK.KPIS.DETAIL_SUBTITLE', { days: dias })
+              ? t('STAYDESK.KPIS.DETAIL_SUBTITLE_COMPARED', {
+                  days: diasDoRecorte,
+                })
+              : t('STAYDESK.KPIS.DETAIL_SUBTITLE', { days: diasDoRecorte })
           "
         >
           <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <KpiCard
+              :label="t('STAYDESK.KPIS.CARDS.CREATED')"
+              :value="String(kpis.volumes?.criadas ?? 0)"
+              :delta="
+                desvio(kpis.volumes?.criadas, anterior?.volumes?.criadas, {
+                  bomQuando: 'none',
+                })
+              "
+              :delta-label="rotuloAnterior"
+              :tooltip="t('STAYDESK.KPIS.TIPS.CREATED')"
+            />
+            <KpiCard
+              :label="t('STAYDESK.KPIS.CARDS.RESOLVED')"
+              :value="String(kpis.volumes?.resolvidas ?? 0)"
+              :delta="
+                desvio(kpis.volumes?.resolvidas, anterior?.volumes?.resolvidas)
+              "
+              :delta-label="rotuloAnterior"
+              :tooltip="t('STAYDESK.KPIS.TIPS.RESOLVED')"
+            />
+            <KpiCard
+              :label="t('STAYDESK.KPIS.CARDS.BACKLOG')"
+              :value="String(kpis.volumes?.abertas_agora ?? 0)"
+              :helper="
+                t('STAYDESK.KPIS.CARDS.BACKLOG_HELPER', {
+                  waiting: kpis.volumes?.esperando_suporte ?? 0,
+                  overdue: kpis.volumes?.vencidas_agora ?? 0,
+                })
+              "
+              :tooltip="t('STAYDESK.KPIS.TIPS.BACKLOG')"
+            />
+            <KpiCard
+              :label="t('STAYDESK.KPIS.CARDS.REOPENED')"
+              :value="String(kpis.volumes?.reabertas ?? 0)"
+              :delta="
+                desvio(kpis.volumes?.reabertas, anterior?.volumes?.reabertas, {
+                  bomQuando: 'down',
+                })
+              "
+              :delta-label="rotuloAnterior"
+              :tooltip="t('STAYDESK.KPIS.TIPS.REOPENED')"
+            />
+            <KpiCard
+              :label="t('STAYDESK.KPIS.CARDS.FCR')"
+              :value="percentual(kpis.volumes?.fcr_percentual)"
+              :helper="
+                t('STAYDESK.KPIS.CARDS.BASE', {
+                  base: kpis.volumes?.fcr_base ?? 0,
+                })
+              "
+              :delta="
+                desvio(
+                  kpis.volumes?.fcr_percentual,
+                  anterior?.volumes?.fcr_percentual,
+                  { unidade: 'pp' }
+                )
+              "
+              :delta-label="rotuloAnterior"
+              :tooltip="t('STAYDESK.KPIS.TIPS.FCR')"
+            />
+            <KpiCard
+              :label="t('STAYDESK.KPIS.CARDS.SLA_FIRST_REPLY')"
+              :value="percentual(kpis.sla?.primeira_resposta?.percentual)"
+              :helper="
+                t('STAYDESK.KPIS.CARDS.BASE', {
+                  base: kpis.sla?.primeira_resposta?.base ?? 0,
+                })
+              "
+              :delta="
+                desvio(
+                  kpis.sla?.primeira_resposta?.percentual,
+                  anterior?.sla?.primeira_resposta?.percentual,
+                  { unidade: 'pp' }
+                )
+              "
+              :delta-label="rotuloAnterior"
+              :tooltip="t('STAYDESK.KPIS.TIPS.SLA')"
+            />
+            <KpiCard
+              :label="t('STAYDESK.KPIS.CARDS.SLA_RESOLUTION')"
+              :value="percentual(kpis.sla?.resolucao?.percentual)"
+              :helper="
+                t('STAYDESK.KPIS.CARDS.BASE', {
+                  base: kpis.sla?.resolucao?.base ?? 0,
+                })
+              "
+              :delta="
+                desvio(
+                  kpis.sla?.resolucao?.percentual,
+                  anterior?.sla?.resolucao?.percentual,
+                  { unidade: 'pp' }
+                )
+              "
+              :delta-label="rotuloAnterior"
+              :tooltip="t('STAYDESK.KPIS.TIPS.SLA')"
+            />
             <template v-for="[fila, tempos] in filas" :key="fila">
               <KpiCard
                 v-for="metrica in [
@@ -451,23 +587,6 @@ onBeforeUnmount(() => clearInterval(relogio));
               :delta-label="rotuloAnterior"
               :tooltip="t('STAYDESK.KPIS.TIPS.ACCEPTANCE')"
             />
-            <KpiCard
-              :label="t('STAYDESK.KPIS.CARDS.CSAT_ANSWERS')"
-              :value="String(kpis.csat.respostas)"
-              :helper="
-                t('STAYDESK.KPIS.CARDS.CSAT_HELPER', {
-                  good: kpis.csat.satisfeitos,
-                  bad: kpis.csat.insatisfeitos,
-                })
-              "
-              :delta="
-                desvio(kpis.csat.respostas, anterior?.csat?.respostas, {
-                  bomQuando: 'none',
-                })
-              "
-              :delta-label="rotuloAnterior"
-              :tooltip="t('STAYDESK.KPIS.TIPS.CSAT')"
-            />
           </div>
         </KpiSection>
 
@@ -475,43 +594,45 @@ onBeforeUnmount(() => clearInterval(relogio));
           :title="t('STAYDESK.KPIS.AGENTS.TITLE')"
           :subtitle="t('STAYDESK.KPIS.AGENTS.HINT')"
         >
-          <div
-            class="overflow-x-auto rounded-xl border border-n-weak bg-n-solid-1"
-          >
-            <table class="w-full min-w-[56rem] border-collapse text-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[64rem] border-collapse text-sm">
               <thead>
-                <tr
-                  class="border-b border-n-weak text-left text-xs uppercase tracking-wider text-n-slate-11"
-                >
-                  <th class="px-4 py-2.5 font-medium">
+                <tr class="text-left text-xs text-n-slate-11">
+                  <th class="py-2 pr-4 font-medium">
                     {{ t('STAYDESK.CENTRAL.KPIS.AGENT') }}
                   </th>
-                  <th class="px-4 py-2.5 font-medium">
+                  <th class="py-2 pr-4 font-medium">
                     {{ t('STAYDESK.CENTRAL.KPIS.NOW') }}
                   </th>
-                  <th class="px-4 py-2.5 font-medium">
+                  <th class="py-2 pr-4 font-medium">
                     {{ t('STAYDESK.CENTRAL.KPIS.AVAILABLE_TIME') }}
                   </th>
-                  <th class="px-4 py-2.5 font-medium">
+                  <th class="py-2 pr-4 font-medium">
+                    {{ t('STAYDESK.KPIS.AGENTS.RESOLVED') }}
+                  </th>
+                  <th class="py-2 pr-4 font-medium">
+                    {{ t('STAYDESK.KPIS.AGENTS.TIMES') }}
+                  </th>
+                  <th class="py-2 pr-4 font-medium">
                     {{ t('STAYDESK.KPIS.ACCEPTANCE.OFFERS') }}
                   </th>
-                  <th class="px-4 py-2.5 font-medium">
+                  <th class="py-2 pr-4 font-medium">
                     {{ t('STAYDESK.KPIS.ACCEPTANCE.RATE') }}
                   </th>
-                  <th class="px-4 py-2.5 font-medium">
+                  <th class="py-2 pr-4 font-medium">
                     {{ t('STAYDESK.KPIS.ACCEPTANCE.ANSWER_TIME') }}
                   </th>
-                  <th class="px-4 py-2.5 font-medium">
+                  <th class="py-2 pr-4 font-medium">
                     {{ t('STAYDESK.CENTRAL.KPIS.CSAT') }}
                   </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-n-weak">
                 <tr v-for="agente in agentes" :key="agente.user_id">
-                  <td class="px-4 py-2.5 font-medium text-n-slate-12">
+                  <td class="py-2 pr-4 font-medium text-n-slate-12">
                     {{ agente.nome }}
                   </td>
-                  <td class="px-4 py-2.5 text-n-slate-11">
+                  <td class="py-2 pr-4 text-n-slate-11">
                     <span class="flex items-center gap-1.5">
                       <span
                         class="inline-block size-2 rounded-full"
@@ -520,7 +641,7 @@ onBeforeUnmount(() => clearInterval(relogio));
                       {{ agente.status_atual || '—' }}
                     </span>
                   </td>
-                  <td class="px-4 py-2.5 tabular-nums text-n-slate-11">
+                  <td class="py-2 pr-4 tabular-nums text-n-slate-11">
                     {{ emDuracao(agente.segundos_online) }}
                     <span class="text-xs text-n-slate-10">
                       {{
@@ -530,7 +651,18 @@ onBeforeUnmount(() => clearInterval(relogio));
                       }}
                     </span>
                   </td>
-                  <td class="px-4 py-2.5 tabular-nums text-n-slate-11">
+                  <td class="py-2 pr-4 tabular-nums text-n-slate-11">
+                    {{ agente.resolvidas ?? 0 }}
+                  </td>
+                  <td class="py-2 pr-4 tabular-nums text-n-slate-11">
+                    {{
+                      t('STAYDESK.KPIS.AGENTS.TIMES_CELL', {
+                        first: emDuracao(agente.primeira_resposta_segundos),
+                        resolution: emDuracao(agente.resolucao_segundos),
+                      })
+                    }}
+                  </td>
+                  <td class="py-2 pr-4 tabular-nums text-n-slate-11">
                     {{
                       t('STAYDESK.KPIS.ACCEPTANCE.BREAKDOWN', {
                         offers: agente.convites,
@@ -540,7 +672,7 @@ onBeforeUnmount(() => clearInterval(relogio));
                       })
                     }}
                   </td>
-                  <td class="px-4 py-2.5 tabular-nums text-n-slate-11">
+                  <td class="py-2 pr-4 tabular-nums text-n-slate-11">
                     <span class="flex items-center gap-1.5">
                       <span
                         class="inline-block size-2 rounded-full"
@@ -549,10 +681,10 @@ onBeforeUnmount(() => clearInterval(relogio));
                       {{ percentual(agente.aceitacao_percentual) }}
                     </span>
                   </td>
-                  <td class="px-4 py-2.5 tabular-nums text-n-slate-11">
+                  <td class="py-2 pr-4 tabular-nums text-n-slate-11">
                     {{ emDuracao(agente.tempo_medio_aceite_segundos) }}
                   </td>
-                  <td class="px-4 py-2.5 tabular-nums text-n-slate-11">
+                  <td class="py-2 pr-4 tabular-nums text-n-slate-11">
                     {{ percentual(agente.csat_percentual) }}
                     <span
                       v-if="agente.csat_respostas"

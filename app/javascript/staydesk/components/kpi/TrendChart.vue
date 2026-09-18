@@ -52,7 +52,7 @@ const rotulos = computed(() => {
   <div class="grid gap-2">
     <svg
       :viewBox="`0 0 ${LARGURA} ${ALTURA}`"
-      class="h-56 w-full text-n-slate-11"
+      class="h-48 w-full text-n-slate-11"
       role="img"
     >
       <g v-for="guia in guias" :key="guia.valor">

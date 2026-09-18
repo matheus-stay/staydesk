@@ -51,6 +51,8 @@ const trocarPeriodo = valor => {
 };
 
 const filas = computed(() => Object.entries(kpis.value?.tempos || {}));
+const pct = valor =>
+  valor === null || valor === undefined ? '—' : `${valor}%`;
 const onlineAgora = computed(
   () => (kpis.value?.agentes || []).filter(agente => agente.online).length
 );
@@ -174,8 +176,54 @@ onMounted(buscar);
                 }}
               </p>
             </article>
+            <article class="rounded-xl border border-n-weak p-4">
+              <p class="m-0 text-xs uppercase text-n-slate-11">
+                {{ t('STAYDESK.KPIS.ACCEPTANCE.TITLE') }}
+              </p>
+              <p class="m-0 text-2xl text-n-slate-12">
+                {{ pct(kpis.aceitacao?.percentual) }}
+              </p>
+              <p class="m-0 text-xs text-n-slate-11">
+                {{
+                  t('STAYDESK.KPIS.ACCEPTANCE.HINT', {
+                    accepted: kpis.aceitacao?.aceitos || 0,
+                    offers: kpis.aceitacao?.convites || 0,
+                  })
+                }}
+              </p>
+            </article>
+            <article class="rounded-xl border border-n-weak p-4">
+              <p class="m-0 text-xs uppercase text-n-slate-11">
+                {{ t('STAYDESK.KPIS.CARDS.CREATED') }}
+              </p>
+              <p class="m-0 text-2xl text-n-slate-12">
+                {{ kpis.volumes?.criadas ?? 0 }}
+              </p>
+              <p class="m-0 text-xs text-n-slate-11">
+                {{
+                  t('STAYDESK.KPIS.CARDS.RESOLVED_HELPER', {
+                    resolved: kpis.volumes?.resolvidas ?? 0,
+                  })
+                }}
+              </p>
+            </article>
+            <article class="rounded-xl border border-n-weak p-4">
+              <p class="m-0 text-xs uppercase text-n-slate-11">
+                {{ t('STAYDESK.KPIS.CARDS.SLA_FIRST_REPLY') }}
+              </p>
+              <p class="m-0 text-2xl text-n-slate-12">
+                {{ pct(kpis.sla?.primeira_resposta?.percentual) }}
+              </p>
+              <p class="m-0 text-xs text-n-slate-11">
+                {{
+                  t('STAYDESK.KPIS.CARDS.SLA_RESOLUTION_HELPER', {
+                    pct: pct(kpis.sla?.resolucao?.percentual),
+                  })
+                }}
+              </p>
+            </article>
             <article
-              v-for="[fila, tempos] in filas"
+              v-for="[fila, tempos] in filas.slice(0, 1)"
               :key="fila"
               class="rounded-xl border border-n-weak p-4"
             >
@@ -240,18 +288,27 @@ onMounted(buscar);
             </table>
           </div>
         </section>
-        <div v-if="atalhos.length" class="flex flex-wrap gap-2">
-          <button
-            v-for="atalho in atalhos"
-            :key="atalho.name"
-            type="button"
-            class="flex items-center gap-2 rounded-lg border border-n-weak px-3 py-2 text-sm text-n-slate-12 hover:bg-n-alpha-1"
-            @click="abrir(atalho.to)"
-          >
-            <Icon :icon="atalho.icon" class="flex-shrink-0" />
-            {{ atalho.label }}
-          </button>
-        </div>
+        <section v-if="atalhos.length" class="grid gap-3">
+          <h3 class="m-0 text-sm font-medium text-n-slate-12">
+            {{ t('STAYDESK.CENTRAL.SHORTCUTS') }}
+          </h3>
+          <div class="grid gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+            <button
+              v-for="atalho in atalhos"
+              :key="atalho.name"
+              type="button"
+              class="flex items-center gap-3 rounded-xl border border-n-weak px-3 py-2.5 text-start text-sm text-n-slate-12 hover:bg-n-alpha-1"
+              @click="abrir(atalho.to)"
+            >
+              <span
+                class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-n-alpha-2 text-n-slate-11"
+              >
+                <Icon :icon="atalho.icon" class="size-4" />
+              </span>
+              <span class="truncate">{{ atalho.label }}</span>
+            </button>
+          </div>
+        </section>
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <section
             v-for="secao in secoes"

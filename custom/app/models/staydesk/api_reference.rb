@@ -19,8 +19,11 @@ class Staydesk::ApiReference
     end
 
     # "GET staydesk/kpis" vira o caminho completo com o parâmetro de conta.
+    # Endpoint com `base` própria (a fachada Zendesk) monta a partir dela.
     def caminho_de_rota(endpoint)
       caminho = endpoint['caminho'].gsub(/\{(\w+)\}/) { ":#{Regexp.last_match(1)}" }
+      return "#{endpoint['base']}/#{caminho}" if endpoint['base'].present?
+
       "/api/v1/accounts/:account_id/#{caminho}"
     end
   end

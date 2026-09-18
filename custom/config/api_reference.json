@@ -67,8 +67,8 @@
           "metodo": "GET",
           "caminho": "staydesk/kpis",
           "titulo": "Ler os KPIs da operação",
-          "resumo": "CSAT, tempos por fila, fila de espera e tempo de cada agente em cada status, no período pedido.",
-          "detalhes": "É o endpoint que alimenta a home da Central e o dashboard. Traz quatro blocos:\n\n**csat** — da pesquisa de satisfação, no período. Satisfeito é nota 4 ou 5; neutro é 3; insatisfeito é 1 ou 2. Vem o total, o percentual, a média e o recorte por agente responsável.\n\n**tempos** — por fila de carga (`chat`, `ticket`, ou o que a conta configurou), a média de `primeira_resposta`, `resposta` e `resolucao`, em segundos, com a versão só em horário comercial e quantas amostras entraram na média.\n\n**fila** — quantas conversas abertas estão sem responsável agora, por fila, e há quanto tempo espera a mais antiga.\n\n**agentes** — para cada pessoa: status atual, se está conectada agora, segundos em cada status dentro da janela e a soma do tempo em status que atendem. Período que começou antes da janela conta só o pedaço dentro dela.\n\n**resumo_dos_agentes** — o KPI de tempo online: quantos agentes tiveram tempo online no período, a média do tempo online entre eles e a média por dia trabalhado. Só conta o tempo nos status marcados como \"contabiliza tempo online\".\n\n`aceitacao` traz os convites do período no total (oferecidos, aceitos, recusados, vencidos e o percentual), e cada agente traz os dele (`convites`, `aceitos`, `recusados`, `vencidos`, `aceitacao_percentual`, `tempo_medio_aceite_segundos`) e o CSAT dele (`csat_respostas`, `csat_percentual`). É o que a página Indicadores da operação, na Central, mostra.",
+          "resumo": "CSAT, aceitação, volumes, SLA, tempos por canal de trabalho, fila de espera, agentes e a série por dia, no período pedido, com filtros e comparação.",
+          "detalhes": "É o endpoint que alimenta a home da Central e o dashboard. Traz quatro blocos:\n\n**csat** — da pesquisa de satisfação, no período. Satisfeito é nota 4 ou 5; neutro é 3; insatisfeito é 1 ou 2. Vem o total, o percentual, a média e o recorte por agente responsável.\n\n**tempos** — por fila de carga (`chat`, `ticket`, ou o que a conta configurou), a média de `primeira_resposta`, `resposta` e `resolucao`, em segundos, com a versão só em horário comercial e quantas amostras entraram na média.\n\n**fila** — quantas conversas abertas estão sem responsável agora, por fila, e há quanto tempo espera a mais antiga.\n\n**agentes** — para cada pessoa: status atual, se está conectada agora, segundos em cada status dentro da janela e a soma do tempo em status que atendem. Período que começou antes da janela conta só o pedaço dentro dela.\n\n**resumo_dos_agentes** — o KPI de tempo online: quantos agentes tiveram tempo online no período, a média do tempo online entre eles e a média por dia trabalhado. Só conta o tempo nos status marcados como \"contabiliza tempo online\".\n\n`aceitacao` traz os convites do período no total (oferecidos, aceitos, recusados, vencidos e o percentual), e cada agente traz os dele (`convites`, `aceitos`, `recusados`, `vencidos`, `aceitacao_percentual`, `tempo_medio_aceite_segundos`) e o CSAT dele (`csat_respostas`, `csat_percentual`). É o que a página Indicadores da operação, na Central, mostra.\n\n**volumes** — `criadas` e `resolvidas` no período, `abertas_agora` (a fila real, sem recorte de data), `esperando_suporte`, `vencidas_agora`, `reabertas`, `fcr_percentual` e `fcr_base` (resolvidas de primeira: uma resposta do agente e sem reabrir).\n\n**sla** — `primeira_resposta` e `resolucao`, cada um com `percentual` dentro do prazo e `base`.\n\n**tempos** — além da média, `mediana_segundos` e `p90_segundos` por métrica.\n\n**agentes** — cada um traz também `resolvidas`, `primeira_resposta_segundos` e `resolucao_segundos`.\n\n**por_dia** — `criadas`, `resolvidas` e `csat_respostas` por dia do período.\n\n**Filtros**: `user_id` (agente), `load_queue` (chave do canal de trabalho) e `team_id` (grupo). `compare=1` traz `anterior`, o período imediatamente anterior de mesma duração, para o desvio.",
           "escopo": "relatorios:leitura",
           "respostas": [
             {
@@ -88,15 +88,39 @@
           "query": [
             {
               "nome": "since",
-              "tipo": "data ISO 8601",
-              "descricao": "Início do período. Padrão: 7 dias atrás.",
-              "exemplo": "2026-09-01T00:00:00Z"
+              "tipo": "data-hora ISO 8601",
+              "descricao": "Início do período. Sem ele, 7 dias atrás.",
+              "exemplo": "2026-09-11T00:00:00Z"
             },
             {
               "nome": "until",
-              "tipo": "data ISO 8601",
-              "descricao": "Fim do período. Padrão: agora.",
-              "exemplo": "2026-09-18T00:00:00Z"
+              "tipo": "data-hora ISO 8601",
+              "descricao": "Fim do período. Sem ele, agora. Janela máxima de 366 dias.",
+              "exemplo": "2026-09-18T23:59:59Z"
+            },
+            {
+              "nome": "compare",
+              "tipo": "booleano",
+              "descricao": "`1` traz também `anterior`: o período imediatamente anterior, de mesma duração.",
+              "exemplo": 1
+            },
+            {
+              "nome": "user_id",
+              "tipo": "inteiro",
+              "descricao": "Só este agente (avaliações, eventos, convites e tempo online dele).",
+              "exemplo": 2
+            },
+            {
+              "nome": "load_queue",
+              "tipo": "texto",
+              "descricao": "Só este canal de trabalho, pela chave (`chat`, `ticket`).",
+              "exemplo": "chat"
+            },
+            {
+              "nome": "team_id",
+              "tipo": "inteiro",
+              "descricao": "Só as conversas deste grupo.",
+              "exemplo": 3
             }
           ],
           "resposta": {
@@ -125,24 +149,32 @@
                 "primeira_resposta": {
                   "segundos": 1080,
                   "segundos_no_horario": 900,
-                  "amostras": 90
+                  "amostras": 90,
+                  "mediana_segundos": 200,
+                  "p90_segundos": 900
                 },
                 "resposta": {
                   "segundos": 1080,
                   "segundos_no_horario": 900,
-                  "amostras": 35
+                  "amostras": 35,
+                  "mediana_segundos": 200,
+                  "p90_segundos": 900
                 },
                 "resolucao": {
                   "segundos": 6384264,
                   "segundos_no_horario": 0,
-                  "amostras": 70
+                  "amostras": 70,
+                  "mediana_segundos": 200,
+                  "p90_segundos": 900
                 }
               },
               "ticket": {
                 "primeira_resposta": {
                   "segundos": 1080,
                   "segundos_no_horario": 0,
-                  "amostras": 49
+                  "amostras": 49,
+                  "mediana_segundos": 200,
+                  "p90_segundos": 900
                 }
               }
             },
@@ -176,7 +208,10 @@
                 "aceitacao_percentual": 91.7,
                 "tempo_medio_aceite_segundos": 6,
                 "csat_respostas": 5,
-                "csat_percentual": 100.0
+                "csat_percentual": 100.0,
+                "resolvidas": 23,
+                "primeira_resposta_segundos": 240,
+                "resolucao_segundos": 5400
               }
             ],
             "resumo_dos_agentes": {
@@ -190,7 +225,35 @@
               "recusados": 2,
               "vencidos": 3,
               "percentual": 88.1
-            }
+            },
+            "volumes": {
+              "criadas": 120,
+              "resolvidas": 98,
+              "abertas_agora": 14,
+              "esperando_suporte": 6,
+              "vencidas_agora": 2,
+              "reabertas": 3,
+              "fcr_percentual": 71.4,
+              "fcr_base": 98
+            },
+            "sla": {
+              "primeira_resposta": {
+                "percentual": 92.5,
+                "base": 80
+              },
+              "resolucao": {
+                "percentual": 88.0,
+                "base": 75
+              }
+            },
+            "por_dia": [
+              {
+                "dia": "2026-09-17",
+                "criadas": 18,
+                "resolvidas": 15,
+                "csat_respostas": 4
+              }
+            ]
           }
         },
         {
@@ -4490,6 +4553,477 @@
               "user_id": 7
             }
           }
+        }
+      ]
+    },
+    {
+      "chave": "zendesk",
+      "titulo": "Compatível com o Zendesk (dashboard)",
+      "texto": "O dashboard da casa popula o banco dele lendo a API do Zendesk. Para a troca não exigir reescrever o sync, estes endpoints respondem **com os mesmos caminhos e formatos** do Zendesk, sobre as conversas do StayDesk.\n\nURL base: `/staydesk/zendesk` — o resto do caminho é o do Zendesk (`/api/v2/...`). Autenticação como no Zendesk: `Basic email/token:<TOKEN>`, onde TOKEN é um token de API do StayDesk com os escopos `relatorios:leitura`, `conversas:leitura` e `conversas:escrita`; o cabeçalho `api_access_token` também vale.\n\nDe-para: `ticket.id` é o número da conversa; `status` new/open/pending/hold/solved/closed; `priority` low/normal/high/urgent; `via.channel` pelo tipo do canal; `requester_id` é `1.000.000.000 + id do contato` (contatos e agentes são tabelas diferentes aqui); `group_id` é o time; `custom_fields[].id` é o id do atributo; `metric_set` sai dos eventos de tempo.",
+      "endpoints": [
+        {
+          "metodo": "GET",
+          "caminho": "incremental/tickets/cursor",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Exportar tickets por cursor",
+          "resumo": "Conversas atualizadas desde `start_time`, por cursor, como tickets do Zendesk.",
+          "detalhes": "`include=metric_sets,users,groups` traz junto os metric sets, os usuários (agentes e os contatos da página) e os grupos. Pagine por `after_cursor` até `end_of_stream`.",
+          "escopo": "relatorios:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "query": [
+            {
+              "nome": "start_time",
+              "tipo": "unix",
+              "descricao": "Só o que mudou a partir daqui.",
+              "exemplo": 1758153600
+            },
+            {
+              "nome": "cursor",
+              "tipo": "texto",
+              "descricao": "O `after_cursor` da página anterior.",
+              "exemplo": "MTc1..."
+            },
+            {
+              "nome": "include",
+              "tipo": "texto",
+              "descricao": "`metric_sets,users,groups`.",
+              "exemplo": "metric_sets,users,groups"
+            },
+            {
+              "nome": "per_page",
+              "tipo": "inteiro",
+              "descricao": "Até 1000.",
+              "exemplo": 1000
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "incremental/ticket_metric_events",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Exportar eventos de métrica (SLA)",
+          "resumo": "Eventos `apply_sla`, `fulfill` e `breach` das métricas `reply_time` e `resolution_time`, a partir do SLA aplicado.",
+          "detalhes": "Um evento por métrica com prazo; `sla.policy.title` é a política.",
+          "escopo": "relatorios:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "query": [
+            {
+              "nome": "start_time",
+              "tipo": "unix",
+              "descricao": "Só o que mudou a partir daqui.",
+              "exemplo": 1758153600
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "satisfaction_ratings",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Listar avaliações de satisfação",
+          "resumo": "Respostas de CSAT como satisfaction ratings, com cursor.",
+          "detalhes": "`score` é `good`/`bad` (notas 4–5 / 1–3), com `_with_comment` quando há comentário. Pagine por `links.next`.",
+          "escopo": "relatorios:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "query": [
+            {
+              "nome": "start_time",
+              "tipo": "unix",
+              "descricao": "A partir daqui.",
+              "exemplo": 1758153600
+            },
+            {
+              "nome": "page[size]",
+              "tipo": "inteiro",
+              "descricao": "Até 100.",
+              "exemplo": 100
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "users",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Listar usuários",
+          "resumo": "Agentes e administradores da conta.",
+          "detalhes": "Filtre por `role[]=admin&role[]=agent`.",
+          "escopo": "relatorios:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "users/search",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Buscar usuário por e-mail",
+          "resumo": "Encontra agentes e contatos pelo e-mail.",
+          "detalhes": "Contato vem como usuário final, com o id deslocado.",
+          "escopo": "relatorios:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "query": [
+            {
+              "nome": "query",
+              "tipo": "texto",
+              "descricao": "O e-mail.",
+              "exemplo": "cliente@exemplo.com"
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "users/{id}/tickets/requested",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Tickets de um usuário final",
+          "resumo": "As conversas de um contato, pelo id deslocado.",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "conversas:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "`1.000.000.000 + id do contato`.",
+              "obrigatorio": true,
+              "exemplo": 1000000184
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "groups",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Listar grupos",
+          "resumo": "Os times da conta.",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "relatorios:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "ticket_fields",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Listar campos do ticket",
+          "resumo": "Os atributos personalizados de conversa, com opções.",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "relatorios:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "ticket_fields/{id}",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Ler um campo do ticket",
+          "resumo": "Um atributo personalizado de conversa, com as opções.",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "relatorios:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Id do atributo.",
+              "obrigatorio": true,
+              "exemplo": 7
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "agent_availabilities/agent_statuses",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Catálogo de status dos agentes",
+          "resumo": "Os status do StayDesk mais Online e Offline, com `channels` (support = ticket, messaging = chat).",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "relatorios:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "agent_availabilities",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Status de cada agente agora",
+          "resumo": "Um registro por agente, no formato JSON:API, com o status atual e os canais.",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "relatorios:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ]
+        },
+        {
+          "metodo": "GET",
+          "caminho": "tickets/{id}",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Ler um ticket",
+          "resumo": "A conversa como ticket do Zendesk.",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "conversas:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Número da conversa.",
+              "obrigatorio": true,
+              "exemplo": 565
+            }
+          ]
+        },
+        {
+          "metodo": "PUT",
+          "caminho": "tickets/{id}",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Atualizar um ticket",
+          "resumo": "Status, prioridade, responsável, grupo, tags, campos e um comentário (público vira resposta; privado vira nota interna).",
+          "detalhes": "É o que a escalação do dashboard usa.",
+          "escopo": "conversas:escrita",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Número da conversa.",
+              "obrigatorio": true,
+              "exemplo": 565
+            }
+          ],
+          "payload": {
+            "ticket": {
+              "status": "pending",
+              "tags": [
+                "escalado"
+              ],
+              "comment": {
+                "body": "Escalado para o N3",
+                "public": false
+              }
+            }
+          }
+        },
+        {
+          "metodo": "GET",
+          "caminho": "tickets/{id}/comments",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Comentários de um ticket",
+          "resumo": "As mensagens da conversa, públicas e internas.",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "conversas:leitura",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Número da conversa.",
+              "obrigatorio": true,
+              "exemplo": 565
+            }
+          ]
+        },
+        {
+          "metodo": "PUT",
+          "caminho": "tickets/{id}/tags",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Definir as tags",
+          "resumo": "Substitui as etiquetas.",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "conversas:escrita",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Número da conversa.",
+              "obrigatorio": true,
+              "exemplo": 565
+            }
+          ],
+          "payload": {
+            "tags": [
+              "escalado"
+            ]
+          }
+        },
+        {
+          "metodo": "POST",
+          "caminho": "tickets/{id}/tags",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Acrescentar tags",
+          "resumo": "Acrescenta etiquetas às que já existem.",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "conversas:escrita",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ],
+          "path": [
+            {
+              "nome": "id",
+              "tipo": "inteiro",
+              "descricao": "Número da conversa.",
+              "obrigatorio": true,
+              "exemplo": 565
+            }
+          ],
+          "payload": {
+            "tags": [
+              "urgente"
+            ]
+          }
+        },
+        {
+          "metodo": "POST",
+          "caminho": "uploads",
+          "base": "/staydesk/zendesk/api/v2",
+          "titulo": "Enviar anexo",
+          "resumo": "Ainda não: responde 501.",
+          "detalhes": "Mesmo formato do Zendesk; veja o de-para do grupo.",
+          "escopo": "conversas:escrita",
+          "respostas": [
+            {
+              "codigo": 200,
+              "descricao": "Deu certo, no formato do Zendesk."
+            },
+            {
+              "codigo": 401,
+              "descricao": "Sem token, token vencido ou sem o escopo: `relatorios:leitura` para leitura, `conversas:leitura`/`conversas:escrita` para tickets."
+            }
+          ]
         }
       ]
     }
