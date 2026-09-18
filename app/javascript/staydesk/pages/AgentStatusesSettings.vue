@@ -36,6 +36,19 @@ const form = ref(emptyForm());
 const statuses = computed(() => store.statuses);
 // Os limites seguem as filas de carga configuradas, não uma lista fixa no código.
 const loadQueues = computed(() => store.loadQueues);
+const distributionChecks = computed(() => store.distributionChecks);
+const CHECKS = [
+  'connected',
+  'available',
+  'has_capacity',
+  'in_group',
+  'inbox_member',
+];
+// O que falta para o agente receber aquela fila, em palavras.
+const faltando = entrada =>
+  CHECKS.filter(chave => !entrada.checks[chave]).map(chave =>
+    t(`STAYDESK.AGENT_STATUS.DIAGNOSIS.CHECKS.${chave}`)
+  );
 const loads = computed(() => store.loads);
 const offerStats = computed(() =>
   store.offerStats.filter(linha => linha.offers > 0)
@@ -136,6 +149,7 @@ const loadLabel = (entry, queue) =>
 onMounted(() => {
   store.fetch();
   store.fetchLoadQueues();
+  store.fetchDistributionChecks();
   store.fetchLoads();
   store.fetchOfferStats();
 });
@@ -365,6 +379,71 @@ const aoEnviar = event => {
             </tr>
           </tbody>
         </table>
+      </section>
+      <section v-if="distributionChecks.length" class="mt-8 grid gap-3">
+        <header class="grid gap-1">
+          <h3 class="m-0 text-sm font-medium text-n-slate-12">
+            {{ t('STAYDESK.AGENT_STATUS.DIAGNOSIS.TITLE') }}
+          </h3>
+          <p class="m-0 text-xs text-n-slate-11">
+            {{ t('STAYDESK.AGENT_STATUS.DIAGNOSIS.DESCRIPTION') }}
+          </p>
+        </header>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[40rem] border-collapse text-sm">
+            <thead>
+              <tr class="text-left text-xs uppercase text-n-slate-11">
+                <th class="py-2 pr-4 font-medium">
+                  {{ t('STAYDESK.AGENT_STATUS.LOAD.AGENT') }}
+                </th>
+                <th class="py-2 pr-4 font-medium">
+                  {{ t('STAYDESK.AGENT_STATUS.DIAGNOSIS.NOW') }}
+                </th>
+                <th
+                  v-for="fila in distributionChecks[0].queues"
+                  :key="fila.queue_id"
+                  class="py-2 pr-4 font-medium"
+                >
+                  {{ fila.queue }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-n-weak">
+              <tr v-for="linha in distributionChecks" :key="linha.user_id">
+                <td class="py-2 pr-4 text-n-slate-12">{{ linha.name }}</td>
+                <td class="py-2 pr-4 text-n-slate-11">
+                  {{
+                    linha.status || t('STAYDESK.AGENT_STATUS.LOAD.NO_STATUS')
+                  }}
+                  <span class="text-xs text-n-slate-10">
+                    ·
+                    {{
+                      linha.online
+                        ? t('STAYDESK.AGENT_STATUS.DIAGNOSIS.CONNECTED')
+                        : t('STAYDESK.AGENT_STATUS.DIAGNOSIS.AWAY')
+                    }}
+                  </span>
+                </td>
+                <td
+                  v-for="fila in linha.queues"
+                  :key="fila.queue_id"
+                  class="py-2 pr-4 align-top"
+                >
+                  <span
+                    v-if="fila.receives"
+                    class="inline-flex items-center gap-1 text-xs text-n-teal-11"
+                  >
+                    <span class="i-lucide-check size-3.5" />
+                    {{ t('STAYDESK.AGENT_STATUS.DIAGNOSIS.RECEIVES') }}
+                  </span>
+                  <span v-else class="text-xs text-n-amber-11">
+                    {{ faltando(fila).join(' · ') }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
       <section v-if="offerStats.length" class="mt-8 grid gap-3">
         <header class="grid gap-1">

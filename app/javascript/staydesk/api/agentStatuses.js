@@ -29,6 +29,11 @@ class AgentStatusesAPI extends ApiClient {
     return axios.get(`${this.url}/agent_loads`);
   }
 
+  // Por que cada agente recebe ou não recebe cada fila
+  distributionChecks() {
+    return axios.get(`${this.url}/distribution_checks`);
+  }
+
   // As filas de carga configuradas na conta (chat, ticket, o que a operação definir)
   loadQueues() {
     return axios.get(`${this.url}/load_queues`);

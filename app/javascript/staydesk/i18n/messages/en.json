@@ -351,6 +351,21 @@
         "ACCEPTED": "Accepted",
         "RATE": "Acceptance",
         "ANSWER_TIME": "Time to answer"
+      },
+      "DIAGNOSIS": {
+        "TITLE": "Who receives what",
+        "NOW": "Now",
+        "DESCRIPTION": "For each agent and each queue, whether distribution delivers and, if not, what is missing. Same rules the distribution uses.",
+        "RECEIVES": "receives",
+        "CONNECTED": "connected",
+        "AWAY": "away",
+        "CHECKS": {
+          "connected": "not connected",
+          "available": "status is away",
+          "has_capacity": "no room in the status",
+          "in_group": "not in the group",
+          "inbox_member": "not in the inbox"
+        }
       }
     },
     "TICKET_STATUS": {

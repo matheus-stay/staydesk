@@ -351,6 +351,21 @@
         "ACCEPTED": "Aceitos",
         "RATE": "Aceitação",
         "ANSWER_TIME": "Tempo para responder"
+      },
+      "DIAGNOSIS": {
+        "TITLE": "Quem recebe o quê",
+        "NOW": "Agora",
+        "DESCRIPTION": "Para cada agente e cada fila, se a distribuição entrega e, se não entrega, o que falta. A conta é a mesma que a distribuição faz.",
+        "RECEIVES": "recebe",
+        "CONNECTED": "conectado",
+        "AWAY": "fora",
+        "CHECKS": {
+          "connected": "sem conexão",
+          "available": "status ausente",
+          "has_capacity": "sem vaga no status",
+          "in_group": "fora do grupo",
+          "inbox_member": "fora da caixa"
+        }
       }
     },
     "TICKET_STATUS": {

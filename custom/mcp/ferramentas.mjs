@@ -114,6 +114,14 @@ export const FERRAMENTAS = [
     active: BOOLEANO,
   }),
   {
+    nome: 'staydesk_diagnostico_da_distribuicao',
+    descricao:
+      'Por que cada agente recebe ou não recebe cada fila: conexão, disponibilidade, limite, grupo e caixa, com sim ou não em cada um.',
+    metodo: 'GET',
+    rota: 'staydesk/distribution_checks',
+    argumentos: {},
+  },
+  {
     nome: 'staydesk_carga_dos_agentes',
     descricao: 'Quantas conversas cada agente atende agora em cada fila, contra o limite do status dele.',
     metodo: 'GET',

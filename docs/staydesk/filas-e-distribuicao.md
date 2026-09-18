@@ -70,6 +70,13 @@ A conta é, nesta ordem:
 O passo 2 existe porque sem ele o grupo dono parece cheio de gente, o transbordo
 nunca abre e a conversa espera por quem não está atendendo.
 
+Quando alguém "coloca online e não cai nada", a resposta está em Central › Status
+dos agentes › **Quem recebe o quê**: para cada agente e cada fila, se a
+distribuição entrega e, se não, qual condição falta (conexão, status, vaga,
+grupo ou caixa). Pela API é `GET staydesk/distribution_checks`. Nove em dez vezes
+é grupo ou caixa: o agente precisa estar no grupo dono da fila, ou num grupo que
+ajuda, **e** ser membro de uma caixa que a fila pega.
+
 ## Aceite
 
 Chat e WhatsApp são **oferecidos**: a conversa é atribuída, o agente recebe o

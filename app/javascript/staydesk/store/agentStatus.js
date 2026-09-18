@@ -7,6 +7,7 @@ export const useAgentStatusStore = defineStore('staydeskAgentStatus', {
     currentStatusId: null,
     loads: [],
     loadQueues: [],
+    distributionChecks: [],
     offerStats: [],
     uiFlags: {
       isFetching: false,
@@ -40,6 +41,12 @@ export const useAgentStatusStore = defineStore('staydeskAgentStatus', {
     async fetchLoadQueues() {
       const { data } = await AgentStatusesAPI.loadQueues();
       this.loadQueues = data.load_queues || [];
+    },
+
+    // Diagnóstico: quem recebe o quê, e o que falta para quem não recebe.
+    async fetchDistributionChecks() {
+      const { data } = await AgentStatusesAPI.distributionChecks();
+      this.distributionChecks = data;
     },
 
     // Painel de carga: quantas conversas cada agente atende agora em cada fila.
