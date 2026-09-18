@@ -5,5 +5,4 @@ json.array! @offers do |offer|
   json.conversation_id offer.conversation.display_id
   json.contact_name offer.conversation.contact&.name
   json.inbox_name offer.conversation.inbox&.name
-  json.last_message offer.conversation.messages.incoming.last&.content
 end

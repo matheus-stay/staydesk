@@ -7,8 +7,9 @@ import Button from 'dashboard/components-next/button/Button.vue';
 import { useOffers } from '../composables/useOffers';
 
 // Os convites aparecem no canto, um cartão por conversa, cada um com o relógio
-// correndo. Aceitar abre a conversa numa aba do espaço de trabalho (as outras
-// abas ficam); recusar devolve para a fila na hora.
+// correndo: só o canal e o nome do cliente, sem o assunto. Aceitar abre a
+// conversa numa aba do espaço de trabalho (as outras abas ficam); recusar
+// devolve para a fila na hora.
 const { t } = useI18n();
 const router = useRouter();
 const { accountScopedRoute } = useAccount();
@@ -20,7 +21,9 @@ const avisar = convite => {
   const titulo = t('STAYDESK.OFFERS.NOTIFICATION', {
     contact: convite.contact_name || '',
   });
-  const aviso = new Notification(titulo, { body: convite.last_message || '' });
+  const aviso = new Notification(titulo, {
+    body: t('STAYDESK.OFFERS.TITLE', { inbox: convite.inbox_name || '' }),
+  });
   setTimeout(() => aviso.close(), 10000);
 };
 
@@ -64,12 +67,6 @@ onMounted(() => {
         </span>
       </div>
       <p class="mt-1 text-sm text-n-slate-12">{{ offer.contact_name }}</p>
-      <p
-        v-if="offer.last_message"
-        class="mt-1 line-clamp-2 text-xs text-n-slate-11"
-      >
-        {{ offer.last_message }}
-      </p>
       <div class="mt-3 flex justify-end gap-2">
         <Button sm faded slate @click="decline(offer.id)">
           {{ t('STAYDESK.OFFERS.DECLINE') }}

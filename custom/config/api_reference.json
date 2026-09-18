@@ -1712,7 +1712,7 @@
           "caminho": "staydesk/offers",
           "titulo": "Listar convites pendentes",
           "resumo": "Os convites pendentes de quem chama, do mais antigo ao mais novo. Lista vazia quando não há convite.",
-          "detalhes": "Cada convite traz a conversa, a caixa, o contato, a última mensagem e `expires_at`. É o que a tela do agente consulta para mostrar o cartão de aceite.\n\nQuando a distribuição entrega várias conversas de uma vez (até a capacidade do agente), cada uma vira um convite; o agente aceita um a um e cada aceite abre a conversa numa aba.",
+          "detalhes": "Cada convite traz a conversa, o canal, o nome do contato e o tempo restante — sem o assunto, de propósito: o agente aceita pelo cliente, não pelo tema. É o que a tela do agente consulta para mostrar o cartão de aceite.\n\nQuando a distribuição entrega várias conversas de uma vez (até a capacidade do agente), cada uma vira um convite; o agente aceita um a um e cada aceite abre a conversa numa aba.",
           "escopo": "operacao:leitura",
           "respostas": [
             {
@@ -1734,7 +1734,6 @@
               "conversation_id": 427,
               "inbox_name": "Chat do site",
               "contact_name": "Marina Alencar",
-              "last_message": "Bom dia! Estou com um problema desde ontem.",
               "expires_at": "2026-09-18T12:12:36Z"
             }
           ]
