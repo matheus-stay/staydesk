@@ -7,13 +7,21 @@
   },
   "CONVERSATION": {
     "INSTAGRAM_RESTRICTION_BANNER": "Instagram messaging is currently affected by an API-level issue on Meta’s side, not a problem with StayDesk. Some messages or actions may be delayed or unavailable. We’re working closely with Meta to resolve it as quickly as possible.",
-    "NATIVE_APP_ADVISORY": "This message was sent from the native app. Reply from StayDesk to maintain the message window."
+    "NATIVE_APP_ADVISORY": "This message was sent from the native app. Reply from StayDesk to maintain the message window.",
+    "NO_MESSAGE_1": "Uh oh! Looks like there are no messages from customers in your channel.",
+    "NO_INBOX_1": "Hola! Looks like you haven't added any channels yet.",
+    "NO_INBOX_AGENT": "Uh Oh! Looks like you are not part of any channel. Please contact your administrator",
+    "LOADING_INBOXES": "Loading channels",
+    "OLD_INSTAGRAM_INBOX_REPLY_BANNER": "This Instagram account was migrated to the new Instagram channel channel. All new messages will show up there. You won’t be able to send messages from this conversation anymore."
   },
   "GENERAL_SETTINGS": {
     "UPDATE_CHATWOOT": "An update {latestChatwootVersion} for StayDesk is available. Please update your instance.",
     "PAYMENT_PENDING": "Your payment is pending. Please update your payment information to continue using StayDesk",
     "UPGRADE": "Upgrade to continue using StayDesk",
-    "LIMITS_UPGRADE": "Your account has exceeded the usage limits, please upgrade your plan to continue using StayDesk"
+    "LIMITS_UPGRADE": "Your account has exceeded the usage limits, please upgrade your plan to continue using StayDesk",
+    "LIMIT_MESSAGES": {
+      "INBOXES": "You have exceeded the channel limit. Hacker plan only supports website live-chat. Additional channels like email, WhatsApp etc. require a paid plan."
+    }
   },
   "HELP_CENTER": {
     "CREATE_PORTAL_DIALOG": {
@@ -33,16 +41,29 @@
     "CREATE_FLOW": {
       "CHANNEL": {
         "BODY": "Choose the provider you want to integrate with StayDesk."
+      },
+      "INBOX": {
+        "TITLE": "Create Channel",
+        "BODY": "Authenticate your account and create a channel."
+      },
+      "AGENT": {
+        "BODY": "Add agents to the created channel."
       }
     },
     "ADD": {
       "FB": {
         "HELP": "PS: By signing in, we only get access to your Page's messages. Your private messages can never be accessed by StayDesk.",
-        "RESTRICTED_WARNING": "Facebook inbox creation is temporarily unavailable due to an API-level issue on Meta’s side, not a problem with StayDesk. We’re working closely with Meta to resolve it as quickly as possible."
+        "RESTRICTED_WARNING": "Facebook channel creation is temporarily unavailable due to an API-level issue on Meta’s side, not a problem with StayDesk. We’re working closely with Meta to resolve it as quickly as possible.",
+        "INBOX_NAME": "Channel Name",
+        "ADD_NAME": "Add a name for your channel",
+        "PICK_NAME": "Pick a Name for your Channel",
+        "CREATE_INBOX": "Create Channel"
       },
       "INSTAGRAM": {
-        "RESTRICTED_WARNING": "Instagram inbox creation is temporarily unavailable due to an API-level issue on Meta’s side, not a problem with StayDesk. We’re working closely with Meta to resolve it as quickly as possible.",
-        "SETTINGS_RESTRICTED_WARNING": "Instagram messaging is currently affected by an API-level issue on Meta’s side, not a problem with StayDesk. Some messages or actions may be delayed or unavailable. We’re working closely with Meta to resolve it as quickly as possible."
+        "RESTRICTED_WARNING": "Instagram channel creation is temporarily unavailable due to an API-level issue on Meta’s side, not a problem with StayDesk. We’re working closely with Meta to resolve it as quickly as possible.",
+        "SETTINGS_RESTRICTED_WARNING": "Instagram messaging is currently affected by an API-level issue on Meta’s side, not a problem with StayDesk. Some messages or actions may be delayed or unavailable. We’re working closely with Meta to resolve it as quickly as possible.",
+        "NEW_INBOX_SUGGESTION": "This Instagram account was previously linked to a different channel and has now been migrated here. All new messages will appear here. The old channel will no longer be able to send or receive messages for this account.",
+        "DUPLICATE_INBOX_BANNER": "This Instagram account was migrated to the new Instagram channel channel. You won’t be able to send/receive Instagram messages from this channel anymore."
       },
       "WHATSAPP": {
         "MANUAL_SETUP": {
@@ -51,32 +72,95 @@
           },
           "VERIFY": {
             "DESCRIPTION": "StayDesk is checking number access and configuring your Meta webhook."
+          },
+          "REVIEW": {
+            "TITLE": "Create your WhatsApp channel",
+            "DESCRIPTION": "Review the number details and choose a name for the channel.",
+            "INBOX_NAME": "Channel name"
+          },
+          "ACTIONS": {
+            "CONNECT": "Create channel"
           }
         },
         "EMBEDDED_SIGNUP": {
-          "RESTRICTED_WARNING": "WhatsApp Embedded Signup is temporarily unavailable due to an API-level issue on Meta’s side, not a problem with StayDesk. You can use manual setup for eligible Cloud API numbers. We’re working closely with Meta to resolve it as quickly as possible."
+          "RESTRICTED_WARNING": "WhatsApp Embedded Signup is temporarily unavailable due to an API-level issue on Meta’s side, not a problem with StayDesk. You can use manual setup for eligible Cloud API numbers. We’re working closely with Meta to resolve it as quickly as possible.",
+          "CALLING_ENABLE_FAILED": "Your WhatsApp channel is ready, but voice calling couldn't be turned on — this number isn't enrolled in the WhatsApp Business Calling API yet. Reach out to Meta or your WhatsApp Business Solution Provider to onboard it, then turn calling on from the channel's Calls settings."
         },
         "API": {
           "MANUAL_RESTRICTION_WARNING": "WhatsApp Embedded Signup is temporarily unavailable due to an API-level issue on Meta’s side, not a problem with StayDesk. Manual setup works only for numbers already connected to WhatsApp Cloud API. Numbers using WhatsApp Business app coexistence are not supported in this flow yet. We’re working closely with Meta to resolve the issue as quickly as possible. Thanks for your patience."
+        },
+        "INBOX_NAME": {
+          "LABEL": "Channel Name",
+          "PLACEHOLDER": "Please enter a channel name"
         }
       },
       "AUTH": {
         "DESC": "StayDesk supports live-chat widgets, Facebook Messenger, WhatsApp, Emails, etc., as channels. If you want to build a custom channel, you can create it using the API channel. To get started, choose one of the channels below."
       },
       "DETAILS": {
-        "DESC": "From the dropdown below, select the Facebook Page you want to connect to StayDesk. You can also give a custom name to your inbox for better identification."
+        "DESC": "From the dropdown below, select the Facebook Page you want to connect to StayDesk. You can also give a custom name to your channel for better identification.",
+        "TITLE": "Channel Details"
       },
       "FINISH": {
-        "DESC": "You have successfully finished integrating your Facebook Page with StayDesk. Next time a customer messages your Page, the conversation will automatically appear on your inbox.<br>We are also providing you with a widget script that you can easily add to your website. Once this is live on your website, customers can message you right from your website without the help of any external tool and the conversation will appear right here, on StayDesk.<br>Cool, huh? Well, we sure try to be :)"
+        "DESC": "You have successfully finished integrating your Facebook Page with StayDesk. Next time a customer messages your Page, the conversation will automatically appear on your channel.<br>We are also providing you with a widget script that you can easily add to your website. Once this is live on your website, customers can message you right from your website without the help of any external tool and the conversation will appear right here, on StayDesk.<br>Cool, huh? Well, we sure try to be :)"
+      },
+      "CHANNEL_NAME": {
+        "LABEL": "Channel Name",
+        "PLACEHOLDER": "Enter your channel name (eg: Acme Inc)",
+        "ERROR": "Please enter a valid channel name"
+      },
+      "WEBSITE_CHANNEL": {
+        "SUBMIT_BUTTON": "Create channel"
+      },
+      "TWILIO": {
+        "CHANNEL_NAME": {
+          "LABEL": "Channel Name",
+          "PLACEHOLDER": "Please enter a channel name"
+        }
+      },
+      "SMS": {
+        "BANDWIDTH": {
+          "INBOX_NAME": {
+            "LABEL": "Channel Name",
+            "PLACEHOLDER": "Please enter a channel name"
+          }
+        }
+      },
+      "EMAIL_CHANNEL": {
+        "DESC": "Integrate your email channel.",
+        "FINISH_MESSAGE": "Your email channel has been created successfully! You can start forwarding your emails to the address below, or configure SMTP and IMAP credentials to send and receive emails directly.",
+        "FINISH_MESSAGE_NO_FORWARDING": "Your email channel has been created successfully! You need to configure SMTP and IMAP credentials to send and receive emails. Without these settings, no emails will be processed."
+      },
+      "AGENTS": {
+        "DESC": "Every agent of the account already serves this channel automatically, as in Zendesk. This step stays for compatibility: you can move on without picking anyone.",
+        "VALIDATION_ERROR": "Add at least one agent to your new Channel",
+        "PICK_AGENTS": "Pick agents for the channel"
+      },
+      "MICROSOFT": {
+        "DESCRIPTION": "Click on the Sign in with Microsoft button to get started. You will redirected to the email sign in page. Once you accept the requested permissions, you would be redirected back to the channel creation step."
+      },
+      "GOOGLE": {
+        "DESCRIPTION": "Click on the Sign in with Google button to get started. You will redirected to the email sign in page. Once you accept the requested permissions, you would be redirected back to the channel creation step."
       }
     },
     "TWILIO_HEALTH": {
-      "DESCRIPTION": "Review the Twilio account, sender and webhooks backing this inbox. Anything StayDesk cannot receive is flagged here",
+      "DESCRIPTION": "Review the Twilio account, sender and webhooks backing this channel. Anything StayDesk cannot receive is flagged here",
       "WEBHOOK": {
         "HINTS": {
           "NOT_SET": "Twilio has no webhook on this sender, so nothing reaches StayDesk.",
           "WRONG_HTTP_METHOD": "The URL is right but Twilio calls it with {method} instead of POST, and StayDesk only answers POST.",
           "MISSING_TWIML_APP": "StayDesk has no TwiML app for this number, so outbound calls cannot be placed."
+        }
+      },
+      "FIELDS": {
+        "SENDER": {
+          "TOOLTIP": "The phone number or messaging service that carries this channel"
+        },
+        "CAPABILITIES": {
+          "TOOLTIP": "Capabilities Twilio has enabled on this number. A capability this channel needs but does not have will never work"
+        },
+        "VOICE_CALLING": {
+          "TOOLTIP": "Whether calling is turned on for this channel"
         }
       }
     },
@@ -84,17 +168,127 @@
       "WHATSAPP_BUSINESS_MANAGEMENT_TOKEN_UPDATE_SUBHEADER": "Provide a token with access to this WhatsApp Business Account when StayDesk cannot retrieve its message templates. StayDesk uses this token only for template synchronization.",
       "WHATSAPP_MANUAL_MIGRATION": {
         "DIALOG": {
-          "VERIFY_NOTICE": "StayDesk will verify these credentials with Meta before applying any changes. If verification fails, the current configuration is left untouched."
+          "VERIFY_NOTICE": "StayDesk will verify these credentials with Meta before applying any changes. If verification fails, the current configuration is left untouched.",
+          "TITLE": "Reconnect WhatsApp channel",
+          "ACTION_REQUIRED_DESCRIPTION": "Channels connected through your own Meta app are not affected by restrictions on the shared embedded signup app. This guided flow updates the WhatsApp API connection without creating a new channel.",
+          "PRESERVED_DESCRIPTION": "Conversations, contacts, collaborators, routing, business hours, and channel settings.",
+          "PHONE_NUMBER_HELP": "Meta's unique ID for the WhatsApp number connected to this channel.",
+          "INBOX": "Channel",
+          "RECONNECT": "Reconnect WhatsApp channel"
         },
         "STEPS": {
           "REVIEW_MIGRATION": {
-            "DESCRIPTION": "Confirm the connection details before reconnecting this inbox. StayDesk will verify the token, WABA, and phone number with Meta before applying changes."
+            "DESCRIPTION": "Confirm the connection details before reconnecting this channel. StayDesk will verify the token, WABA, and phone number with Meta before applying changes."
+          },
+          "BEFORE_YOU_START": {
+            "DESCRIPTION": "This reconnects the WhatsApp API details for this channel. Conversations, collaborators, routing, business hours, CSAT, and bot settings will be preserved."
           }
+        },
+        "BANNER": {
+          "DESCRIPTION": "This channel connects through the shared Meta app used for embedded signup, which recent Meta restrictions have affected. To avoid similar issues in the future, we recommend reconnecting it with your own Meta app."
         }
+      },
+      "INBOX_AGENTS_SUB_TEXT": "Add or remove agents from this channel",
+      "INBOX_UPDATE_TITLE": "Channel Settings",
+      "INBOX_UPDATE_SUB_TEXT": "Update your channel settings",
+      "AUTO_ASSIGNMENT_SUB_TEXT": "Enable or disable the automatic assignment of new conversations to the agents added to this channel.",
+      "INBOX_IDENTIFIER": "Channel Identifier",
+      "FORWARD_EMAIL_NOT_CONFIGURED": "Forwarding emails to your channel is currently disabled on this installation. To use this feature, it must be enabled by your administrator. Please get in touch with them to proceed.",
+      "WHATSAPP_EMBEDDED_SIGNUP_SUBHEADER": "This channel is connected through WhatsApp embedded signup.",
+      "WHATSAPP_EMBEDDED_SIGNUP_DESCRIPTION": "You can reconfigure this channel to update your WhatsApp Business settings.",
+      "WHATSAPP_MANUAL_TRANSFER_SUBHEADER": "This channel was connected through WhatsApp embedded signup, which is no longer supported. Enter the WhatsApp Cloud API credentials from your own Meta app to switch this channel to a manual setup. Configure the webhook in your Meta app using the verification token above before switching.",
+      "WHATSAPP_MANUAL_TRANSFER_SUCCESS": "Channel switched to manual setup successfully.",
+      "WHATSAPP_CONNECT_DESCRIPTION": "Connect this channel to WhatsApp Business for enhanced features and easier management.",
+      "WHATSAPP_CALLING_ENABLED": {
+        "DESCRIPTION": "Allow agents to start and receive WhatsApp voice calls on this channel. Available only on embedded-signup WhatsApp Cloud channels with calling permission granted by Meta."
       }
     },
     "WIDGET_BUILDER": {
       "BRANDING_TEXT": "Powered by StayDesk"
+    },
+    "HEADER": "Channels",
+    "DESCRIPTION": "Where customers come from: WhatsApp, email, website chat, API. Every agent serves every channel; who gets what is decided by queues, status and capacity.",
+    "LEARN_MORE": "Learn more about channels",
+    "COUNT": "{n} channel | {n} channels",
+    "SEARCH_PLACEHOLDER": "Search channel name, channel, or identifier...",
+    "NO_RESULTS": "No channels found matching your search",
+    "RECONNECTION_REQUIRED": "Your channel is disconnected. You won't receive new messages until you reauthorize it.",
+    "LIST": {
+      "404": "There are no channels attached to this account."
+    },
+    "DETAILS": {
+      "ERROR_CHANNEL_CREATION": "We were unable to create the channel. Please try again.",
+      "CREATING_CHANNEL": "Creating your Channel...",
+      "TITLE": "Configure Channel Details"
+    },
+    "AGENTS": {
+      "ADD_AGENTS": "Adding Agents to your Channel..."
+    },
+    "FINISH": {
+      "TITLE": "Your Channel is ready!",
+      "WEBSITE_SUCCESS": "You have successfully finished creating a website channel. Copy the code shown below and paste it on your website. Next time a customer use the live chat, the conversation will automatically appear on your channel.",
+      "WHATSAPP_QR_INSTRUCTION": "Scan the QR code above to quickly test your WhatsApp channel",
+      "SMS_QR_INSTRUCTION": "Scan the QR code above to quickly test your SMS channel",
+      "SMS_QR_ALT": "QR code to test the SMS channel",
+      "MESSENGER_QR_INSTRUCTION": "Scan the QR code above to quickly test your Facebook Messenger channel",
+      "TELEGRAM_QR_INSTRUCTION": "Scan the QR code above to quickly test your Telegram channel"
+    },
+    "EDIT": {
+      "API": {
+        "SUCCESS_MESSAGE": "Channel settings updated successfully",
+        "ERROR_MESSAGE": "We couldn't update channel settings. Please try again later."
+      }
+    },
+    "DELETE": {
+      "API": {
+        "SUCCESS_MESSAGE": "Channel deleted successfully",
+        "ERROR_MESSAGE": "Could not delete channel. Please try again later.",
+        "AVATAR_SUCCESS_MESSAGE": "Channel avatar deleted successfully",
+        "AVATAR_ERROR_MESSAGE": "Could not delete the channel avatar. Please try again later."
+      }
+    },
+    "VOICE_CONFIGURATION": {
+      "ENABLE_VOICE": {
+        "DESCRIPTION": "Enable voice calling on this channel. Agents will be able to make and receive phone calls."
+      }
+    },
+    "WHATSAPP_CALLING": {
+      "ENABLE": {
+        "DESCRIPTION": "Allow agents to receive and place WhatsApp Cloud calls on this channel. Customers can call this business number directly from WhatsApp."
+      }
+    },
+    "ACCOUNT_HEALTH": {
+      "ERRORS": {
+        "AUTHORIZATION": {
+          "EMBEDDED_DESCRIPTION": "Meta could not validate the connection for this channel. Go to Configuration to reconfigure it using Embedded Signup.",
+          "MANUAL_DESCRIPTION": "Meta could not validate the access token for this channel. Go to Configuration to verify or replace it."
+        }
+      }
+    },
+    "FEATURES": {
+      "USE_INBOX_AVATAR_FOR_BOT": "Use channel name and avatar for the bot"
+    },
+    "HELP_CENTER": {
+      "SUB_TEXT": "Attach a Help Center with the channel"
+    },
+    "AUTO_ASSIGNMENT": {
+      "MAX_ASSIGNMENT_LIMIT_SUB_TEXT": "Limit the maximum number of conversations from this channel that can be auto assigned to an agent"
+    },
+    "ASSIGNMENT": {
+      "USING_POLICY": "Using custom assignment policy for this channel",
+      "DEFAULT_POLICY_DESCRIPTION": "Link a custom assignment policy to customize how conversations are assigned to agents in this channel."
+    },
+    "ASSIGNMENT_POLICY": {
+      "DELETE_CONFIRM_MESSAGE": "Are you sure you want to remove this assignment policy from this channel? The channel will revert to default assignment rules."
+    },
+    "BUSINESS_HOURS": {
+      "TOGGLE_AVAILABILITY": "Enable business availability for this channel"
+    },
+    "IMAP": {
+      "TOGGLE_AVAILABILITY": "Enable IMAP configuration for this channel"
+    },
+    "SMTP": {
+      "TOGGLE_AVAILABILITY": "Enable SMTP configuration for this channel"
     }
   },
   "INTEGRATION_SETTINGS": {
@@ -141,7 +335,10 @@
   },
   "ONBOARDING_INBOX_SETUP": {
     "META_RESTRICTION": {
-      "MESSAGE": "Inbox setup for Facebook, Instagram, and WhatsApp is temporarily unavailable due to an API-level issue on Meta’s side, not a problem with StayDesk. We’re working closely with Meta to resolve it as quickly as possible."
+      "MESSAGE": "Channel setup for Facebook, Instagram, and WhatsApp is temporarily unavailable due to an API-level issue on Meta’s side, not a problem with StayDesk. We’re working closely with Meta to resolve it as quickly as possible."
+    },
+    "CHANNELS_DIALOG": {
+      "SUBTITLE": "Manage all of them from one dashboard. You can also set up and edit channels later inside the app."
     }
   },
   "RESET_PASSWORD": {
@@ -177,6 +374,227 @@
     "SHARE_MODAL": {
       "SHARE_TEXT": "Check out my {year} Year in Review with StayDesk!",
       "BRANDING": "Made with StayDesk"
+    }
+  },
+  "SETTINGS": {
+    "INBOXES": {
+      "NEW_INBOX": "Add Channel"
+    }
+  },
+  "SIDEBAR": {
+    "INBOX_VIEW": "Channel View",
+    "INBOX": "My Channel",
+    "CAPTAIN_INBOXES": "Channels",
+    "INBOXES": "Channels",
+    "NEW_INBOX": "New channel",
+    "REPORTS_INBOX": "Channel",
+    "REAUTHORIZE": "Your channel connection has expired, please reconnect\n to continue receiving and sending messages"
+  },
+  "ASSIGNMENT_POLICY": {
+    "INDEX": {
+      "HEADER": {
+        "DESCRIPTION": "Define policies to effectively manage workload and route conversations based on the needs of channels and agents. Learn more here"
+      },
+      "ASSIGNMENT_POLICY": {
+        "DESCRIPTION": "Manage how conversations get assigned in channels."
+      }
+    },
+    "AGENT_ASSIGNMENT_POLICY": {
+      "INDEX": {
+        "CARD": {
+          "POPOVER": "Added channels"
+        }
+      },
+      "CREATE": {
+        "API": {
+          "INBOX_LINKED": "Channel has been linked to the policy"
+        }
+      },
+      "EDIT": {
+        "CONFIRM_ADD_INBOX_DIALOG": {
+          "TITLE": "Add channel",
+          "DESCRIPTION": "{inboxName} channel is already linked to another policy. Are you sure you want to link it to this policy? It will be unlinked from the other policy."
+        },
+        "INBOX_LINK_PROMPT": {
+          "TITLE": "Link channel to policy",
+          "DESCRIPTION": "Would you like to link this channel to the assignment policy?",
+          "LINK_BUTTON": "Link channel"
+        },
+        "INBOX_API": {
+          "ADD": {
+            "SUCCESS_MESSAGE": "Channel added to policy successfully",
+            "ERROR_MESSAGE": "Failed to add channel to policy"
+          },
+          "REMOVE": {
+            "SUCCESS_MESSAGE": "Channel removed from policy successfully",
+            "ERROR_MESSAGE": "Failed to remove channel from policy"
+          }
+        }
+      },
+      "FORM": {
+        "INBOXES": {
+          "LABEL": "Added channels",
+          "DESCRIPTION": "Add channels for which this policy will be applicable.",
+          "ADD_BUTTON": "Add channel",
+          "DROPDOWN": {
+            "SEARCH_PLACEHOLDER": "Search and select channels to add"
+          },
+          "EMPTY_STATE": "No channels added to this policy, add a channel to get started",
+          "API": {
+            "SUCCESS_MESSAGE": "Channel successfully added to policy",
+            "ERROR_MESSAGE": "Failed to add channel to policy"
+          }
+        }
+      }
+    },
+    "AGENT_CAPACITY_POLICY": {
+      "EDIT": {
+        "INBOX_LIMIT_API": {
+          "ADD": {
+            "SUCCESS_MESSAGE": "Channel limit added successfully",
+            "ERROR_MESSAGE": "Failed to add channel limit"
+          },
+          "UPDATE": {
+            "SUCCESS_MESSAGE": "Channel limit updated successfully",
+            "ERROR_MESSAGE": "Failed to update channel limit"
+          },
+          "DELETE": {
+            "SUCCESS_MESSAGE": "Channel limit deleted successfully",
+            "ERROR_MESSAGE": "Failed to delete channel limit"
+          }
+        }
+      },
+      "FORM": {
+        "INBOX_CAPACITY_LIMIT": {
+          "LABEL": "Channel capacity limits",
+          "ADD_BUTTON": "Add channel",
+          "FIELD": {
+            "SELECT_INBOX": "Select channel"
+          },
+          "EMPTY_STATE": "No channel limit set"
+        }
+      }
+    }
+  },
+  "ONBOARDING": {
+    "ALL_CONVERSATION": {
+      "NEW_LINK": "Click here to create a channel"
+    }
+  },
+  "REPORT": {
+    "DRILLDOWN": {
+      "UNKNOWN_INBOX": "Unknown channel"
+    }
+  },
+  "INBOX_REPORTS": {
+    "HEADER": "Channel Overview",
+    "DESCRIPTION": "Quickly view your channel performance with key metrics like conversations, response times, resolution times, and resolved cases—all in one place. Click a channel name for more details.",
+    "DOWNLOAD_INBOX_REPORTS": "Download channel reports",
+    "FILTER_DROPDOWN_LABEL": "Select Channel",
+    "ALL_INBOXES": "All Channels",
+    "SEARCH_INBOX": "Search Channel",
+    "FILTERS": {
+      "INPUT_PLACEHOLDER": {
+        "INBOXES": "Search channels"
+      }
+    }
+  },
+  "CSAT_REPORTS": {
+    "FILTERS": {
+      "INPUT_PLACEHOLDER": {
+        "INBOXES": "Search channels"
+      },
+      "INBOXES": {
+        "LABEL": "Channel"
+      }
+    }
+  },
+  "SLA_REPORTS": {
+    "DROPDOWN": {
+      "INPUT_PLACEHOLDER": {
+        "INBOXES": "Channel name"
+      },
+      "INBOXES": "Channel"
+    }
+  },
+  "SUMMARY_REPORTS": {
+    "INBOX": "Channel"
+  },
+  "CONTACT_PANEL": {
+    "VOICE_INBOX_PICKER": {
+      "TITLE": "Choose a voice channel"
+    }
+  },
+  "NEW_CONVERSATION": {
+    "NO_INBOX": "Couldn't find a channel to initiate a new conversation with this contact.",
+    "FORM": {
+      "INBOX": {
+        "LABEL": "Via Channel",
+        "PLACEHOLDER": "Choose source channel",
+        "ERROR": "Select a channel"
+      }
+    }
+  },
+  "COMPOSE_NEW_CONVERSATION": {
+    "FORM": {
+      "NO_INBOX_ALERT": "There are no available channels to start a conversation with this contact.",
+      "INBOX_SELECTOR": {
+        "BUTTON": "Show channels"
+      }
+    }
+  },
+  "SEARCH": {
+    "FILTERS": {
+      "IN": "Channel",
+      "INBOXES": "Channels",
+      "NO_INBOXES": "No channels found"
+    }
+  },
+  "AGENT_MGMT": {
+    "ADD": {
+      "DESC": "You can add people who will be able to handle support for your channels."
+    }
+  },
+  "COMMAND_BAR": {
+    "COMMANDS": {
+      "GO_TO_MY_INBOX": "Go to My Channel",
+      "GO_TO_INBOX_REPORTS": "Go to Channel Reports",
+      "GO_TO_SETTINGS_INBOXES": "Go to Channel Settings"
+    }
+  },
+  "CAMPAIGN": {
+    "LIVE_CHAT": {
+      "CREATE": {
+        "FORM": {
+          "INBOX": {
+            "LABEL": "Select Channel",
+            "PLACEHOLDER": "Select Channel",
+            "ERROR": "Channel is required"
+          }
+        }
+      }
+    },
+    "SMS": {
+      "CREATE": {
+        "FORM": {
+          "INBOX": {
+            "LABEL": "Select Channel",
+            "PLACEHOLDER": "Select Channel",
+            "ERROR": "Channel is required"
+          }
+        }
+      }
+    },
+    "WHATSAPP": {
+      "CREATE": {
+        "FORM": {
+          "INBOX": {
+            "LABEL": "Select Channel",
+            "PLACEHOLDER": "Select Channel",
+            "ERROR": "Channel is required"
+          }
+        }
+      }
     }
   }
 }

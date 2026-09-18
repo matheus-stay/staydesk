@@ -14,8 +14,8 @@ Fica em Central › Atendimento › Filas.
 | Campo | O que faz |
 |---|---|
 | Grupos principais | Quem recebe primeiro. A conversa entra no primeiro da lista e, quando alguém pega, fica no grupo desse agente |
-| Canais | Quais canais entram nesta fila. Vazio é "todos" |
-| Caixas de entrada | Caixas específicas, para quando o canal não basta. A caixa vence o canal |
+| Tipo de canal | Quais tipos entram nesta fila (WhatsApp, e-mail…). Vazio é "todos" |
+| Canal | Canais específicos, para quando o tipo não basta (o número StayCloud WPP, o e-mail do financeiro). O canal vence o tipo |
 | Condições | Afinam o resto (etiqueta, prioridade, campo do ticket). Opcional |
 | Grupos secundários | Só entram quando nenhum principal tem alguém disponível. Opcional |
 | Espera | Minutos sem ninguém disponível nos principais antes de os secundários entrarem. Em branco, na hora |
@@ -23,9 +23,9 @@ Fica em Central › Atendimento › Filas.
 | Aceite | Se o agente precisa aceitar antes de a conversa virar dele |
 | Tempo para aceitar | Segundos até a conversa voltar para a fila |
 
-A entrada se configura por **canal** e por **caixa**, que é como a operação
-pensa: "chat e WhatsApp caem no N1, e-mail cai no N2". Deixar os dois vazios faz
-a fila recolher o que as filas acima não pegaram. As condições avançadas ficam
+A entrada se configura por **tipo de canal** e por **canal**, como a fila do
+Zendesk (*Canal é WhatsApp*, *Nome do canal é StayCloud WPP*). Deixar os dois
+vazios faz a fila recolher o que as filas acima não pegaram. As condições avançadas ficam
 para o que o canal não resolve, como etiqueta, prioridade ou campo do ticket.
 
 A ordem importa: a primeira fila que casar leva. A conversa recebe o grupo na
@@ -55,9 +55,9 @@ trabalho › Canais de trabalho; na API e no arquivo continuam sendo
 | Campo | O que faz |
 |---|---|
 | Chave | `chat`, `ticket`, o que a operação definir. É o que aparece no status e na regra de capacidade |
-| Canais | Tipos de canal que contam neste canal de trabalho |
-| Caixas | Caixas específicas. A caixa vence o canal |
-| Pega o que sobrar | O canal coringa: fica com as caixas que nenhum outro pegou |
+| Tipo de canal | Tipos que contam neste canal de trabalho |
+| Canal | Canais específicos. O canal vence o tipo |
+| Pega o que sobrar | O coringa: fica com os canais que nenhum outro pegou |
 
 Sem nenhum configurado, vale o padrão do produto: chat pega tudo e e-mail é
 ticket.
@@ -77,11 +77,31 @@ da fila (principal, ou secundário liberado), é **membro da caixa** e está
 **conectado**. Grupo decide de quem é o trabalho; status decide que tipo ele
 pega agora; capacidade decide quanto.
 
+## Canal, não caixa
+
+O Chatwoot chama de **caixa de entrada** cada instância de canal (o número do
+WhatsApp, o e-mail do suporte, o chat do site) e exige que o agente seja
+**membro** dela para receber e enxergar conversas. O Zendesk não tem isso: quem
+está no grupo atende o canal que a fila mandar. O StayDesk segue o Zendesk:
+
+- Na tela tudo se chama **canal**: a lista de canais fica agrupada por tipo em
+  Central › Canais, e nas filas e canais de trabalho os campos são *Tipo de
+  canal* e *Canal*.
+- **Todo agente atende todos os canais**, sempre. Agente novo entra em todos;
+  canal novo nasce com todos (`Staydesk::ChannelMembership`, ganchos em
+  `AccountUser` e `Inbox`; a importação e uma migração fecham o que faltava). A
+  aba "Colaboradores" da caixa some.
+- Quem recebe o quê é grupo + status + capacidade + conexão. O que o agente vê é
+  das visualizações por grupo e dos papéis.
+
+Na API e no arquivo de configuração os nomes do Chatwoot continuam (`inbox_ids`,
+`caixas`), porque são ids e nomes de canal específico.
+
 ## Quem pode receber agora
 
 A conta é, nesta ordem:
 
-1. Quem é membro da caixa.
+1. Quem está no canal (todo agente está em todos, ver abaixo).
 2. Quem está **conectado de verdade**, não só marcado como online no banco.
 3. Quem está num status que **recebe** o canal de trabalho daquela caixa.
 4. Quem ainda tem vaga nesse canal pela **regra de capacidade** dele.
@@ -94,9 +114,8 @@ secundários nunca entram e a conversa espera por quem não está atendendo.
 Quando alguém "coloca online e não cai nada", a resposta está em Central ›
 Distribuição de trabalho › Status dos agentes › **Quem recebe o quê**: para cada
 agente e cada fila, se a distribuição entrega e, se não, qual condição falta
-(conexão, status, canal, vaga, grupo ou caixa). Pela API é `GET staydesk/distribution_checks`. Nove em dez vezes
-é grupo ou caixa: o agente precisa estar num grupo principal ou secundário da
-fila **e** ser membro de uma caixa que a fila pega.
+(conexão, status, canal de trabalho, vaga ou grupo). Pela API é `GET staydesk/distribution_checks`. Nove em dez vezes
+é grupo: o agente precisa estar num grupo principal ou secundário da fila.
 
 ## Aceite
 

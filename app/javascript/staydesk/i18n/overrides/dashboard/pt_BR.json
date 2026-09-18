@@ -7,13 +7,21 @@
   },
   "CONVERSATION": {
     "INSTAGRAM_RESTRICTION_BANNER": "As mensagens do Instagram estão sendo afetadas por um problema na API da Meta, e não por uma falha no StayDesk. Algumas mensagens ou ações podem sofrer atrasos ou ficar temporariamente indisponíveis. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível.",
-    "NATIVE_APP_ADVISORY": "Esta mensagem foi enviada a partir do aplicativo nativo. Responda pelo StayDesk para manter a janela de mensagens ativa."
+    "NATIVE_APP_ADVISORY": "Esta mensagem foi enviada a partir do aplicativo nativo. Responda pelo StayDesk para manter a janela de mensagens ativa.",
+    "NO_MESSAGE_1": "Oh oh! Parece que não há mensagens de clientes na seu canal.",
+    "NO_INBOX_1": "Hola! Parece que você não adicionou nenhum canal ainda.",
+    "NO_INBOX_AGENT": "Uh Oh! Parece que você não faz parte de nenhum canal. Por favor, contate seu administrador",
+    "LOADING_INBOXES": "Carregando canais",
+    "OLD_INSTAGRAM_INBOX_REPLY_BANNER": "Esta conta do Instagram foi migrada para a nova canal do canal do Instagram. Todas as novas mensagens serão mostradas lá. Você não poderá mais enviar mensagens desta conversa."
   },
   "GENERAL_SETTINGS": {
     "UPDATE_CHATWOOT": "Uma atualização {latestChatwootVersion} para o StayDesk está disponível. Por favor, atualize sua instância.",
     "PAYMENT_PENDING": "Seu pagamento está pendente. Por favor, atualize suas informações de pagamento para continuar usando o StayDesk",
     "UPGRADE": "Atualize para continuar usando o StayDesk",
-    "LIMITS_UPGRADE": "Sua conta excedeu os limites de uso. Por favor, faça um upgrade do seu plano para continuar usando o StayDesk"
+    "LIMITS_UPGRADE": "Sua conta excedeu os limites de uso. Por favor, faça um upgrade do seu plano para continuar usando o StayDesk",
+    "LIMIT_MESSAGES": {
+      "INBOXES": "Você excedeu o limite do canal. O plano Hacker só suporta chat ao vivo do site. Caixas adicionais como e-mail, WhatsApp etc. requerem um plano pago."
+    }
   },
   "HELP_CENTER": {
     "CREATE_PORTAL_DIALOG": {
@@ -33,53 +41,214 @@
     "CREATE_FLOW": {
       "CHANNEL": {
         "BODY": "Escolha o provedor que você deseja integrar com o StayDesk."
+      },
+      "INBOX": {
+        "TITLE": "Criar Canal",
+        "BODY": "Autenticar sua conta e criar um canal."
+      },
+      "AGENT": {
+        "BODY": "Adicionar agentes ao canal criado."
       }
     },
     "ADD": {
       "FB": {
         "HELP": "Obs: ao fazer login, apenas temos acesso às mensagens da sua página. Suas mensagens privadas nunca podem ser acessadas pelo StayDesk.",
-        "RESTRICTED_WARNING": "A criação de caixas de entrada do Facebook está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível."
+        "RESTRICTED_WARNING": "A criação de canais do Facebook está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível.",
+        "INBOX_NAME": "Nome do Canal",
+        "ADD_NAME": "Adicione um nome para seu canal",
+        "PICK_NAME": "Escolha um nome para seu canal",
+        "CREATE_INBOX": "Criar Canal"
       },
       "INSTAGRAM": {
-        "RESTRICTED_WARNING": "A criação de caixas de entrada do Instagram está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível.",
-        "SETTINGS_RESTRICTED_WARNING": "As mensagens do Instagram estão sendo afetadas por um problema na API da Meta, e não por uma falha no StayDesk. Algumas mensagens ou ações podem sofrer atrasos ou ficar temporariamente indisponíveis. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível."
+        "RESTRICTED_WARNING": "A criação de canais do Instagram está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível.",
+        "SETTINGS_RESTRICTED_WARNING": "As mensagens do Instagram estão sendo afetadas por um problema na API da Meta, e não por uma falha no StayDesk. Algumas mensagens ou ações podem sofrer atrasos ou ficar temporariamente indisponíveis. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível.",
+        "NEW_INBOX_SUGGESTION": "Esta conta do Instagram estava conectada a um canal diferente e agora foi migrada para aqui. Todas as novas mensagens aparecerão aqui. O canal antiga não poderá mais enviar ou receber mensagens para esta conta.",
+        "DUPLICATE_INBOX_BANNER": "Esta conta do Instagram foi migrada para a nova canal de canal do Instagram. Você não poderá mais enviar/receber mensagens do Instagram deste canal."
       },
       "WHATSAPP": {
         "EMBEDDED_SIGNUP": {
           "ACCESS_REQUEST": {
             "DESCRIPTION": "Conecte um novo número ou um número existente do aplicativo WhatsApp Business sem configuração manual. Para solicitar essa opção, informe à nossa equipe o que sua empresa faz, como você usará o WhatsApp e qual conta do StayDesk precisa de acesso."
           },
-          "RESTRICTED_WARNING": "O WhatsApp Embedded Signup está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Você pode utilizar a configuração manual para números compatíveis com a Cloud API. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível."
+          "RESTRICTED_WARNING": "O WhatsApp Embedded Signup está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Você pode utilizar a configuração manual para números compatíveis com a Cloud API. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível.",
+          "CALLING_ENABLE_FAILED": "Seu canal do WhatsApp está pronta, mas as chamadas de voz não puderam ser ativadas — este número ainda não está cadastrado na API de Chamadas do WhatsApp Business. Entre em contato com a Meta ou com seu provedor de soluções WhatsApp Business para realizar o cadastro e, depois, ative as chamadas nas configurações de Chamadas do canal."
         },
         "API": {
           "MANUAL_RESTRICTION_WARNING": "O WhatsApp Embedded Signup está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. A configuração manual funciona apenas para números que já estão conectados à WhatsApp Cloud API. Números que utilizam a coexistência com o aplicativo WhatsApp Business ainda não são compatíveis com esse fluxo. Estamos trabalhando em conjunto com a Meta para resolver o problema o mais rápido possível. Agradecemos pela sua paciência."
+        },
+        "INBOX_NAME": {
+          "LABEL": "Nome do Canal",
+          "PLACEHOLDER": "Por favor, digite um nome para canal"
         }
       },
       "AUTH": {
         "DESC": "O StayDesk suporta widgets de chats ao vivo, Facebook Messenger, perfis do Twitter, WhatsApp, E-mails, etc., como canais. Se você quiser criar um canal personalizado, você pode criá-lo usando o canal API. Para começar, escolha um dos canais abaixo."
       },
       "DETAILS": {
-        "DESC": "No menu abaixo, selecione a Página do Facebook que você deseja se conectar ao StayDesk. Você também pode dar um nome personalizado para sua caixa de entrada para uma melhor identificação."
+        "DESC": "No menu abaixo, selecione a Página do Facebook que você deseja se conectar ao StayDesk. Você também pode dar um nome personalizado para seu canal para uma melhor identificação.",
+        "TITLE": "Detalhes do Canal"
       },
       "FINISH": {
-        "DESC": "Você concluiu a integração da sua página do Facebook com o StayDesk. Na próxima vez que um cliente enviar uma mensagem para sua página, a conversa aparecerá automaticamente na sua caixa de entrada. <br> Também estamos fornecendo um script de widget que você pode adicionar facilmente ao seu site. Assim que estiver disponível no seu site, os clientes poderão enviar mensagens diretamente do seu site, sem a ajuda de nenhuma ferramenta externa, e a conversa aparecerá aqui, no StayDesk. Legal, hein? Com certeza estamos tentamos ser :)"
+        "DESC": "Você concluiu a integração da sua página do Facebook com o StayDesk. Na próxima vez que um cliente enviar uma mensagem para sua página, a conversa aparecerá automaticamente na seu canal. <br> Também estamos fornecendo um script de widget que você pode adicionar facilmente ao seu site. Assim que estiver disponível no seu site, os clientes poderão enviar mensagens diretamente do seu site, sem a ajuda de nenhuma ferramenta externa, e a conversa aparecerá aqui, no StayDesk. Legal, hein? Com certeza estamos tentamos ser :)"
+      },
+      "CHANNEL_NAME": {
+        "LABEL": "Nome do Canal",
+        "PLACEHOLDER": "Digite o nome do canal (ex: Acme Inc)"
+      },
+      "WEBSITE_CHANNEL": {
+        "SUBMIT_BUTTON": "Criar canal"
+      },
+      "TWILIO": {
+        "CHANNEL_NAME": {
+          "LABEL": "Nome do Canal",
+          "PLACEHOLDER": "Por favor, digite um nome para canal"
+        }
+      },
+      "SMS": {
+        "BANDWIDTH": {
+          "INBOX_NAME": {
+            "LABEL": "Nome do Canal",
+            "PLACEHOLDER": "Por favor, digite um nome para canal"
+          }
+        }
+      },
+      "EMAIL_CHANNEL": {
+        "DESC": "Integre seu canal de e-mail.",
+        "FINISH_MESSAGE_NO_FORWARDING": "Seu canal de e-mail foi criada com sucesso! É necessário configurar as credenciais de SMTP e IMAP para enviar e receber e-mails. Sem essas configurações, nenhum e-mail será processado."
+      },
+      "AGENTS": {
+        "DESC": "Todo agente da conta já atende este canal automaticamente, como no Zendesk. Esta etapa fica aqui só por compatibilidade: pode seguir sem marcar ninguém.",
+        "VALIDATION_ERROR": "Escolha ao menos um agente ou siga adiante: todos já atendem o canal.",
+        "PICK_AGENTS": "Escolha agentes para o canal"
+      },
+      "MICROSOFT": {
+        "DESCRIPTION": "Clique no botão Entrar com a Microsoft para começar. Você será redirecionado para o login do e-mail. Após aceitar as permissões solicitadas, você será redirecionado de volta para a etapa de criação do canal."
+      },
+      "GOOGLE": {
+        "DESCRIPTION": "Clique no botão Entrar com o Google para começar. Você será redirecionado para o login do e-mail. Depois que você aceitar as permissões solicitadas, você será redirecionado de volta para a etapa de criação do canal."
       }
     },
     "SETTINGS_POPUP": {
       "WHATSAPP_BUSINESS_MANAGEMENT_TOKEN_UPDATE_SUBHEADER": "Forneça um token com acesso a esta conta do WhatsApp Business quando o StayDesk não conseguir recuperar seus modelos de mensagem. O StayDesk utiliza esse token apenas para sincronizar os modelos de mensagem.",
       "WHATSAPP_MANUAL_MIGRATION": {
         "DIALOG": {
-          "VERIFY_NOTICE": "O StayDesk verificará estas credenciais com o Meta antes de aplicar quaisquer alterações. Se a verificação falhar, a configuração atual ficará intacta."
+          "VERIFY_NOTICE": "O StayDesk verificará estas credenciais com o Meta antes de aplicar quaisquer alterações. Se a verificação falhar, a configuração atual ficará intacta.",
+          "TITLE": "Reconectar canal do WhatsApp",
+          "ACTION_REQUIRED_DESCRIPTION": "Os canais conectados por meio da sua própria aplicação da Meta não são afetadas pelas restrições da aplicação compartilhada do WhatsApp Embedded Signup. Este fluxo guiado atualiza a conexão com a API do WhatsApp sem criar uma nova canal.",
+          "PRESERVED_DESCRIPTION": "Conversas, contatos, colaboradores, roteamento, horário de atendimento e configurações do canal.",
+          "PHONE_NUMBER_HELP": "ID exclusivo da Meta para o número do WhatsApp conectado a este canal.",
+          "INBOX": "Canal",
+          "RECONNECT": "Reconectar canal do WhatsApp"
         },
         "STEPS": {
           "REVIEW_MIGRATION": {
-            "DESCRIPTION": "Confirme os detalhes da conexão antes de reconectar esta caixa de entrada. O StayDesk verificará o token, WABA e o número de telefone com meta antes de aplicar as alterações."
+            "DESCRIPTION": "Confirme os detalhes da conexão antes de reconectar este canal. O StayDesk verificará o token, WABA e o número de telefone com meta antes de aplicar as alterações."
+          },
+          "BEFORE_YOU_START": {
+            "DESCRIPTION": "Isso reconecta os detalhes da API do WhatsApp para este canal. Conversas, colaboradores, roteadores, horários de funcionamento, CSAT e configurações do robô serão preservadas."
           }
+        },
+        "BANNER": {
+          "DESCRIPTION": "Este canal está conectada por meio da aplicação compartilhada da Meta utilizada pelo WhatsApp Embedded Signup, que foi afetada por restrições recentes da Meta. Para evitar problemas semelhantes no futuro, recomendamos reconectá-la utilizando sua própria aplicação da Meta."
         }
+      },
+      "INBOX_AGENTS_SUB_TEXT": "Adicionar ou remover agentes desse canal",
+      "INBOX_UPDATE_TITLE": "Configurações do Canal",
+      "INBOX_UPDATE_SUB_TEXT": "Atualize suas configurações de canal",
+      "AUTO_ASSIGNMENT_SUB_TEXT": "Ativar ou desativar a atribuição automática de novas conversas aos agentes adicionados a esse canal.",
+      "INBOX_IDENTIFIER": "Identificador do canal",
+      "FORWARD_EMAIL_NOT_CONFIGURED": "O encaminhamento de e-mails para seu canal está desativado nesta instalação. Para utilizar esse recurso, ele deve ser habilitado pelo administrador. Entre em contato com um para prosseguir.",
+      "WHATSAPP_EMBEDDED_SIGNUP_SUBHEADER": "Este canal está conectada por meio do WhatsApp Embedded Signup.",
+      "WHATSAPP_EMBEDDED_SIGNUP_DESCRIPTION": "Você pode reconfigurar este canal para atualizar suas configurações do WhatsApp Business.",
+      "WHATSAPP_MANUAL_TRANSFER_SUBHEADER": "Este canal foi conectada por meio do WhatsApp Embedded Signup, que não é mais compatível. Informe as credenciais da API do WhatsApp Cloud da sua própria aplicação da Meta para migrar este canal para uma configuração manual. Antes de realizar a migração, configure o webhook na sua aplicação da Meta utilizando o token de verificação acima.",
+      "WHATSAPP_MANUAL_TRANSFER_SUCCESS": "Canal migrada para configuração manual com sucesso.",
+      "WHATSAPP_CONNECT_DESCRIPTION": "Conecte este canal ao WhatsApp Business para ter recursos aprimorados e um gerenciamento mais fácil.",
+      "WHATSAPP_CALLING_ENABLED": {
+        "DESCRIPTION": "Permita que os atendentes iniciem e recebam chamadas de voz do WhatsApp neste canal. Disponível apenas para canais do WhatsApp Cloud configurados por meio do WhatsApp Embedded Signup e com permissão de chamadas concedida pela Meta."
       }
     },
     "WIDGET_BUILDER": {
       "BRANDING_TEXT": "Desenvolvido por StayDesk"
+    },
+    "HEADER": "Canais",
+    "DESCRIPTION": "Por onde o cliente chega: WhatsApp, e-mail, chat do site, API. Todo agente atende todos os canais; quem recebe o quê é decidido pelas filas, pelo status e pela capacidade.",
+    "LEARN_MORE": "Saiba mais sobre os canais",
+    "COUNT": "{n} canal | {n} canais",
+    "SEARCH_PLACEHOLDER": "Pesquisar canais...",
+    "NO_RESULTS": "Nenhum canal encontrada correspondente à sua busca",
+    "RECONNECTION_REQUIRED": "Seu canal está desconectada. Você não receberá novas mensagens até reautorizar.",
+    "LIST": {
+      "404": "Não há canais anexadas a esta conta."
+    },
+    "DETAILS": {
+      "CREATING_CHANNEL": "Criando seu canal...",
+      "TITLE": "Configurar detalhes do Canal"
+    },
+    "AGENTS": {
+      "ADD_AGENTS": "Adicionando agentes à seu canal..."
+    },
+    "FINISH": {
+      "TITLE": "Seu canal está pronto!",
+      "WEBSITE_SUCCESS": "Você concluiu a criação de um canal de site. Copie o código mostrado abaixo e cole-o no seu site. Na próxima vez que um cliente usar o bate-papo ao vivo, a conversa aparecerá automaticamente na seu canal.",
+      "WHATSAPP_QR_INSTRUCTION": "Escaneie o código QR acima para testar rapidamente seu canal do WhatsApp",
+      "MESSENGER_QR_INSTRUCTION": "Escaneie o código QR acima para testar rapidamente seu canal do Facebook Messenger",
+      "TELEGRAM_QR_INSTRUCTION": "Escaneie o código QR acima para testar rapidamente seu canal do Telegram"
+    },
+    "EDIT": {
+      "API": {
+        "SUCCESS_MESSAGE": "Configurações de canal atualizados com sucesso",
+        "ERROR_MESSAGE": "Não foi possível atualizar as configurações do canal. Por favor, tente novamente mais tarde."
+      }
+    },
+    "DELETE": {
+      "API": {
+        "ERROR_MESSAGE": "Não foi possível excluir o canal. Tente novamente mais tarde.",
+        "AVATAR_SUCCESS_MESSAGE": "Perfil do canal excluído com sucesso",
+        "AVATAR_ERROR_MESSAGE": "Não foi possível excluir o perfil do canal. Por favor, tente novamente mais tarde."
+      }
+    },
+    "VOICE_CONFIGURATION": {
+      "ENABLE_VOICE": {
+        "DESCRIPTION": "Habilite chamadas de voz neste canal. Agentes poderão fazer e receber chamadas telefônicas."
+      }
+    },
+    "WHATSAPP_CALLING": {
+      "ENABLE": {
+        "DESCRIPTION": "Permita que os atendentes recebam e realizem chamadas do WhatsApp Cloud neste canal. Os clientes poderão ligar diretamente para este número comercial pelo WhatsApp."
+      }
+    },
+    "ACCOUNT_HEALTH": {
+      "ERRORS": {
+        "AUTHORIZATION": {
+          "EMBEDDED_DESCRIPTION": "A Meta não conseguiu validar a conexão deste canal. Acesse Configurações para reconfigurá-la usando o WhatsApp Embedded Signup.",
+          "MANUAL_DESCRIPTION": "A Meta não conseguiu validar o token de acesso deste canal. Acesse Configurações para verificá-lo ou substituí-lo."
+        }
+      }
+    },
+    "FEATURES": {
+      "USE_INBOX_AVATAR_FOR_BOT": "Use o nome do canal e avatar do bot"
+    },
+    "HELP_CENTER": {
+      "SUB_TEXT": "Anexe um Centro de Ajuda com o canal"
+    },
+    "AUTO_ASSIGNMENT": {
+      "MAX_ASSIGNMENT_LIMIT_SUB_TEXT": "Limitar o número máximo de conversas deste canal que pode ser atribuído automaticamente a um agente"
+    },
+    "ASSIGNMENT": {
+      "USING_POLICY": "Utilizando política de atribuição personalizada para este canal",
+      "DEFAULT_POLICY_DESCRIPTION": "Vincule uma política de atribuição personalizada para definir como as conversas serão atribuídas aos agentes neste canal."
+    },
+    "ASSIGNMENT_POLICY": {
+      "DELETE_CONFIRM_MESSAGE": "Tem certeza de que deseja remover esta política de atribuição deste canal? O canal voltará às regras de atribuição padrão."
+    },
+    "BUSINESS_HOURS": {
+      "TOGGLE_AVAILABILITY": "Permitir a disponibilidade de negócios para esse canal"
+    },
+    "IMAP": {
+      "TOGGLE_AVAILABILITY": "Habilitar a configuração IMAP para este canal"
+    },
+    "SMTP": {
+      "TOGGLE_AVAILABILITY": "Ativar a configuração SMTP para este canal"
     }
   },
   "INTEGRATION_SETTINGS": {
@@ -120,7 +289,10 @@
   },
   "ONBOARDING_INBOX_SETUP": {
     "META_RESTRICTION": {
-      "MESSAGE": "A configuração de caixas de entrada do Facebook, Instagram e WhatsApp está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível."
+      "MESSAGE": "A configuração de canais do Facebook, Instagram e WhatsApp está temporariamente indisponível devido a um problema na API da Meta, e não por uma falha no StayDesk. Estamos trabalhando em conjunto com a Meta para resolver a situação o mais rápido possível."
+    },
+    "CHANNELS_DIALOG": {
+      "SUBTITLE": "Gerencie todos eles em um único painel. Você também pode configurar e editar canais posteriormente dentro do aplicativo."
     }
   },
   "RESET_PASSWORD": {
@@ -159,6 +331,232 @@
   },
   "SIDEBAR": {
     "SETTINGS": "Central",
-    "CONVERSATIONS": "Hub"
+    "CONVERSATIONS": "Hub",
+    "INBOX_VIEW": "Canal",
+    "INBOX": "Canal",
+    "CAPTAIN_INBOXES": "Canais",
+    "INBOXES": "Canais",
+    "NEW_INBOX": "Nova canal",
+    "REPORTS_INBOX": "Canal",
+    "REAUTHORIZE": "A conexão com a seu canal expirou. Por favor, reconecte para continuar recebendo e enviando mensagens"
+  },
+  "SETTINGS": {
+    "INBOXES": {
+      "NEW_INBOX": "Adicionar Canal"
+    }
+  },
+  "ASSIGNMENT_POLICY": {
+    "INDEX": {
+      "HEADER": {
+        "DESCRIPTION": "Defina políticas para gerenciar a carga de trabalho de forma eficaz e encaminhar conversas com base nas necessidades dos canais e dos agentes. Saiba mais aqui"
+      },
+      "ASSIGNMENT_POLICY": {
+        "DESCRIPTION": "Gerencie como as conversas são atribuídas nos canais."
+      }
+    },
+    "AGENT_ASSIGNMENT_POLICY": {
+      "INDEX": {
+        "CARD": {
+          "POPOVER": "Canais adicionados"
+        }
+      },
+      "CREATE": {
+        "API": {
+          "INBOX_LINKED": "O canal foi vinculada à política"
+        }
+      },
+      "EDIT": {
+        "CONFIRM_ADD_INBOX_DIALOG": {
+          "TITLE": "Adicionar canal",
+          "DESCRIPTION": "O canal {inboxName} já está vinculada a outra política. Tem certeza de que deseja vinculá-la a esta política? Ela será desvinculada da outra."
+        },
+        "INBOX_LINK_PROMPT": {
+          "TITLE": "Vincular canal à política",
+          "DESCRIPTION": "Deseja vincular este canal à política de atribuição?",
+          "LINK_BUTTON": "Vincular canal"
+        },
+        "INBOX_API": {
+          "ADD": {
+            "SUCCESS_MESSAGE": "Canal adicionado à política com sucesso",
+            "ERROR_MESSAGE": "Falha ao adicionar o canal à política"
+          },
+          "REMOVE": {
+            "SUCCESS_MESSAGE": "Canal removido da política com sucesso",
+            "ERROR_MESSAGE": "Canal removido da política com sucesso"
+          }
+        }
+      },
+      "FORM": {
+        "INBOXES": {
+          "LABEL": "Canais adicionados",
+          "DESCRIPTION": "Adicionar canais às quais esta política será aplicada.",
+          "ADD_BUTTON": "Adicionar canal",
+          "DROPDOWN": {
+            "SEARCH_PLACEHOLDER": "Pesquisar e selecionar canais para adicionar"
+          },
+          "EMPTY_STATE": "Nenhum canal adicionado a esta política. Adicione um canal para começar",
+          "API": {
+            "SUCCESS_MESSAGE": "Canal adicionado à política com sucesso",
+            "ERROR_MESSAGE": "Falha ao adicionar o canal à política"
+          }
+        }
+      }
+    },
+    "AGENT_CAPACITY_POLICY": {
+      "EDIT": {
+        "INBOX_LIMIT_API": {
+          "ADD": {
+            "SUCCESS_MESSAGE": "Limite de canal adicionado com sucesso",
+            "ERROR_MESSAGE": "Falha ao adicionar limite de canal"
+          },
+          "UPDATE": {
+            "SUCCESS_MESSAGE": "Limite de canal atualizado com sucesso",
+            "ERROR_MESSAGE": "Falha ao atualizar limite do canal"
+          },
+          "DELETE": {
+            "SUCCESS_MESSAGE": "Limite do canal excluído com sucesso",
+            "ERROR_MESSAGE": "Falha ao excluir o limite do canal"
+          }
+        }
+      },
+      "FORM": {
+        "INBOX_CAPACITY_LIMIT": {
+          "LABEL": "Limites de capacidade do canal",
+          "ADD_BUTTON": "Adicionar canal",
+          "FIELD": {
+            "SELECT_INBOX": "Selecionar canal"
+          },
+          "EMPTY_STATE": "Nenhum limite de canal definido"
+        }
+      }
+    }
+  },
+  "ONBOARDING": {
+    "ALL_CONVERSATION": {
+      "NEW_LINK": "Clique aqui para criar um canal"
+    }
+  },
+  "REPORT": {
+    "DRILLDOWN": {
+      "UNKNOWN_INBOX": "Canal desconhecida"
+    }
+  },
+  "INBOX_REPORTS": {
+    "HEADER": "Visualizar Canal",
+    "DESCRIPTION": "Veja rapidamente o desempenho do canal com métricas-chave como conversas, tempos de resposta, tempos de resolução, e casos resolvidos — tudo em um só lugar. Clique no canal para mais detalhes",
+    "FILTER_DROPDOWN_LABEL": "Selecionar canal",
+    "ALL_INBOXES": "Todas os canais",
+    "SEARCH_INBOX": "Pesquisar canal",
+    "FILTERS": {
+      "INPUT_PLACEHOLDER": {
+        "INBOXES": "Pesquisar canais"
+      }
+    }
+  },
+  "CSAT_REPORTS": {
+    "FILTERS": {
+      "INPUT_PLACEHOLDER": {
+        "INBOXES": "Pesquisar canais"
+      },
+      "INBOXES": {
+        "LABEL": "Canal"
+      }
+    }
+  },
+  "SLA_REPORTS": {
+    "DROPDOWN": {
+      "INPUT_PLACEHOLDER": {
+        "INBOXES": "Nome do Canal"
+      },
+      "INBOXES": "Canal"
+    }
+  },
+  "SUMMARY_REPORTS": {
+    "INBOX": "Canal"
+  },
+  "TEAMS_SETTINGS": {
+    "AGENTS": {
+      "ADD_AGENTS": "Adicionando agentes à seu canal..."
+    },
+    "FINISH": {
+      "TITLE": "Seu canal está pronto!"
+    }
+  },
+  "CONTACT_PANEL": {
+    "VOICE_INBOX_PICKER": {
+      "TITLE": "Escolha um canal de voz"
+    }
+  },
+  "NEW_CONVERSATION": {
+    "NO_INBOX": "Não foi possível encontrar um canal para iniciar uma nova conversa com este contato.",
+    "FORM": {
+      "INBOX": {
+        "LABEL": "Canal",
+        "PLACEHOLDER": "Escolher o canal de origem",
+        "ERROR": "Selecione um canal"
+      }
+    }
+  },
+  "COMPOSE_NEW_CONVERSATION": {
+    "FORM": {
+      "NO_INBOX_ALERT": "Não há canais disponíveis para iniciar uma conversa com este contato.",
+      "INBOX_SELECTOR": {
+        "BUTTON": "Mostrar Canais"
+      }
+    }
+  },
+  "SEARCH": {
+    "FILTERS": {
+      "IN": "Canal",
+      "INBOXES": "Canais",
+      "NO_INBOXES": "Nenhum canal encontrada"
+    }
+  },
+  "AGENT_MGMT": {
+    "ADD": {
+      "DESC": "Você pode adicionar pessoas que poderão acompanhar o suporte de seus canais."
+    }
+  },
+  "COMMAND_BAR": {
+    "COMMANDS": {
+      "GO_TO_MY_INBOX": "Ir para Minha Canal",
+      "GO_TO_INBOX_REPORTS": "Ir para Relatórios do Canal",
+      "GO_TO_SETTINGS_INBOXES": "Ir para as Configurações do Canal"
+    }
+  },
+  "CAMPAIGN": {
+    "LIVE_CHAT": {
+      "CREATE": {
+        "FORM": {
+          "INBOX": {
+            "LABEL": "Selecionar canal",
+            "PLACEHOLDER": "Selecionar canal",
+            "ERROR": "Canal obrigatória"
+          }
+        }
+      }
+    },
+    "SMS": {
+      "CREATE": {
+        "FORM": {
+          "INBOX": {
+            "LABEL": "Selecionar canal",
+            "PLACEHOLDER": "Selecionar canal",
+            "ERROR": "Canal obrigatória"
+          }
+        }
+      }
+    },
+    "WHATSAPP": {
+      "CREATE": {
+        "FORM": {
+          "INBOX": {
+            "LABEL": "Selecione um canal",
+            "PLACEHOLDER": "Selecione um canal",
+            "ERROR": "Canal obrigatória"
+          }
+        }
+      }
+    }
   }
 }

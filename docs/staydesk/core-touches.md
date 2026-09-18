@@ -28,6 +28,8 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/dashboard/routes/dashboard/settings/attributes/AddAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
 | `app/javascript/dashboard/routes/dashboard/settings/attributes/EditAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
 | `app/javascript/dashboard/routes/dashboard/conversation/contact/ContactInfo.vue` | gancho | UX | O nome do cliente abre o perfil; a edição fica no lápis |
+| `app/javascript/dashboard/routes/dashboard/settings/inbox/Settings.vue` | gancho | Canais | A aba Colaboradores sai: todo agente atende todos os canais (2 linhas) |
+| `spec/support/staydesk_inbox_members.rb` | legado | Canais | Arquivo novo: `create(:inbox_member)` de vínculo que já existe devolve o existente, porque todo agente já está em todos os canais |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Botão de compactar a barra lateral |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Rodapé da barra (compactar e Central) fora da parte que rola |
 | `app/javascript/dashboard/components-next/sidebar/SidebarGroup.vue` | gancho | UX | Passa `to` ao subgrupo (1 linha) |

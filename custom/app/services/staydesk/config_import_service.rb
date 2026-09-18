@@ -26,7 +26,8 @@ class Staydesk::ConfigImportService
       politicas_de_sla: importar_politicas,
       filas: importar_filas,
       visualizacoes: importar_visualizacoes,
-      area_de_trabalho: importar_area_de_trabalho
+      area_de_trabalho: importar_area_de_trabalho,
+      canais: "#{Staydesk::ChannelMembership.sync!(@account)} vínculo(s) de agente com canal criado(s)"
     }
   end
 

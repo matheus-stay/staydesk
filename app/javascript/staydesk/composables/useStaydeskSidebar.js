@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { usePolicy } from 'dashboard/composables/usePolicy';
-import { AREA } from '../routes';
+import { AREA, CONFIGURA } from '../routes';
 import { estaNaCentral } from '../helpers/central';
 import { useTeamViews } from './useTeamViews';
 import { useWorkspace } from './useWorkspace';
@@ -145,7 +145,7 @@ export const useStaydeskSidebar = () => {
       name: 'CentralCanais',
       label: () => t('STAYDESK.CENTRAL.SECTIONS.CHANNELS'),
       icon: 'i-lucide-inbox',
-      itens: ['Settings Inboxes', 'Settings Templates'],
+      itens: ['StaydeskChannelsSettings', 'Settings Templates'],
     },
     {
       name: 'CentralRegras',
@@ -180,8 +180,9 @@ export const useStaydeskSidebar = () => {
   const SOLTOS = ['StaydeskCentralHome', 'StaydeskReports'];
 
   // Telas do produto que não fazem sentido na Central: o SLA do Chatwoot é
-  // Enterprise, e o nosso motor de SLA já mora em Status e prazos.
-  const FORA_DA_CENTRAL = ['Settings Sla'];
+  // Enterprise, e o nosso motor de SLA já mora em Prazos; a lista de caixas do
+  // produto dá lugar à de canais, agrupada por tipo.
+  const FORA_DA_CENTRAL = ['Settings Sla', 'Settings Inboxes'];
 
   const organizarCentral = itens => {
     const aceitos = itens.filter(item => !FORA_DA_CENTRAL.includes(item.name));
@@ -296,6 +297,22 @@ export const useStaydeskSidebar = () => {
       icon: 'i-lucide-split',
       activeOn: ['staydesk_load_queues_settings'],
       to: accountScopedRoute('staydesk_load_queues_settings'),
+    },
+    {
+      name: 'StaydeskChannelsSettings',
+      permissions: CONFIGURA,
+      label: t('STAYDESK.CHANNELS.SETTINGS_TITLE'),
+      icon: 'i-lucide-inbox',
+      activeOn: [
+        'staydesk_channels_settings',
+        'settings_inbox_list',
+        'settings_inbox_new',
+        'settings_inbox_show',
+        'settings_inbox_finish',
+        'settings_inboxes_page_channel',
+        'settings_inboxes_add_agents',
+      ],
+      to: accountScopedRoute('staydesk_channels_settings'),
     },
     {
       name: 'StaydeskCapacityRulesSettings',

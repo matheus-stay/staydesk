@@ -357,7 +357,7 @@
           "available": "status ausente",
           "has_capacity": "capacidade cheia",
           "in_group": "fora do grupo",
-          "inbox_member": "fora da caixa",
+          "inbox_member": "fora do canal",
           "receives_channel": "status não recebe o canal"
         }
       },
@@ -445,11 +445,11 @@
         "ACCEPT_TIMEOUT": "Tempo para aceitar (segundos)",
         "ACCEPT_HINT": "Sem aceite dentro do tempo, a conversa volta para a fila e é oferecida a outro agente disponível. Use em chat e WhatsApp; ticket normalmente não precisa.",
         "INTAKE": "O que entra nesta fila",
-        "INTAKE_HINT": "Deixe vazio para a fila pegar o que as filas acima não pegaram. A ordem manda: a primeira que casar leva.",
-        "CHANNELS": "Canais",
-        "CHANNELS_PLACEHOLDER": "Todos os canais",
-        "INBOXES": "Caixas de entrada específicas",
-        "INBOXES_PLACEHOLDER": "Todas as caixas do canal",
+        "INTAKE_HINT": "Por tipo de canal (todo WhatsApp) ou por canal (o número StayCloud WPP), como na fila do Zendesk. Deixe vazio para a fila pegar o que as filas acima não pegaram. A ordem manda: a primeira que casar leva.",
+        "CHANNELS": "Tipo de canal",
+        "CHANNELS_PLACEHOLDER": "Todos os tipos",
+        "INBOXES": "Canal",
+        "INBOXES_PLACEHOLDER": "Todos os canais do tipo",
         "PRIORITY": "Ordem de entrega",
         "PRIORITY_HINT": "Por chegada, o mais antigo sai primeiro. Por SLA, sai primeiro quem está mais perto de vencer, mesmo que tenha acabado de entrar; o que não tem SLA vai depois, por chegada.",
         "PRIORITY_OPTIONS": {
@@ -537,7 +537,7 @@
         "CentralAtendimento": "A tela e os estados de quem atende: o catálogo de status do ticket, as visualizações de cada grupo e a área de trabalho.",
         "CentralPrazos": "Os prazos: as políticas de SLA e o horário comercial que faz o prazo parar.",
         "CentralPessoas": "Quem trabalha na conta e o que cada um pode: agentes, grupos, papéis com permissão granular e as chaves de integração.",
-        "CentralCanais": "Por onde o cliente chega: as caixas de entrada de cada canal e os modelos de mensagem.",
+        "CentralCanais": "Por onde o cliente chega: os canais por tipo (WhatsApp, e-mail, chat, API) e os modelos de mensagem. Todo agente atende todos os canais.",
         "CentralRegras": "O que roda sozinho e o que o agente reaproveita: automações, macros, respostas prontas, robôs, etiquetas e os campos do ticket.",
         "CentralConta": "A conta em si: dados gerais, a documentação da API, integrações, auditoria, segurança e cobrança.",
         "CentralOutros": "Telas do produto que ainda não têm seção própria.",
@@ -560,7 +560,7 @@
         "Settings Agents": "Quem tem acesso à conta e o papel de cada um no Chatwoot.",
         "Settings Teams": "Os grupos de atendimento e quem está em cada um.",
         "Settings Custom Roles": "Papéis personalizados do produto.",
-        "Settings Inboxes": "As caixas de entrada de cada canal e quem as atende.",
+        "Settings Inboxes": "A lista do produto, sem agrupar por tipo.",
         "Settings Templates": "Modelos de mensagem dos canais que exigem aprovação.",
         "Settings Automation": "Regras que rodam quando algo acontece: atribuir, etiquetar, mudar prioridade, avisar.",
         "Settings Macros": "Sequências de ações que o agente aplica com um clique.",
@@ -572,7 +572,8 @@
         "Settings Audit Logs": "Quem fez o quê na conta.",
         "Settings Security": "Políticas de senha e de sessão.",
         "Settings Billing": "Plano e cobrança.",
-        "StaydeskCapacityRulesSettings": "Quantas conversas de cada canal o agente aguenta ao mesmo tempo: a regra padrão e as atribuídas a agentes."
+        "StaydeskCapacityRulesSettings": "Quantas conversas de cada canal o agente aguenta ao mesmo tempo: a regra padrão e as atribuídas a agentes.",
+        "StaydeskChannelsSettings": "Os canais da conta agrupados por tipo, com a configuração de cada um. Todo agente atende todos."
       }
     },
     "API_TOKENS": {
@@ -614,7 +615,7 @@
         "contatos": "Contatos e empresas",
         "relatorios": "Relatórios e números",
         "operacao": "Configuração da operação e SLA",
-        "canais": "Caixas de entrada e canais",
+        "canais": "Canais",
         "equipe": "Agentes, times e papéis",
         "automacao": "Automações, macros, etiquetas, campos e integrações",
         "central_de_ajuda": "Central de ajuda",
@@ -635,7 +636,7 @@
     },
     "LOAD_QUEUES": {
       "SETTINGS_TITLE": "Canais de trabalho",
-      "SETTINGS_DESCRIPTION": "O que é chat e o que é ticket, por canal e por caixa. É por canal de trabalho que o status do agente diz o que ele recebe e a regra de capacidade diz quanto.",
+      "SETTINGS_DESCRIPTION": "O que é chat e o que é ticket, por tipo de canal ou por canal. É por canal de trabalho que o status do agente diz o que ele recebe e a regra de capacidade diz quanto.",
       "NEW": "Novo canal de trabalho",
       "CATCH_ALL": "o que os outros canais não pegam",
       "NOTHING": "nada, por enquanto",
@@ -644,13 +645,13 @@
         "NAME": "Nome",
         "KEY": "Chave",
         "KEY_HINT": "A chave identifica o canal no status do agente e na regra de capacidade. Não muda depois de criada.",
-        "CHANNELS": "Canais",
-        "CHANNELS_PLACEHOLDER": "Nenhum canal",
-        "INBOXES": "Caixas específicas",
-        "INBOXES_PLACEHOLDER": "Nenhuma caixa",
-        "INBOXES_HINT": "A caixa vence o canal, para o mesmo tipo de canal servir a coisas diferentes.",
+        "CHANNELS": "Tipo de canal",
+        "CHANNELS_PLACEHOLDER": "Nenhum tipo",
+        "INBOXES": "Canais específicos",
+        "INBOXES_PLACEHOLDER": "Nenhum canal",
+        "INBOXES_HINT": "O canal vence o tipo, para o mesmo tipo de canal servir a coisas diferentes (a API é tanto WhatsApp quanto chamado do WHMCS).",
         "CATCH_ALL": "Pega o que sobrar",
-        "CATCH_ALL_HINT": "Fica com as caixas que nenhum outro canal de trabalho pegou."
+        "CATCH_ALL_HINT": "Fica com os canais que nenhum outro canal de trabalho pegou."
       },
       "TABLE": {
         "NAME": "Canal de trabalho",
@@ -665,7 +666,7 @@
       "EDIT": "Editar",
       "DELETE": {
         "BUTTON": "Excluir",
-        "CONFIRM": "Excluir o canal de trabalho \"{name}\"? Ele some dos status e das regras de capacidade, e as caixas dele passam para o canal que pega o que sobrar."
+        "CONFIRM": "Excluir o canal de trabalho \"{name}\"? Ele some dos status e das regras de capacidade, e os canais dele passam para o que pega o que sobrar."
       }
     },
     "API_DOCS": {
@@ -758,6 +759,15 @@
         "DELETE_SUCCESS": "Regra excluída",
         "DELETE_ERROR": "Não foi possível excluir a regra"
       }
+    },
+    "CHANNELS": {
+      "SETTINGS_TITLE": "Canais",
+      "SETTINGS_DESCRIPTION": "Por onde o cliente chega, agrupado por tipo como no Zendesk. Todo agente atende todos os canais; quem recebe o quê é decidido pelas filas, pelo status e pela capacidade.",
+      "NEW": "Novo canal",
+      "CONFIGURE": "Configurar",
+      "EMPTY": "Nenhum canal ainda.",
+      "COUNT": "{count} canal | {count} canais",
+      "MEMBERS_NOTE": "Todo agente da conta atende este canal."
     }
   },
   "AUTOMATION": {

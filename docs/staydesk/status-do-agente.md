@@ -4,8 +4,8 @@ O agente escolhe no menu de disponibilidade o que atende agora (tudo, só chat, 
 A distribuição automática respeita o status e o dashboard soma o tempo em cada um.
 
 - `staydesk_agent_statuses`: catálogo da conta (nome, cor, `availability` = `online` ou `busy`,
-  `work_channels` que o status recebe, `inbox_ids` que atende; vazio = todas). Central › Distribuição de
-  trabalho › Status dos agentes.
+  `work_channels` que o status recebe, `inbox_ids` de canais específicos só pela API; vazio = todos). Central ›
+  Distribuição de trabalho › Status dos agentes.
 - `staydesk_agent_status_periods`: início e fim de cada status por agente; o atual é o sem `ended_at`.
 - `Staydesk::AgentStatusService#change_to`: fecha o período aberto, abre o novo e alinha a disponibilidade
   do Chatwoot (`online` ou `busy`).

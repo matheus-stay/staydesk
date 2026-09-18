@@ -4,6 +4,12 @@ module Custom::AccountUser
 
   def self.prepended(base)
     base.has_one :staydesk_role, class_name: 'Staydesk::AccountUserRole', dependent: :destroy
+    base.after_create_commit :staydesk_join_every_channel
+  end
+
+  # Todo agente atende todos os canais, como no Zendesk (Staydesk::ChannelMembership).
+  def staydesk_join_every_channel
+    account.inboxes.find_each { |canal| canal.inbox_members.find_or_create_by!(user_id: user_id) }
   end
 
   def staydesk_light?

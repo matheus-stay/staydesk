@@ -2,7 +2,6 @@
 import { computed, onMounted, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAlert } from 'dashboard/composables';
-import { useMapGetter } from 'dashboard/composables/store';
 import SettingsLayout from 'dashboard/routes/dashboard/settings/SettingsLayout.vue';
 import BaseSettingsHeader from 'dashboard/routes/dashboard/settings/components/BaseSettingsHeader.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
@@ -10,7 +9,6 @@ import Switch from 'dashboard/components-next/switch/Switch.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import Select from 'dashboard/components-next/select/Select.vue';
-import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
 import { useAgentStatusStore } from '../store/agentStatus';
 import { emDuracao } from '../helpers/duracao';
 import { fromSaveButton } from '../helpers/form';
@@ -20,7 +18,6 @@ import { fromSaveButton } from '../helpers/form';
 // Zendesk; quanto recebe é da regra de capacidade.
 const { t } = useI18n();
 const store = useAgentStatusStore();
-const inboxes = useMapGetter('inboxes/getInboxes');
 
 const editing = ref(null);
 const deleting = ref(null);
@@ -88,14 +85,6 @@ const availabilityOptions = computed(() => [
   { value: 'busy', label: t('STAYDESK.AGENT_STATUS.AVAILABILITY.busy') },
 ]);
 
-const inboxNames = status =>
-  status.inbox_ids.length
-    ? inboxes.value
-        .filter(inbox => status.inbox_ids.includes(inbox.id))
-        .map(inbox => inbox.name)
-        .join(', ')
-    : t('STAYDESK.AGENT_STATUS.ALL_INBOXES');
-
 const startEdit = status => {
   editing.value = status || 'new';
   form.value = status
@@ -112,10 +101,6 @@ const startEdit = status => {
       }
     : { ...emptyForm(), workChannels: loadQueues.value.map(fila => fila.key) };
 };
-
-const inboxOptions = computed(() =>
-  inboxes.value.map(inbox => ({ value: inbox.id, label: inbox.name }))
-);
 
 const save = async () => {
   if (!form.value.name.trim()) return;
@@ -298,21 +283,6 @@ const aoEnviar = event => {
             </label>
           </div>
         </fieldset>
-        <fieldset class="grid gap-2">
-          <legend class="text-sm text-n-slate-12">
-            {{ t('STAYDESK.AGENT_STATUS.FORM.INBOXES') }}
-          </legend>
-          <p class="text-xs text-n-slate-11">
-            {{ t('STAYDESK.AGENT_STATUS.FORM.INBOXES_HINT') }}
-          </p>
-          <TagMultiSelectComboBox
-            v-model="form.inboxIds"
-            :options="inboxOptions"
-            :placeholder="t('STAYDESK.AGENT_STATUS.FORM.INBOXES_PLACEHOLDER')"
-            :search-placeholder="t('STAYDESK.PICKER.SEARCH')"
-            :empty-state="t('STAYDESK.PICKER.EMPTY')"
-          />
-        </fieldset>
         <label class="flex items-center gap-2 text-sm text-n-slate-12">
           <Switch v-model="form.active" />
           {{ t('STAYDESK.AGENT_STATUS.FORM.ACTIVE') }}
@@ -354,7 +324,6 @@ const aoEnviar = event => {
                 t(`STAYDESK.AGENT_STATUS.AVAILABILITY.${status.availability}`)
               }}
             </td>
-            <td class="py-3 pr-4 text-n-slate-11">{{ inboxNames(status) }}</td>
             <td class="py-3 pr-4 text-n-slate-11">
               <p class="m-0">{{ channelsSummary(status) }}</p>
               <p class="m-0 text-xs text-n-slate-10">

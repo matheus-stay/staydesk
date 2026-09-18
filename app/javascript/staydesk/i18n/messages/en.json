@@ -357,7 +357,7 @@
           "available": "status away",
           "has_capacity": "capacity full",
           "in_group": "not in the group",
-          "inbox_member": "not in the inbox",
+          "inbox_member": "outside the channel",
           "receives_channel": "status does not receive the channel"
         }
       },
@@ -445,11 +445,11 @@
         "ACCEPT_TIMEOUT": "Time to accept (seconds)",
         "ACCEPT_HINT": "Without an answer in time, the conversation goes back to the queue and is offered to another available agent. Use it for chat and WhatsApp; tickets usually do not need it.",
         "INTAKE": "What comes into this queue",
-        "INTAKE_HINT": "Leave empty and the queue takes what the queues above did not. Order rules: the first match wins.",
-        "CHANNELS": "Channels",
-        "CHANNELS_PLACEHOLDER": "Every channel",
-        "INBOXES": "Specific inboxes",
-        "INBOXES_PLACEHOLDER": "Every inbox of the channel",
+        "INTAKE_HINT": "By channel type (every WhatsApp) or by channel (the StayCloud WPP number), as in the Zendesk queue. Leave empty and the queue takes what the queues above did not. Order rules: the first match wins.",
+        "CHANNELS": "Channel type",
+        "CHANNELS_PLACEHOLDER": "Every type",
+        "INBOXES": "Channel",
+        "INBOXES_PLACEHOLDER": "Every channel of the type",
         "PRIORITY": "Delivery order",
         "PRIORITY_HINT": "By arrival, the oldest goes first. By SLA, whoever is closest to breaching goes first, even if it just came in; anything without SLA goes after, by arrival.",
         "PRIORITY_OPTIONS": {
@@ -537,7 +537,7 @@
         "CentralAtendimento": "The screen and the states of whoever handles work: the ticket status catalog, each group's views and the workspace.",
         "CentralPrazos": "Deadlines: SLA policies and the business hours that pause them.",
         "CentralPessoas": "Who works in the account and what each one can do: agents, groups, roles with granular permissions and integration keys.",
-        "CentralCanais": "Where the customer comes in: the inboxes of each channel and message templates.",
+        "CentralCanais": "Where customers come from: channels by type (WhatsApp, email, chat, API) and message templates. Every agent serves every channel.",
         "CentralRegras": "What runs on its own and what the agent reuses: automations, macros, canned responses, bots, labels and ticket fields.",
         "CentralConta": "The account itself: general data, API documentation, integrations, audit, security and billing.",
         "CentralOutros": "Product screens without a section of their own yet.",
@@ -547,7 +547,9 @@
         "StaydeskLoadQueuesSettings": "What counts as chat and as ticket, by channel and by inbox. Statuses and capacity speak in work channels.",
         "StaydeskQueuesSettings": "What enters each queue and which groups it goes to: primary, secondary, delivery order and acceptance.",
         "StaydeskCapacityRulesSettings": "How many conversations of each channel an agent takes at once: the default rule and the ones assigned to agents.",
-        "StaydeskAgentStatusesSettings": "What each status receives (chat, ticket), timeout, online time, and the who-gets-what diagnosis."
+        "StaydeskAgentStatusesSettings": "What each status receives (chat, ticket), timeout, online time, and the who-gets-what diagnosis.",
+        "StaydeskChannelsSettings": "The account channels grouped by type, with each one's settings. Every agent serves all of them.",
+        "Settings Inboxes": "The product list, not grouped by type."
       }
     },
     "API_TOKENS": {
@@ -589,7 +591,7 @@
         "contatos": "Contacts and companies",
         "relatorios": "Reports and numbers",
         "operacao": "Operation setup and SLA",
-        "canais": "Inboxes and channels",
+        "canais": "Channels",
         "equipe": "Agents, teams and roles",
         "automacao": "Automations, macros, labels, fields and integrations",
         "central_de_ajuda": "Help center",
@@ -610,7 +612,7 @@
     },
     "LOAD_QUEUES": {
       "SETTINGS_TITLE": "Work channels",
-      "SETTINGS_DESCRIPTION": "What counts as chat and as ticket, by channel and by inbox. Work channels are what the agent status uses to say what it receives and the capacity rule to say how much.",
+      "SETTINGS_DESCRIPTION": "What counts as chat and as ticket, by channel type or by channel. Work channels are what the agent status uses to say what it receives and the capacity rule to say how much.",
       "NEW": "New work channel",
       "CATCH_ALL": "whatever the other channels do not take",
       "NOTHING": "nothing yet",
@@ -619,13 +621,13 @@
         "NAME": "Name",
         "KEY": "Key",
         "KEY_HINT": "The key identifies the channel in the agent status and in the capacity rule. It does not change after creation.",
-        "CHANNELS": "Channels",
-        "CHANNELS_PLACEHOLDER": "No channel",
-        "INBOXES": "Specific inboxes",
-        "INBOXES_PLACEHOLDER": "No inbox",
-        "INBOXES_HINT": "The inbox beats the channel, so one channel type can serve different things.",
+        "CHANNELS": "Channel type",
+        "CHANNELS_PLACEHOLDER": "No type",
+        "INBOXES": "Specific channels",
+        "INBOXES_PLACEHOLDER": "No channel",
+        "INBOXES_HINT": "The channel beats the type, so one channel type can serve different things (API is both WhatsApp and WHMCS tickets).",
         "CATCH_ALL": "Takes the rest",
-        "CATCH_ALL_HINT": "Keeps the inboxes no other work channel took."
+        "CATCH_ALL_HINT": "Keeps the channels no other work channel took."
       },
       "TABLE": {
         "NAME": "Work channel",
@@ -640,7 +642,7 @@
       "EDIT": "Edit",
       "DELETE": {
         "BUTTON": "Delete",
-        "CONFIRM": "Delete the work channel \"{name}\"? It disappears from statuses and capacity rules, and its inboxes move to the channel that takes the rest."
+        "CONFIRM": "Delete the work channel \"{name}\"? It disappears from statuses and capacity rules, and its channels move to the one that takes the rest."
       }
     },
     "API_DOCS": {
@@ -733,6 +735,15 @@
         "DELETE_SUCCESS": "Rule deleted",
         "DELETE_ERROR": "Could not delete the rule"
       }
+    },
+    "CHANNELS": {
+      "SETTINGS_TITLE": "Channels",
+      "SETTINGS_DESCRIPTION": "Where customers come from, grouped by type as in Zendesk. Every agent serves every channel; who gets what is decided by queues, status and capacity.",
+      "NEW": "New channel",
+      "CONFIGURE": "Configure",
+      "EMPTY": "No channels yet.",
+      "COUNT": "{count} channel | {count} channels",
+      "MEMBERS_NOTE": "Every agent of the account serves this channel."
     }
   },
   "AUTOMATION": {

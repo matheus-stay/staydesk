@@ -37,7 +37,7 @@ dentro a barra lateral vira o menu da Central, agrupado por assunto:
 | Atendimento | Status do ticket, visualizações por time, área de trabalho |
 | Prazos | Políticas de SLA, calendários |
 | Pessoas | Agentes, times, papéis, tokens de API |
-| Canais | Caixas de entrada, modelos |
+| Canais | Os canais por tipo (WhatsApp, e-mail, chat, API), com a configuração de cada um, e os modelos de mensagem |
 | Regras e automação | Automações, macros, respostas prontas, robôs, etiquetas, campos |
 | Conta | Conta, integrações, dados, auditoria, segurança, faturamento |
 
