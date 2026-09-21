@@ -1,5 +1,7 @@
 # Entra em AsyncDispatcher pelo gancho prepend_mod_with('AsyncDispatcher').
 module Custom::AsyncDispatcher
+  include Staydesk::InscricaoUnica
+
   def listeners
     super + [Staydesk::SlaListener.instance, Staydesk::SlaAutomationListener.instance]
   end

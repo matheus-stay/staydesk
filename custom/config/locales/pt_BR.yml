@@ -28,6 +28,14 @@ pt_BR:
           '3': 😐
           '4': 🙂
           '5': 😍
+      recebimento:
+        titulo: Dados do chamado
+        numero: Número
+        assunto: Assunto
+        canal: Canal
+        aberto_em: Aberto em
+        botao: Acompanhar no painel
+        dica: Você também pode responder este e-mail.
   conversations:
     reply:
       email:

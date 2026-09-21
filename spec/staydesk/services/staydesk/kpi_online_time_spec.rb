@@ -27,7 +27,11 @@ RSpec.describe 'tempo online no KPI' do
     expect(linha[:segundos_no_periodo]).to be_within(60).of(3600 * 2.5)
   end
 
+  # Com hora fixa: perto da meia-noite um período de quatro horas cai em dois
+  # dias e a contagem de dias trabalhados muda sozinha.
   it 'averages per worked day and across the team' do
+    travel_to(Time.zone.parse('2026-09-15 12:00:00'))
+    # devolvido no fim do exemplo para não congelar os outros
     periodo(disponivel, 2.days.ago, 2.days.ago + 4.hours)
     periodo(disponivel, 1.day.ago, 1.day.ago + 2.hours)
 
@@ -38,5 +42,7 @@ RSpec.describe 'tempo online no KPI' do
     expect(linha[:media_diaria_online_segundos]).to be_within(60).of(3.hours.to_i)
     expect(resultado[:resumo_dos_agentes]).to include(agentes_com_tempo_online: 1)
     expect(resultado[:resumo_dos_agentes][:tempo_online_medio_segundos]).to be_within(60).of(6.hours.to_i)
+  ensure
+    travel_back
   end
 end

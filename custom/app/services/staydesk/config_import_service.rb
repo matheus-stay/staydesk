@@ -15,6 +15,7 @@ class Staydesk::ConfigImportService
 
   def perform
     {
+      conta: configurar_conta,
       times: importar_times,
       etiquetas: importar_etiquetas,
       atributos: importar_atributos,
@@ -37,6 +38,19 @@ class Staydesk::ConfigImportService
 
   def secao(chave)
     @config[chave] || []
+  end
+
+  # O que é da conta inteira: hoje, o painel onde o cliente acompanha os
+  # chamados dele, que vai no botão do aviso de recebimento.
+  def configurar_conta
+    dados = @config['conta']
+    return if dados.blank?
+
+    painel = dados['painel_do_cliente']
+    return if painel.blank?
+
+    @account.update!(custom_attributes: @account.custom_attributes.to_h.merge('staydesk_painel_do_cliente' => painel))
+    painel
   end
 
   def importar_times

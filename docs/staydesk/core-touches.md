@@ -51,6 +51,7 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/mailers/conversation_reply_mailer.rb` | gancho | SPEC-18 | Layout da marca, assinatura e idioma da conta na resposta ao cliente |
 | `app/javascript/survey/views/Response.vue` | gancho | SPEC-18 | A nota escolhida no e-mail já entra marcada na pesquisa |
 | `app/listeners/csat_survey_listener.rb` | gancho | SPEC-18 | A pesquisa de satisfação espera antes de sair, para não passar na frente da resposta |
+| `app/services/automation_rules/action_service.rb` | gancho | SPEC-18 | Ação de aviso de recebimento nos gatilhos |
 | `app/javascript/dashboard/components/widgets/conversation/MoreActions.vue` | gancho | SPEC-10 | Seletor de status personalizado no lugar do botão Resolver quando a conta tem catálogo (3 linhas) |
 
 ## Views sobrepostas (o original não muda)

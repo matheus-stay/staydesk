@@ -27,3 +27,11 @@ en:
           '3': 😐
           '4': 🙂
           '5': 😍
+      recebimento:
+        titulo: Ticket details
+        numero: Number
+        assunto: Subject
+        canal: Channel
+        aberto_em: Opened at
+        botao: Follow it in the portal
+        dica: You can also reply to this e-mail.

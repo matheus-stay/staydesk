@@ -3,7 +3,9 @@
     prefixo que vale para este mailer é o nome dele, sem a pasta. %>
 <%# Resposta ao cliente no canal de e-mail, dentro do layout da marca. O pedido
     de avaliação sai como bloco próprio, não como um link solto no meio do texto. %>
-<% if @message.input_csat? %>
+<% if @message.content_attributes['staydesk_aviso'] == 'recebimento' %>
+  <%= render 'staydesk_recebimento', texto: @message.outgoing_content.html_safe, dados: staydesk_dados_do_chamado(@conversation, @inbox), painel: @staydesk_painel %>
+<% elsif @message.input_csat? %>
   <%= render 'staydesk_csat', link: @conversation.csat_survey_link, mensagem: @inbox.csat_config&.dig('message') %>
 <% elsif @message.content_attributes.dig('email', 'html_content', 'reply').present? %>
   <%= @message.content_attributes.dig('email', 'html_content', 'reply').html_safe %>

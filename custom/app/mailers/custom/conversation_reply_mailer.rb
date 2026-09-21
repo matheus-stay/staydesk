@@ -5,6 +5,10 @@
 # layout com a identidade e a assinatura de quem respondeu é o que o Zendesk
 # entrega hoje, e é o que o cliente espera de uma empresa.
 module Custom::ConversationReplyMailer
+  def self.prepended(base)
+    base.helper Staydesk::EmailHelper
+  end
+
   ACOES_PARA_O_CLIENTE = %w[email_reply reply_without_summary reply_with_summary].freeze
 
   private
@@ -28,6 +32,7 @@ module Custom::ConversationReplyMailer
     @staydesk_marca = @account&.name.presence || @inbox&.sanitized_business_name
     @staydesk_endereco = staydesk_endereco_de_resposta
     @staydesk_logo = staydesk_logo_url
+    @staydesk_painel = Staydesk::Marca.painel_do_cliente(@account)
   end
 
   # Quem assina é quem respondeu; mensagem automática não ganha assinatura.
@@ -49,9 +54,6 @@ module Custom::ConversationReplyMailer
   # A logo vai por URL absoluta: cliente de e-mail não carrega imagem do anexo
   # do produto nem enxerga caminho relativo.
   def staydesk_logo_url
-    base = ENV.fetch('FRONTEND_URL', nil)
-    return if base.blank?
-
-    "#{base.chomp('/')}/brand-assets/logo-email.png"
+    Staydesk::Marca.logo_de_email(ENV.fetch('FRONTEND_URL', nil))
   end
 end
