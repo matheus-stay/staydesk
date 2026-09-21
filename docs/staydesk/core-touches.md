@@ -48,6 +48,8 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/dashboard/routes/dashboard/settings/automation/constants.js` | gancho | SPEC-08 | Eventos de SLA na lista de eventos e nas condições por evento das automações |
 | `app/models/macro.rb` | gancho | SPEC-15 | Macro aceita as ações da camada StayDesk (definir campo e status do ticket) |
 | `app/models/team.rb` | gancho | SPEC-18 | O nome do grupo fica como foi escrito, em vez de virar tudo minúsculo |
+| `app/mailers/conversation_reply_mailer.rb` | gancho | SPEC-18 | Layout da marca, assinatura e idioma da conta na resposta ao cliente |
+| `app/javascript/survey/views/Response.vue` | gancho | SPEC-18 | A nota escolhida no e-mail já entra marcada na pesquisa |
 | `app/javascript/dashboard/components/widgets/conversation/MoreActions.vue` | gancho | SPEC-10 | Seletor de status personalizado no lugar do botão Resolver quando a conta tem catálogo (3 linhas) |
 
 ## Views sobrepostas (o original não muda)

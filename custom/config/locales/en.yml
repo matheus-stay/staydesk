@@ -3,13 +3,27 @@
 en:
   integration_apps:
     dyte:
-      short_description: 'Start video/voice calls with customers directly from StayDesk.'
-      description: 'Cloudflare RealtimeKit lets your agents start video/voice calls with your customers directly from StayDesk.'
+      short_description: Start video/voice calls with customers directly from StayDesk.
+      description: Cloudflare RealtimeKit lets your agents start video/voice calls with your customers directly from StayDesk.
     slack:
-      description: "Integrate StayDesk with Slack to keep your team in sync. This integration allows you to receive notifications for new conversations and respond to them directly within Slack's interface."
+      description: Integrate StayDesk with Slack to keep your team in sync. This integration allows you to receive notifications for new conversations and respond to them directly within Slack's interface.
     webhooks:
-      description: 'Webhook events provide real-time updates about activities in your StayDesk account. You can subscribe to your preferred events, and StayDesk will send you HTTP callbacks with the updates.'
-  # Our own business copy: what the agent reads when a rule stops them.
+      description: Webhook events provide real-time updates about activities in your StayDesk account. You can subscribe to your preferred events, and StayDesk will send you HTTP callbacks with the updates.
   staydesk:
     ticket_fields:
       required_to_resolve: 'Fill these before resolving: %{fields}'
+    email:
+      attachments: Attachments
+      footer:
+        reply_here: Reply to this e-mail to continue the conversation.
+      csat:
+        title: How did we do?
+        subtitle: It takes less than a minute and helps us get better.
+        button: Rate this conversation
+        hint: Pick a face or use the button to open the survey.
+        faces:
+          '1': 😞
+          '2': 🙁
+          '3': 😐
+          '4': 🙂
+          '5': 😍

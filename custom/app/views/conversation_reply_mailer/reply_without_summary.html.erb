@@ -1,0 +1,18 @@
+<%# Resposta ao cliente nos demais canais, dentro do layout da marca. %>
+<% @messages.each do |message| %>
+  <% if message.input_csat? %>
+    <%= render 'staydesk_csat', link: message.conversation.csat_survey_link, mensagem: @inbox.csat_config&.dig('message') %>
+  <% else %>
+    <div style="margin:0 0 12px; font-size:15px; line-height:1.6; color:#1F2937; unicode-bidi:plaintext;">
+      <% if message.content.present? %>
+        <%= ChatwootMarkdownRenderer.new(message.content).render_message %>
+      <% end %>
+      <% if message.attachments.present? %>
+        <p style="margin:12px 0 0; font-size:14px; color:#5B6478;"><%= t('staydesk.email.attachments') %></p>
+        <% message.attachments.each do |attachment| %>
+          <p style="margin:4px 0 0;"><a href="<%= attachment.file_url %>" target="_blank" rel="noopener" style="color:#545DFF;"><%= attachment.file.filename.to_s %></a></p>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

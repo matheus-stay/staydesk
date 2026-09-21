@@ -1,0 +1,23 @@
+<%# Pedido de avaliação com cara de gente: título, uma linha de contexto e as
+    notas já clicáveis, para o cliente responder sem abrir outra tela antes. %>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#F7F8FE; border:1px solid #E3E7F2; border-radius:12px;">
+  <tr>
+    <td style="padding:22px 24px; text-align:center; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+      <p style="margin:0 0 6px; font-size:16px; font-weight:600; color:#1B2559;"><%= t('staydesk.email.csat.title') %></p>
+      <p style="margin:0 0 18px; font-size:14px; line-height:1.5; color:#5B6478;"><%= mensagem.presence || t('staydesk.email.csat.subtitle') %></p>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto 18px;">
+        <tr>
+          <% %w[1 2 3 4 5].each do |nota| %>
+            <td style="padding:0 4px;">
+              <a href="<%= "#{link}?rating=#{nota}" %>" target="_blank" rel="noopener"
+                 style="display:inline-block; width:44px; height:44px; line-height:44px; border-radius:22px; background-color:#FFFFFF; border:1px solid #E3E7F2; text-decoration:none; font-size:20px;"><%= t("staydesk.email.csat.faces.#{nota}") %></a>
+            </td>
+          <% end %>
+        </tr>
+      </table>
+      <a href="<%= link %>" target="_blank" rel="noopener"
+         style="display:inline-block; padding:12px 26px; border-radius:10px; background-color:#545DFF; color:#FFFFFF; font-size:15px; font-weight:600; text-decoration:none;"><%= t('staydesk.email.csat.button') %></a>
+      <p style="margin:14px 0 0; font-size:12px; color:#8A93A8;"><%= t('staydesk.email.csat.hint') %></p>
+    </td>
+  </tr>
+</table>

@@ -228,3 +228,5 @@ class ConversationReplyMailer < ApplicationMailer
                 })
   end
 end
+
+ConversationReplyMailer.prepend_mod_with('ConversationReplyMailer') # staydesk:hook layout da marca na resposta ao cliente

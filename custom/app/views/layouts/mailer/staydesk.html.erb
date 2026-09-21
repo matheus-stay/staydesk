@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title><%= @staydesk_marca %></title>
+  </head>
+  <body style="margin:0; padding:0; background-color:#F1F3F9; -webkit-font-smoothing:antialiased;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#F1F3F9;">
+      <tr>
+        <td align="center" style="padding:24px 12px 32px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;">
+            <tr>
+              <td style="padding:8px 4px 16px;">
+                <% if @staydesk_logo.present? %>
+                  <img src="<%= @staydesk_logo %>" alt="<%= @staydesk_marca %>" height="28" style="height:28px; width:auto; border:0; display:block;" />
+                <% else %>
+                  <span style="font:600 18px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#1B2559;"><%= @staydesk_marca %></span>
+                <% end %>
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color:#FFFFFF; border:1px solid #E3E7F2; border-radius:16px; overflow:hidden;">
+                <div style="height:4px; background-color:#545DFF; font-size:0; line-height:0;">&nbsp;</div>
+                <div style="padding:28px 28px 8px; font:400 15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#1F2937;">
+                  <%= yield %>
+                </div>
+                <% if @staydesk_agente.present? %>
+                  <div style="padding:8px 28px 28px;">
+                    <div style="border-top:1px solid #EEF1F8; padding-top:16px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <% if @staydesk_agente_avatar.present? %>
+                            <td style="padding-right:12px;" valign="middle">
+                              <img src="<%= @staydesk_agente_avatar %>" alt="<%= @staydesk_agente %>" width="40" height="40" style="width:40px; height:40px; border-radius:20px; display:block; border:0;" />
+                            </td>
+                          <% end %>
+                          <td valign="middle" style="font:400 14px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#1F2937;">
+                            <strong style="color:#1B2559;"><%= @staydesk_agente %></strong><br />
+                            <span style="color:#6B7280;"><%= @staydesk_marca %></span>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                <% end %>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 8px 0; text-align:center; font:400 12px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#8A93A8;">
+                <%= t('staydesk.email.footer.reply_here') %><br />
+                <% if @staydesk_endereco.present? %>
+                  <span style="color:#6B7280;"><%= @staydesk_endereco %></span> ·
+                <% end %>
+                <%= @staydesk_marca %>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

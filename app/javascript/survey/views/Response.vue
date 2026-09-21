@@ -10,6 +10,7 @@ import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
 import { getSurveyDetails, updateSurvey } from 'survey/api/survey';
 
 import { CSAT_DISPLAY_TYPES } from 'shared/constants/messages';
+import { preselecionarNota } from 'staydesk/helpers/csat'; // staydesk:hook nota vinda do e-mail
 
 export default {
   name: 'Response',
@@ -87,7 +88,7 @@ export default {
     },
   },
   async mounted() {
-    this.getSurveyDetails();
+    this.getSurveyDetails().then(() => preselecionarNota(this)); // staydesk:hook nota vinda do e-mail
   },
   methods: {
     selectRating(rating) {
