@@ -21,4 +21,10 @@ RSpec.describe Staydesk::TeamViewImportService do
 
     expect(Staydesk::TeamView.where(account: account).count).to eq(1)
   end
+  it 'finds the group by name without caring about capitals' do
+    lideranca = create(:team, account: account, name: 'Tech Lead')
+    described_class.new(account: account, definitions: [{ 'name' => 'Fila', 'teams' => ['tech lead'], 'query' => { 'payload' => [] } }]).perform
+
+    expect(Staydesk::TeamView.find_by(account: account, name: 'Fila').team_ids).to eq([lideranca.id])
+  end
 end

@@ -26,6 +26,7 @@ class Staydesk::TeamViewImportService
   private
 
   def team_ids_for(names)
-    names.map { |name| @account.teams.find_by!(name: name.strip.downcase).id }
+    # Sem diferenciar maiúsculas: o nome do grupo é gravado como foi escrito.
+    names.map { |name| @account.teams.find_by!('lower(name) = ?', name.strip.downcase).id }
   end
 end
