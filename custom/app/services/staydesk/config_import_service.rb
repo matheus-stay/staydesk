@@ -87,10 +87,12 @@ class Staydesk::ConfigImportService
   end
 
   def regra_de_csat(dados, caixa)
+    config = caixa.csat_config || {}
     sem = dados['sem_pesquisa_com_etiquetas']
-    return caixa.csat_config if sem.blank?
-
-    (caixa.csat_config || {}).merge('survey_rules' => { 'operator' => 'does_not_contain', 'values' => sem })
+    config = config.merge('survey_rules' => { 'operator' => 'does_not_contain', 'values' => sem }) if sem.present?
+    atraso = dados['pesquisa_apos_minutos']
+    config = config.merge(Staydesk::Csat::CHAVE => atraso.to_i) if atraso.present?
+    config
   end
 
   def importar_politicas

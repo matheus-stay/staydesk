@@ -14,3 +14,5 @@ class CsatSurveyListener < BaseListener
     CsatSurveys::ResponseBuilder.new(message: message).perform
   end
 end
+
+CsatSurveyListener.prepend_mod_with('CsatSurveyListener') # staydesk:hook a pesquisa sai depois da resposta
