@@ -165,7 +165,7 @@ rails staydesk:configurar ACCOUNT_ID=1 FILE=configuracao.yml
 
 O arquivo cobre times, etiquetas, atributos, caixas, status do ticket, filas de
 carga, status do agente, calendário, políticas de SLA, filas, visualizações e
-área de trabalho. É idempotente: rodar de novo só atualiza o que mudou.
+área de trabalho, mais os **gatilhos** (seção `automacoes`). É idempotente: rodar de novo só atualiza o que mudou.
 
 O mesmo arquivo entra pela API, sem console, com o token de um administrador:
 
@@ -174,3 +174,25 @@ curl -X POST -H "api_access_token: sd_seu_token" -H "Content-Type: application/j
   --data "$(jq -Rs '{yaml: .}' configuracao.yml)" \
   "https://staydesk.staycloud.com.br/api/v1/accounts/1/staydesk/config_import"
 ```
+
+### Gatilhos e variáveis
+
+A seção `automacoes` cria os gatilhos do produto a partir do mesmo arquivo:
+
+```yaml
+automacoes:
+  - nome: Confirmação de recebimento
+    evento: conversation_created
+    canais: ['Channel::Email', 'Channel::Api']
+    acoes:
+      - tipo: send_message
+        valores:
+          - "Olá! O seu ticket #{{conversation.display_id}} já foi recebido."
+```
+
+`canais` e `caixas` viram condição por canal, como nas políticas de SLA; sem
+nenhum dos dois, o gatilho vale para toda conversa aberta. O texto aceita as
+variáveis do produto (`conversation.display_id`, `contact.name`, `agent.name`,
+`inbox.name`, `account.name`), resolvidas no envio. Mensagem de gatilho não
+conta como primeira resposta no SLA nem nos indicadores.
+

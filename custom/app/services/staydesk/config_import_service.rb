@@ -25,6 +25,7 @@ class Staydesk::ConfigImportService
       calendario: importar_calendario&.name,
       politicas_de_sla: importar_politicas,
       filas: importar_filas,
+      automacoes: importar_automacoes,
       visualizacoes: importar_visualizacoes,
       area_de_trabalho: importar_area_de_trabalho,
       canais: "#{Staydesk::ChannelMembership.sync!(@account)} vínculo(s) de agente com canal criado(s)"
@@ -96,7 +97,7 @@ class Staydesk::ConfigImportService
   end
 
   def importar_politica(dados, posicao)
-    caixas = caixas_da_politica(dados)
+    caixas = caixas_da_regra(dados)
     politica = Staydesk::SlaPolicy.find_or_initialize_by(account: @account, name: dados.fetch('nome'))
     politica.update!(
       description: dados['descricao'],
@@ -121,9 +122,9 @@ class Staydesk::ConfigImportService
     condicoes + [{ 'attribute_key' => 'inbox_id', 'filter_operator' => 'equal_to', 'values' => caixas }]
   end
 
-  # As caixas que a política alcança: nil quando ela não fala de canal (vale
-  # para todos), lista vazia quando fala mas nenhum existe ainda na conta.
-  def caixas_da_politica(dados)
+  # As caixas que a regra alcança: nil quando ela não fala de canal (vale para
+  # todos), lista vazia quando fala mas nenhum existe ainda na conta.
+  def caixas_da_regra(dados)
     return nil if dados['canais'].blank? && dados['caixas'].blank?
 
     por_tipo = dados['canais'].present? ? @account.inboxes.where(channel_type: Array(dados['canais'])).pluck(:id) : []
@@ -178,6 +179,38 @@ class Staydesk::ConfigImportService
 
   def grupos_secundarios(dados)
     Array(dados['times_secundarios'] || dados['times_que_ajudam'] || dados['times_de_transbordo'])
+  end
+
+  # Gatilhos, como no Zendesk: "quando entrar um ticket por e-mail, avise o
+  # cliente que recebemos". O texto aceita as variáveis do produto, então
+  # `{{conversation.display_id}}` vira o número do ticket na hora do envio.
+  def importar_automacoes
+    secao('automacoes').map { |dados| importar_automacao(dados) }
+  end
+
+  def importar_automacao(dados)
+    caixas = caixas_da_regra(dados)
+    regra = AutomationRule.find_or_initialize_by(account: @account, name: dados.fetch('nome'))
+    regra.update!(
+      description: dados['descricao'],
+      event_name: dados['evento'] || 'conversation_created',
+      conditions: condicoes(dados, caixas).presence || [condicao_de_status_aberto],
+      actions: acoes_da_automacao(dados),
+      active: caixas != []
+    )
+    caixas == [] ? "#{regra.name} (nenhum canal desses existe na conta; desativada)" : regra.name
+  end
+
+  def acoes_da_automacao(dados)
+    dados.fetch('acoes').map do |acao|
+      { 'action_name' => acao.fetch('tipo'), 'action_params' => Array(acao['valores'] || acao['valor']) }
+    end
+  end
+
+  # O avaliador de condições precisa de pelo menos uma linha; sem filtro de
+  # canal, a regra vale para toda conversa aberta.
+  def condicao_de_status_aberto
+    { 'attribute_key' => 'status', 'filter_operator' => 'equal_to', 'values' => ['open'] }
   end
 
   def importar_visualizacoes

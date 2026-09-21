@@ -52,7 +52,7 @@ rails staydesk:configurar ACCOUNT_ID=1 FILE=configuracao.yml
 
 Cobre times, etiquetas, campos do ticket, caixas, status do ticket, filas de
 carga, status do agente, calendário, políticas de SLA, filas, visualizações e
-área de trabalho. É idempotente: rodar de novo só atualiza o que mudou.
+área de trabalho, mais os **gatilhos** (seção `automacoes`). É idempotente: rodar de novo só atualiza o que mudou.
 
 O mesmo arquivo entra pela API, sem console, com o token de um administrador:
 
