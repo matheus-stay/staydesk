@@ -61,7 +61,7 @@
      "caminho": "staydesk/config_import",
      "titulo": "Aplicar a configuração da operação de uma vez",
      "resumo": "Recebe o mesmo YAML do comando `rails staydesk:configurar` e aplica na conta: times, etiquetas, campos do ticket, caixas, status, filas de carga, regras de capacidade, calendário, SLA, filas, visualizações e área de trabalho.",
-     "detalhes": "É o jeito de subir um ambiente novo sem console: manda o arquivo e a conta fica pronta. Idempotente: rodar de novo só atualiza o que mudou. Aceita o YAML como texto em `yaml` ou a mesma estrutura já em JSON em `config`. Só o administrador chama. Nomes de caixa que não existem na conta são ignorados na hora de amarrar visualizações, SLA e filas, então crie os canais antes ou rode de novo depois.",
+     "detalhes": "É o jeito de subir um ambiente novo sem console: manda o arquivo e a conta fica pronta. Idempotente: rodar de novo só atualiza o que mudou. Aceita o YAML como texto em `yaml` ou a mesma estrutura já em JSON em `config`. A seção `times` também põe agentes nos grupos de uma vez (por e-mail), o que evita atribuir pessoa por pessoa. Só o administrador chama. Nomes de caixa que não existem na conta são ignorados na hora de amarrar visualizações, SLA e filas, então crie os canais antes ou rode de novo depois.",
      "escopo": "operacao:escrita",
      "payload": {
       "yaml": "times:\n  - Suporte N1\netiquetas:\n  - { nome: hospedagem, cor: '#545DFF' }\n"

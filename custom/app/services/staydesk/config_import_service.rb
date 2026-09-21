@@ -7,6 +7,7 @@
 class Staydesk::ConfigImportService
   include Staydesk::ConfigImport::Catalogo
   include Staydesk::ConfigImport::Automacoes
+  include Staydesk::ConfigImport::Times
 
   def initialize(account:, config:)
     @account = account
@@ -51,14 +52,6 @@ class Staydesk::ConfigImportService
 
     @account.update!(custom_attributes: @account.custom_attributes.to_h.merge('staydesk_painel_do_cliente' => painel))
     painel
-  end
-
-  def importar_times
-    secao('times').map { |nome| time!(nome).name }
-  end
-
-  def time!(nome)
-    @account.teams.find_by('lower(name) = ?', nome.strip.downcase) || @account.teams.create!(name: nome.strip)
   end
 
   def importar_etiquetas

@@ -175,6 +175,25 @@ curl -X POST -H "api_access_token: sd_seu_token" -H "Content-Type: application/j
   "https://staydesk.staycloud.com.br/api/v1/accounts/1/staydesk/config_import"
 ```
 
+### Pôr muita gente em muitos grupos
+
+A seção `times` aceita o grupo só pelo nome ou com quem está nele:
+
+```yaml
+times:
+  - Administradores
+  - nome: Suporte N1
+    agentes: [ana@staycloud.com, bruno@staycloud.com]
+  - nome: Suporte N2
+    agentes: [carla@staycloud.com]
+    agentes_exatos: true
+```
+
+`agentes` acrescenta quem falta e não tira ninguém. `agentes_exatos: true`
+deixa o grupo igual à lista, removendo quem não está nela. Quem não tem conta
+na conta do StayDesk aparece no resumo da importação em vez de quebrar a carga.
+O mesmo vale pelo MCP, com a ferramenta `staydesk_configurar`.
+
 ### Gatilhos e variáveis
 
 A seção `automacoes` cria os gatilhos do produto a partir do mesmo arquivo:
