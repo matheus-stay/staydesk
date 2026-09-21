@@ -19,6 +19,21 @@ class Staydesk::QueueRouter
     fila
   end
 
+  # A fila desta conversa quando ela ainda nem foi gravada, para o grupo já
+  # nascer definido: a distribuição automática corre em paralelo e, se o grupo
+  # chegar depois, ela atribui sem passar pelo aceite. Só decide quando a
+  # resposta é inequívoca; fila que depende de condições precisa da conversa
+  # gravada, então nesse caso a decisão fica para o roteamento pós-criação.
+  def match_inline
+    Staydesk::Queue.active.where(account_id: @conversation.account_id).ordered.each do |fila|
+      next unless fila.atende_canal?(@conversation.inbox)
+      return nil if fila.conditions.present?
+
+      return fila
+    end
+    nil
+  end
+
   def match
     Staydesk::Queue.active.where(account_id: @conversation.account_id).ordered.find { |fila| matches?(fila) }
   end

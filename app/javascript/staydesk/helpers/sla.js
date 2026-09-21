@@ -31,3 +31,14 @@ export const slaState = (attributes = {}, now = Date.now()) => {
     label: remaining === null ? null : formatDuration(remaining),
   };
 };
+
+// Estado de uma métrica do SLA aplicado (primeira resposta, próxima resposta,
+// resolução). Responder depois do prazo não apaga o atraso: o painel dizia
+// "cumprido" enquanto o selo da conversa dizia "vencido", e quem lia os dois
+// não sabia em qual acreditar. Vencido ganha de cumprido.
+export const metricState = metric => {
+  if (!metric) return 'none';
+  if (metric.breached) return metric.met_at ? 'late' : 'breached';
+  if (metric.met_at) return 'met';
+  return metric.due_at ? 'due' : 'none';
+};

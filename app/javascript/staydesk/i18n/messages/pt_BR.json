@@ -77,6 +77,7 @@
       "NO_SLA": "Nenhum SLA se aplica a esta conversa",
       "DUE": "vence",
       "MET_AT": "cumprido",
+      "MET_LATE": "cumprido com atraso",
       "METRIC": {
         "first_response": "Primeira resposta",
         "next_response": "Próxima resposta",

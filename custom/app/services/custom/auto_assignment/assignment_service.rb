@@ -5,7 +5,7 @@ module Custom::AutoAssignment::AssignmentService
   # Fila com aceite: convida em vez de atribuir (SPEC-16). O convite pendente
   # reserva a vaga do agente; a conversa segue sem responsável até o aceite.
   def assign_conversation(conversation, agent)
-    fila = Staydesk::Queue.da_equipe(conversation.account_id, conversation.team_id)
+    fila = Staydesk::Queue.da_conversa(conversation)
     return super unless fila&.accept_required
     return false if Staydesk::Offer.pendentes.exists?(conversation_id: conversation.id)
 

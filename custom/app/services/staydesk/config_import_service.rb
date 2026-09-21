@@ -92,24 +92,42 @@ class Staydesk::ConfigImportService
   end
 
   def importar_politicas
-    secao('politicas_de_sla').each_with_index.map do |dados, posicao|
-      politica = Staydesk::SlaPolicy.find_or_initialize_by(account: @account, name: dados.fetch('nome'))
-      politica.update!(
-        description: dados['descricao'],
-        calendar: dados['calendario'] ? Staydesk::Calendar.find_by(account: @account, name: dados['calendario']) : nil,
-        conditions: condicoes(dados),
-        targets: dados.fetch('alvos'),
-        pause_statuses: dados['pausa_em'] || %w[pending snoozed],
-        position: posicao, active: true
-      )
-      politica.name
-    end
+    secao('politicas_de_sla').each_with_index.map { |dados, posicao| importar_politica(dados, posicao) }
   end
 
-  # Condições no formato do filtro avançado. Canal e caixa não entram aqui: são
-  # campos próprios da fila, porque é assim que a operação pensa a entrada.
-  def condicoes(dados)
-    dados['condicoes'] || []
+  def importar_politica(dados, posicao)
+    caixas = caixas_da_politica(dados)
+    politica = Staydesk::SlaPolicy.find_or_initialize_by(account: @account, name: dados.fetch('nome'))
+    politica.update!(
+      description: dados['descricao'],
+      calendar: dados['calendario'] ? Staydesk::Calendar.find_by(account: @account, name: dados['calendario']) : nil,
+      conditions: condicoes(dados, caixas),
+      targets: dados.fetch('alvos'),
+      pause_statuses: dados['pausa_em'] || %w[pending snoozed],
+      position: posicao, active: caixas != []
+    )
+    caixas == [] ? "#{politica.name} (nenhum canal desses existe na conta; desativada)" : politica.name
+  end
+
+  # Condições no formato do filtro avançado. Canal e caixa viram uma condição
+  # por caixa de entrada: é assim que a operação descreve a política ("o SLA do
+  # chat", "o SLA do ticket") e é o que o avaliador de condições entende. Sem
+  # isso, política sem condição casa com qualquer conversa e a primeira da
+  # ordem leva todas, inclusive as dos outros canais.
+  def condicoes(dados, caixas = nil)
+    condicoes = Array(dados['condicoes'])
+    return condicoes if caixas.blank?
+
+    condicoes + [{ 'attribute_key' => 'inbox_id', 'filter_operator' => 'equal_to', 'values' => caixas }]
+  end
+
+  # As caixas que a política alcança: nil quando ela não fala de canal (vale
+  # para todos), lista vazia quando fala mas nenhum existe ainda na conta.
+  def caixas_da_politica(dados)
+    return nil if dados['canais'].blank? && dados['caixas'].blank?
+
+    por_tipo = dados['canais'].present? ? @account.inboxes.where(channel_type: Array(dados['canais'])).pluck(:id) : []
+    (por_tipo + caixas_por_nome(dados['caixas'])).uniq
   end
 
   def caixas_por_nome(nomes)

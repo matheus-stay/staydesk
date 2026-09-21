@@ -62,6 +62,18 @@ class Staydesk::Queue < ApplicationRecord
     filas.find { |fila| fila.team_ids.include?(team_id) } || filas.find { |fila| fila.fallback_team_ids.include?(team_id) }
   end
 
+  # A fila que responde por esta conversa agora. O grupo é relido do banco
+  # quando a conversa já existe: a distribuição em massa carrega as conversas
+  # antes de o roteamento gravar o grupo, e um objeto velho faria a fila com
+  # aceite passar batido, entregando o trabalho sem convite.
+  def self.da_conversa(conversa)
+    return if conversa.blank?
+
+    team_id = conversa.team_id
+    team_id = ::Conversation.where(id: conversa.id).pick(:team_id) || team_id if conversa.persisted?
+    da_equipe(conversa.account_id, team_id)
+  end
+
   # Quem está em qualquer um destes grupos, sem repetir.
   def self.membros(team_ids)
     return [] if team_ids.blank?

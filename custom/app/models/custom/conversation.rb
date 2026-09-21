@@ -5,6 +5,7 @@ module Custom::Conversation
     base.validate :staydesk_required_ticket_fields
     # Os after_commit rodam em ordem inversa: o convite guardado na criação sai
     # depois de a conversa passar pela fila.
+    base.before_create :staydesk_route_to_queue_inline
     base.after_create_commit :staydesk_lancar_convite!
     base.after_create_commit :staydesk_route_to_queue
     # Um despacho só: os after_commit rodam em ordem inversa e alguns deles
@@ -58,6 +59,16 @@ module Custom::Conversation
     staydesk_record_events(mudancas)
     staydesk_align_ticket_status(mudancas)
     staydesk_lancar_convite!
+  end
+
+  # O grupo da fila entra antes de a conversa ser gravada, porque a distribuição
+  # automática do produto dispara no mesmo save: sem grupo ela não enxerga a
+  # fila e entrega o trabalho sem convite.
+  def staydesk_route_to_queue_inline
+    return if team_id.present?
+
+    fila = Staydesk::QueueRouter.new(self).match_inline
+    self.team = fila.team if fila.present?
   end
 
   # A conversa nova passa pelas filas antes de a distribuição escolher o agente

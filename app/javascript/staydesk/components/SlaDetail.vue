@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useNow } from '@vueuse/core';
 import SlaAPI from '../api/sla';
-import { formatDuration } from '../helpers/sla';
+import { formatDuration, metricState } from '../helpers/sla';
 
 // As três métricas do SLA aplicado à conversa, com prazo e estado.
 const props = defineProps({
@@ -42,10 +42,25 @@ watch(
 const remaining = dueAt =>
   dueAt ? formatDuration(new Date(dueAt).getTime() - now.value.getTime()) : '';
 
-const metricClass = metric => {
-  if (metric.met_at) return 'text-n-teal-11';
-  if (metric.breached) return 'text-n-ruby-11';
-  return 'text-n-slate-12';
+const CORES = {
+  met: 'text-n-teal-11',
+  late: 'text-n-ruby-11',
+  breached: 'text-n-ruby-11',
+  due: 'text-n-slate-12',
+  none: 'text-n-slate-12',
+};
+
+const metricClass = metric => CORES[metricState(metric)];
+
+// "cumprido" só quando foi dentro do prazo; fora dele o painel diz o mesmo que
+// o selo da conversa.
+const metricLabel = metric => {
+  const estado = metricState(metric);
+  if (estado === 'met') return t('STAYDESK.SLA.MET_AT');
+  if (estado === 'late') return t('STAYDESK.SLA.MET_LATE');
+  if (estado === 'breached') return t('STAYDESK.SLA.BREACHED');
+  if (estado === 'due') return remaining(metric.due_at);
+  return '—';
 };
 </script>
 
@@ -68,13 +83,7 @@ const metricClass = metric => {
           t(`STAYDESK.SLA.METRIC.${name}`)
         }}</span>
         <span class="tabular-nums" :class="metricClass(metric)">
-          <template v-if="metric.met_at">{{
-            t('STAYDESK.SLA.MET_AT')
-          }}</template>
-          <template v-else-if="metric.due_at">{{
-            remaining(metric.due_at)
-          }}</template>
-          <template v-else>—</template>
+          {{ metricLabel(metric) }}
         </span>
       </div>
     </template>

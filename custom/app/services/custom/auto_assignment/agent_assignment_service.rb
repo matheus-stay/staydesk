@@ -26,6 +26,6 @@ module Custom::AutoAssignment::AgentAssignmentService
   private
 
   def staydesk_fila_com_aceite?
-    Staydesk::Queue.da_equipe(conversation.account_id, conversation.team_id)&.accept_required || false
+    Staydesk::Queue.da_conversa(conversation)&.accept_required || false
   end
 end

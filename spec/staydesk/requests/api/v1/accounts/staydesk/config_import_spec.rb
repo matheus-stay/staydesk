@@ -21,7 +21,7 @@ RSpec.describe 'StayDesk Config Import API', type: :request do
 
     expect(response).to have_http_status(:success)
     expect(response.parsed_body.keys).to include('times', 'etiquetas', 'status_do_agente', 'canais')
-    expect(account.teams.pluck(:name)).to eq(['suporte n1'])
+    expect(account.teams.pluck(:name)).to eq(['Suporte N1'])
     expect(account.labels.pluck(:title)).to eq(['hospedagem'])
     expect(Staydesk::AgentStatus.where(account: account).pluck(:name)).to include('Só chat')
   end
