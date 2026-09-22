@@ -25,6 +25,7 @@ module Custom::Concerns::ApplicationControllerConcern
   # Papel com `staydesk_report_own` e sem `report_manage` só enxerga a si mesmo:
   # o pedido precisa vir filtrado pelo próprio usuário.
   def staydesk_guard_own_reports
+    return if staydesk_fora_do_alcance_da_guarda?
     return unless REPORT_CONTROLLERS.match?(controller_path)
     return unless staydesk_report_limited_to_self?
     return if staydesk_report_about_self?
@@ -53,10 +54,18 @@ module Custom::Concerns::ApplicationControllerConcern
 
   def staydesk_guard_light_agent
     return if request.get? || request.head?
+    return if staydesk_fora_do_alcance_da_guarda?
     return unless staydesk_light_account_user?
     return if LIGHT_WRITE_ALLOWLIST.fetch(controller_path, []).include?(action_name) && staydesk_light_message_allowed?
 
     render json: { error: 'Light agents can only read and add private notes' }, status: :forbidden
+  end
+
+  # Entrar, sair, confirmar conta e trocar senha são rotas de autenticação: não
+  # há agente leve antes de existir sessão, e perguntar por `current_user` ali
+  # quebra o fluxo do produto — era o 500 de quem tentava definir a senha.
+  def staydesk_fora_do_alcance_da_guarda?
+    respond_to?(:devise_controller?, true) && devise_controller?
   end
 
   def staydesk_light_account_user?
