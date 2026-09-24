@@ -2,8 +2,10 @@ require 'rails_helper'
 
 RSpec.describe Staydesk::KpiService do
   let(:account) { create(:account) }
-  let(:chat) { create(:inbox, account: account, channel: create(:channel_widget, account: account)) }
-  let(:email) { create(:inbox, account: account, channel: create(:channel_email, account: account)) }
+  # Sem distribuição automática: o KPI mede o que fica esperando na fila, e com
+  # ela ligada a conversa sairia da espera no mesmo instante em que entra.
+  let(:chat) { create(:inbox, account: account, enable_auto_assignment: false, channel: create(:channel_widget, account: account)) }
+  let(:email) { create(:inbox, account: account, enable_auto_assignment: false, channel: create(:channel_email, account: account)) }
   let(:agent) { create(:user, account: account, role: :agent) }
   let(:account_user) { account.account_users.find_by(user: agent) }
 

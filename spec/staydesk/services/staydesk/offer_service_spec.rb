@@ -3,7 +3,9 @@ require 'rails_helper'
 RSpec.describe Staydesk::OfferService do
   let(:account) { create(:account) }
   let(:n1) { create(:team, account: account, name: 'suporte n1') }
-  let(:chat) { create(:inbox, account: account) }
+  # Distribuição desligada na caixa: estes testes acionam a distribuição na mão,
+  # para escolher o agente. Ligada, a criação já convidaria alguém pelo rodízio.
+  let(:chat) { create(:inbox, account: account, enable_auto_assignment: false) }
   let(:ana) { create(:user, account: account, role: :agent) }
   let(:bruno) { create(:user, account: account, role: :agent) }
 

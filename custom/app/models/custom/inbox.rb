@@ -12,6 +12,16 @@ module Custom::Inbox
     super(user_ids.map(&:to_i) - inbox_members.pluck(:user_id))
   end
 
+  # A fila com aceite (SPEC-16) vive na distribuição legada: é ela que chama
+  # `find_assignee`, guarda o convidado e dispara o convite. A distribuição v2 do
+  # upstream é assíncrona, passa por um job por caixa e, quando ligada, desvia o
+  # fluxo inteiro — a conversa entra na fila, ninguém é convidado e nada registra
+  # erro. Enquanto o aceite for o nosso modelo, a caixa fica no caminho legado,
+  # independente de a conta ter a chave `assignment_v2` ligada.
+  def auto_assignment_v2_enabled?
+    false
+  end
+
   def member_ids_with_assignment_capacity
     ids = super & conectados_agora
     return ids if ids.blank?
