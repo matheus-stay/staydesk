@@ -8,6 +8,7 @@ class Staydesk::ConfigImportService
   include Staydesk::ConfigImport::Catalogo
   include Staydesk::ConfigImport::Automacoes
   include Staydesk::ConfigImport::Times
+  include Staydesk::ConfigImport::Visualizacoes
 
   def initialize(account:, config:)
     @account = account
@@ -189,29 +190,6 @@ class Staydesk::ConfigImportService
 
   def grupos_secundarios(dados)
     Array(dados['times_secundarios'] || dados['times_que_ajudam'] || dados['times_de_transbordo'])
-  end
-
-  def importar_visualizacoes
-    definicoes = secao('visualizacoes').map do |dados|
-      {
-        'name' => dados.fetch('nome'), 'description' => dados['descricao'], 'color' => dados['cor'],
-        'sort_by' => dados['ordem'], 'columns' => dados['colunas'], 'teams' => dados['times'],
-        'query' => { 'payload' => consulta_da_visualizacao(dados) }
-      }
-    end
-    Staydesk::TeamViewImportService.new(account: @account, definitions: definicoes).perform.map(&:name)
-  end
-
-  # `caixas` na visualização vira uma linha de filtro por caixa de entrada, para o
-  # YAML falar de nomes e não de ids, que mudam de ambiente para ambiente.
-  def consulta_da_visualizacao(dados)
-    linhas = dados.fetch('consulta').map(&:dup)
-    caixas = caixas_por_nome(dados['caixas'])
-    linhas = [{ 'attribute_key' => 'inbox_id', 'filter_operator' => 'equal_to', 'values' => caixas }] + linhas if caixas.any?
-    linhas.each_with_index.map do |linha, indice|
-      linha['query_operator'] = indice == linhas.size - 1 ? nil : (linha['query_operator'] || 'and')
-      linha
-    end
   end
 
   def importar_area_de_trabalho
