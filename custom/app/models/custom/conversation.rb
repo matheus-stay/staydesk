@@ -6,6 +6,7 @@ module Custom::Conversation
     # Os after_commit rodam em ordem inversa: o convite guardado na criação sai
     # depois de a conversa passar pela fila.
     base.before_create :staydesk_route_to_queue_inline
+    base.before_create :staydesk_status_inicial
     base.after_create_commit :staydesk_lancar_convite!
     base.after_create_commit :staydesk_route_to_queue
     # Um despacho só: os after_commit rodam em ordem inversa e alguns deles
@@ -69,6 +70,20 @@ module Custom::Conversation
 
     fila = Staydesk::QueueRouter.new(self).match_inline
     self.team = fila.team if fila.present?
+  end
+
+  # Conversa nasce com status de ticket, como no Zendesk, onde todo caso entra
+  # como "Novo". Sem isto o status só aparecia quando alguém assumia ou resolvia:
+  # o caso recém-chegado ficava sem status nenhum, some da visão que filtra por
+  # ele e conta como "em atendimento" em quem olha só o status base.
+  # Vai no before_create para entrar no mesmo INSERT, sem segunda escrita.
+  def staydesk_status_inicial
+    return if custom_attributes&.dig(Staydesk::TicketStatus::ATTRIBUTE_KEY).present?
+
+    inicial = Staydesk::TicketStatus.default_for(account, status)
+    return if inicial.blank?
+
+    self.custom_attributes = (custom_attributes || {}).merge(Staydesk::TicketStatus::ATTRIBUTE_KEY => inicial.name)
   end
 
   # A conversa nova passa pelas filas antes de a distribuição escolher o agente
