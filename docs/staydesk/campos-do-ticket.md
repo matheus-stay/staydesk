@@ -25,6 +25,32 @@ marcada **ou** desmarcada, porque desmarcada também é resposta.
 No painel do agente, campo obrigatório aparece com asterisco, e um aviso no topo
 lista o que falta antes de ele tentar resolver.
 
+Ao resolver com campo obrigatório vazio (botão Resolver, seletor de status, menu
+da conversa ou "Enviar como" resolvido), abre a janela do produto que pede os
+campos que faltam; preenchidos, a resolução segue. Os campos do StayDesk entram
+nessa janela por um gancho em `useConversationRequiredAttributes.js`
+(`staydesk/helpers/camposObrigatorios.js`). Se ainda assim o servidor recusar,
+o aviso mostra a mensagem dele, que lista os campos.
+
+No arquivo de configuração: `obrigatorio_para_resolver: true` na seção
+`atributos` (ver [api-e-mcp.md](api-e-mcp.md)). Sem a chave, fica o que está
+marcado na tela.
+
+## O assunto do ticket
+
+O assunto não é um campo do ticket, mas mora em dois lugares, e vale saber
+quais. O ticket de e-mail grava em `additional_attributes.mail_subject`; o que
+chega pela API (WHMCS) grava em `custom_attributes.assunto`. Ao salvar,
+`Custom::Conversation#staydesk_assunto_unico` copia o `assunto` para
+`mail_subject` quando este está vazio, para uma regra por assunto (gatilho,
+fila) valer para os dois.
+
+Onde o assunto aparece (tabela do Hub, home do Hub e API do Zendesk), a regra é
+a do Zendesk: ticket de e-mail ou API mostra `mail_subject`, depois `assunto`,
+depois "sem assunto"; chat e WhatsApp mostram "Chat com <cliente>", nunca a
+última mensagem. No front, `app/javascript/staydesk/helpers/assunto.js`; na API
+do Zendesk, `Staydesk::Zendesk::Serializer#assunto`.
+
 ## Pela API
 
 | Endpoint | O que faz |

@@ -7,7 +7,7 @@ configurações nem relatórios.
 ## Como funciona
 
 - Tabela `staydesk_account_user_roles` (`account_user_id`, `kind` = `full` ou `light`), modelo
-  `Staydesk::AccountUserRole`. Administração em Configurações › Papéis dos agentes
+  `Staydesk::AccountUserRole`. Administração em Central › Pessoas › Papéis dos agentes
   (`GET/PUT /staydesk/agent_roles/:user_id`, administrador).
 - `Custom::AccountUser` (gancho `prepend_mod_with('AccountUser')`): `staydesk_light?` e
   `permissions` com `staydesk_light` a mais. O front recebe isso no payload do usuário.
@@ -20,3 +20,6 @@ configurações nem relatórios.
 
 A API é a barreira de verdade; a interface só evita o erro. O leve ainda vê os botões de status e
 responsável do upstream; a chamada volta 403.
+
+O `kind` aqui é só cheio ou leve. Os papéis com permissão granular
+(`staydesk_roles`, `Staydesk::Role`) estão em [permissoes.md](permissoes.md).

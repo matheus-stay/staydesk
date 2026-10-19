@@ -38,6 +38,8 @@ primeira do usuário, ou a do cabeçalho `X-Account-Id`.
 | `via.channel` | tipo do canal: `email`, `chat` (site), `whatsapp`, `api`, `sms`, `facebook`, `instagram`… |
 | `requester_id` (usuário final) | `1_000_000_000 + contact_id` — contatos e agentes são tabelas diferentes aqui; o deslocamento evita colisão de id |
 | `assignee_id` / `group_id` | `assignee_id` / `team_id` |
+| `subject` | e-mail e API: `mail_subject`, depois `custom_attributes.assunto`, depois `additional_attributes.assunto`, depois "sem assunto"; chat e WhatsApp: "Chat com <cliente>" (i18n `staydesk.subject.*`, no idioma da conta) |
+| `description` | primeira mensagem do cliente |
 | `tags` | etiquetas |
 | `custom_fields[].id` | id da definição do atributo |
 | `satisfaction_rating.score` | `good`/`bad` (4–5 / 1–3), `_with_comment` quando há comentário, `unoffered` sem avaliação |

@@ -1,77 +1,75 @@
-# StayDesk — Mapa de Arquitetura (Chatwoot v4.17.1)
+# StayDesk — Onde cada coisa mora
 
-> Status: v1 · 2026-08-28 · FABLE CTO · Base: auditoria direta do código do fork
+O StayDesk é o Chatwoot **community** (MIT) com a camada da StayCloud por cima.
+Este mapa diz em que pasta cada coisa está e por quê. A regra de como tocar o
+núcleo está em [camada-staydesk.md](camada-staydesk.md); o que é Enterprise e
+por que não usamos, em [edicao-community.md](edicao-community.md).
 
 ## Stack
 
 | Camada | Tecnologia |
 |---|---|
-| Backend | Ruby on Rails (Ruby 3.2.2), Sidekiq (jobs), ActionCable (websockets) |
-| Frontend | **Vue 3 + Vite + Tailwind CSS**, Vitest (testes), Histoire (component playground) |
-| Banco | PostgreSQL 16 + pgvector (embeddings p/ IA) |
-| Cache/filas | Redis |
-| Dev runner | Overmind/Foreman (`Procfile.dev`: rails :3000 + sidekiq + vite dev) |
+| Backend | Ruby on Rails (Ruby da `.ruby-version`, hoje 3.4.4), Sidekiq (jobs), ActionCable (websockets) |
+| Frontend | Vue 3 + Vite + Tailwind CSS, Vitest nos testes. Node da `.nvmrc` |
+| Banco | PostgreSQL 16 com pgvector (imagem `pgvector/pgvector:pg16` no compose) |
+| Cache e filas | Redis |
+| Ambiente local | `docker compose` (ver [runbook-local.md](runbook-local.md)) |
 
-## Estrutura do frontend (`app/javascript/`) — território do Luiz
+## Edição
 
-| Pasta | O que é | Relevância |
-|---|---|---|
-| `dashboard/` | App principal dos agentes (a "cara" do helpdesk) | ⭐ Principal alvo do redesign |
-| `dashboard/components-next/` | **Design refresh em andamento pelo upstream** — componentes novos (Conversation, Inbox, Contacts, Settings...) | ⭐⭐ Construir em cima disso, não do legado |
-| `dashboard/components/` | Componentes legados | Evitar investir aqui |
-| `design-system/` | Tokens/estilos base + Histoire | Ponto de entrada pro design system StayDesk |
-| `widget/` | Chat widget embedado nos sites dos clientes | Rebrand fase 2 |
-| `portal/` | Help Center público | Rebrand fase 2 |
-| `v3/`, `survey/`, `superadmin_pages/` | Superfícies auxiliares | Baixa prioridade |
-| `tailwind.config.js` (raiz) | Config Tailwind | Customizar tokens de marca aqui |
+Roda a edição community: `DISABLE_ENTERPRISE=true`, nada de `enterprise/`
+executa, e o que a operação precisava do Enterprise (SLA, papéis, campo
+obrigatório para resolver, white-label) foi construído na camada. A pasta
+`enterprise/` continua no repositório só porque o sync com o oficial precisa
+dela. Detalhes em [edicao-community.md](edicao-community.md).
 
-**Implicação estratégica:** o upstream está no meio de um redesign (`components-next`). O redesign StayDesk deve (a) usar os componentes-next como base, (b) concentrar identidade visual em tokens Tailwind + design-system, minimizando conflito de merge com upstream.
+## A camada StayDesk
 
-## ⚠️ Licenciamento — decisão obrigatória
+| Pasta | O que é |
+|---|---|
+| `custom/` | Todo o backend da camada: modelos, serviços, jobs, listeners, controllers, rotas, migrations, tarefas rake e a referência da API. Estrutura em `custom/README.md` |
+| `custom/mcp/` | Servidor MCP que expõe a API da conta como ferramentas |
+| `custom/bin/` | Gate dos toques no núcleo, varredura da marca e gerador de ícones |
+| `app/javascript/staydesk/` | Todo o frontend da camada: páginas, componentes, composables, stores, API, helpers, textos e rotas |
+| `spec/staydesk/` | Specs do backend da camada |
+| `app/javascript/staydesk/**/specs/` | Specs do frontend da camada |
+| `docs/staydesk/` | Esta documentação. O histórico de planejamento fica em `arquivo/` |
+| `swagger/staydesk/` | OpenAPI da camada. A referência que a Central mostra é `custom/config/api_reference.json` |
+| `theme/`, `tailwind.config.js`, `public/brand-assets/` | Tokens e marca, pelos pontos de extensão que o próprio Chatwoot oferece ([marca.md](marca.md)) |
 
-O repo contém **duas licenças**:
+Fora disso, o núcleo do Chatwoot só é tocado nas formas que
+[camada-staydesk.md](camada-staydesk.md) descreve, e cada toque fica registrado
+em [core-touches.md](core-touches.md), conferido por
+`node custom/bin/staydesk-gate.mjs`.
 
-- Raiz: **MIT** (livre, é o Chatwoot Community Edition)
-- `enterprise/`: **Chatwoot Enterprise License** (proprietária — usar essas features em produção exige licença paga)
+## Frontend do núcleo (`app/javascript/`)
 
-### Features premium/enterprise (flags em `config/features.yml`)
+| Pasta | O que é |
+|---|---|
+| `dashboard/` | O app dos agentes. A camada entra por ganchos de uma linha e pela montagem das rotas (`withStaydeskRoutes`) |
+| `dashboard/components-next/` | Os componentes novos do upstream. Quando a camada compõe com o núcleo, compõe com estes |
+| `dashboard/components/` | Componentes legados do upstream |
+| `widget/`, `portal/`, `survey/` | Widget de chat, central de ajuda pública e pesquisa de satisfação. O que a camada muda aqui está em `core-touches.md` |
 
-`sla` · `captain_integration` (IA) · `advanced_search` · `custom_roles` · `saml` · `companies` · `channel_voice` · `audit_logs` · `disable_branding` · `csat_review_notes` · `advanced_assignment` · `conversation_required_attributes` · `custom_tools` · `help_center_embedding_search`
-
-### Opções (decidir no gate 3)
-
-| Opção | Prós | Contras |
-|---|---|---|
-| A. Ficar só no MIT (community) | Zero custo, zero risco legal | Sem SLA nativo, sem Captain AI, branding Chatwoot |
-| B. Licenciar Chatwoot (paid self-hosted) | Tudo liberado, suporte | Custo recorrente (avaliar vs Zendesk) |
-| C. Construir o que faltar por fora do `enterprise/` | Controle total | Esforço dev; não copiar código enterprise (violação) |
-
-**Recomendação preliminar CTO:** validar com o Naldo o que o CS *realmente* usa. Se SLA formal for indispensável → comparar custo B vs esforço C. `disable_branding` (white-label) provavelmente importa pro StayDesk → pesa a favor de B ou C.
-
-### ✅ Decisão 2026-08-28 (Luiz) — ADR-001
-
-- **Fase de avaliação (local):** usar TODAS as features, incluindo enterprise. Legal: a Enterprise License permite explicitamente uso em *development and testing* sem assinatura.
-- **Como foi ativado localmente:** `InstallationConfig` → `INSTALLATION_PRICING_PLAN=enterprise`, `INSTALLATION_PRICING_PLAN_QUANTITY=100` + premium flags habilitadas na conta (via rails runner). Só vale pro ambiente local.
-- **Gate pendente (bloqueia produção):** antes do go-live (story 6.4), decidir **pagar licença** ou **remover/substituir** as features enterprise. Produção sem licença = violação — não é opção.
-
-## Modelo de fork (anti-drift)
+## Ramos (modelo de fork)
 
 ```
-upstream (chatwoot/chatwoot) ──rebase periódico──▶ develop (staydesk)
-                                                      │
-                              customizações StayDesk ─┴─ branches feature → PR → develop
+upstream (chatwoot/chatwoot) ──▶ develop (espelho do oficial, sem nada nosso)
+                                      │
+                                      └─ merge ─▶ staydesk-revisado (o ramo de trabalho)
 ```
 
-Regras:
-1. Nunca commitar direto em `develop` — sempre branch + PR
-2. Customização visual concentrada em tokens/design-system (merge barato)
-3. Features novas em módulos próprios (`app/javascript/dashboard/staydesk/` ou similar) quando possível
-4. Sync com upstream: mensal, ou por release de segurança
+- `develop` é cópia fiel do `develop` do oficial. É contra ele que o gate
+  compara: o que difere de `develop` fora da camada é toque no núcleo e precisa
+  estar em `core-touches.md`.
+- O trabalho vive em `staydesk-revisado`. O sync traz o oficial para `develop`
+  e depois faz merge de `develop` no ramo de trabalho, resolvendo os conflitos
+  com a lógica do upstream e mantendo as classes e os ganchos da camada.
+- Comandos do sync em [runbook-local.md](runbook-local.md).
 
 ## Ambientes
 
-| Ambiente | Como roda | Uso |
-|---|---|---|
-| **Avaliação local** | `docker compose -f docker-compose.local.yaml` → `localhost:3020` | Naldo/Luiz explorarem o produto |
-| **Dev frontend** | `make setup` + `overmind start -f Procfile.dev` (Ruby 3.2.2, Node 20, pnpm, PG14+, Redis) | Luiz desenvolver com hot-reload Vite |
-| Produção | (fase posterior — VPS StayCloud, provavelmente compose ou k8s) | — |
+| Ambiente | Como roda |
+|---|---|
+| Local | `docker compose up -d`, app em `http://localhost:3000` ([runbook-local.md](runbook-local.md)) |
+| Produção | Imagem construída pelo CI a cada push em ramo `staydesk-*` (`.github/workflows/staydesk_image.yml`). Deploy e staging ficam fora deste mapa |

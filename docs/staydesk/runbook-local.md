@@ -1,69 +1,98 @@
-# StayDesk — Runbook Local
+# StayDesk — Runbook local
 
-> ⚠️ **Local do repo: `~/dev/staydesk`** — NÃO usar `~/Documents/staydesk` (ver ADR-003 abaixo).
+Subir, popular e conferir o ambiente local. Tudo roda pelo `docker-compose.yaml`
+da raiz, o mesmo do Chatwoot: rails, sidekiq, vite, postgres, redis e mailhog.
 
-## ADR-003 — Por que o repo saiu de `~/Documents`
+## Antes de começar
 
-`~/Documents` sincroniza com iCloud Drive. Combinado com um clone parcial (`--filter=blob:none`), isso corrompeu o packfile do git em 28/08: operações de `git add`/`push` disparavam download preguiçoso de blobs, estouravam timeout, eram mortas no meio e deixavam pack truncado (`pack ... is far too short to be a packfile`).
+- Repositório fora de pasta sincronizada (iCloud, OneDrive, Dropbox) e clone
+  completo, sem `--filter`. Em agosto, um clone parcial dentro de pasta
+  sincronizada corrompeu o packfile do git: o download preguiçoso de blobs
+  estourava o tempo no meio do `push` e deixava o pack truncado.
+- O ramo de trabalho é `staydesk-revisado`. `develop` é o espelho do oficial
+  ([architecture-map.md](architecture-map.md)).
+- `.env` na raiz, a partir do `.env.example`, com `DISABLE_ENTERPRISE=true` e
+  `DISABLE_TELEMETRY=true` ([edicao-community.md](edicao-community.md)).
 
-**Regra:** repositórios git ficam em `~/dev/`, fora de pastas sincronizadas. Clone sempre completo (sem `--filter`).
-
----
-
-## Dois ambientes
-
-| Ambiente | Compose | App | Pra quê |
-|---|---|---|---|
-| **Avaliação** (produção-like) | `docker-compose.local.yaml` | http://localhost:3020 | Naldo e Luiz explorarem o produto com dados reais |
-| **Dev** (hot-reload) | `docker-compose.dev.local.yaml` | http://localhost:3021 | Luiz mexer no frontend e ver a mudança na hora |
-
-Portas separadas de propósito — os dois podem rodar ao mesmo tempo.
-
-### Avaliação
+## Subir
 
 ```bash
-cd ~/dev/staydesk && docker compose -f docker-compose.local.yaml up -d
+docker compose up -d
 ```
 
-Primeira vez (banco): `docker compose -f docker-compose.local.yaml run --rm rails bundle exec rails db:chatwoot_prepare`
+- App: **http://localhost:3000** · Vite dev server: 3036 · Mailhog (e-mails de teste): http://localhost:8025
+- O diretório local é montado no container (`./:/app`): editar `.vue`, CSS ou
+  Ruby reflete na hora, sem rebuild.
+- Primeira vez (banco): `docker compose run --rm rails bundle exec rails db:chatwoot_prepare`
+- Marca nas contas: `docker compose exec rails bundle exec rails staydesk:setup`
 
-### Dev com hot-reload
+## Parar e voltar
 
 ```bash
-cd ~/dev/staydesk && docker compose -p staydesk-dev -f docker-compose.dev.local.yaml up -d
+docker compose stop      # para tudo, mantém os containers
+docker compose up -d     # volta
+docker compose logs -f rails
 ```
 
-- App: **http://localhost:3021** · Vite dev server: 3036 · Mailhog (e-mails de teste): http://localhost:8026
-- O diretório local é montado no container (`./:/app`) — **editar `.vue`/CSS reflete na hora**, sem rebuild
-- Primeira vez (banco do dev): `docker compose -p staydesk-dev -f docker-compose.dev.local.yaml run --rm rails bundle exec rails db:chatwoot_prepare`
+**Nunca rodar `docker compose down` nem `docker volume prune`.** O compose
+monta o volume nomeado `postgres` em `/data/postgres`, mas o Postgres grava em
+`/var/lib/postgresql/data`. Os dados de verdade ficam num **volume anônimo**
+criado pela imagem, preso ao container. `down` apaga o container e o próximo
+`up` cria outro com um volume anônimo novo, vazio; `volume prune` apaga o
+antigo de vez. Para parar, `stop`; para voltar, `up -d`.
 
-## Parar / logs / reset
+Para fixar o volume e não depender do container, um
+`docker-compose.override.yml` local aponta o caminho certo para um volume com
+nome. Ele fica fora do git pelo `.git/info/exclude` (não pelo `.gitignore`, que
+é compartilhado):
+
+```yaml
+services:
+  postgres:
+    volumes:
+      - pgdados:/var/lib/postgresql/data
+volumes:
+  pgdados:
+    external: true
+    name: <nome do volume anônimo que hoje guarda os dados>
+```
+
+O nome sai de `docker inspect <container do postgres> --format '{{json .Mounts}}'`.
+Com o override no lugar, o banco sobrevive a recriar o container.
+
+## Testes e conferências
 
 ```bash
-docker compose -f docker-compose.local.yaml down
-docker compose -f docker-compose.local.yaml logs -f rails
-docker compose -f docker-compose.local.yaml down -v   # APAGA os dados
+# specs da camada (banco de teste dentro do container)
+docker compose run --rm -T -e RAILS_ENV=test rails bundle exec rspec spec/staydesk
+
+# estilo do Ruby, dentro do container
+docker compose run --rm -T rails bundle exec rubocop custom spec/staydesk
+
+# specs do frontend da camada
+npx vitest run app/javascript/staydesk
+
+# toques no núcleo, contra develop, antes de commitar
+node custom/bin/staydesk-gate.mjs --worktree
+
+# nenhum texto visível diz Chatwoot
+node custom/bin/marca.mjs varredura
 ```
 
-(trocar por `-p staydesk-dev -f docker-compose.dev.local.yaml` para a stack de dev)
+O gate sem `--worktree` confere o que já está commitado (`HEAD`). Com ele,
+confere a árvore de trabalho, que é o que interessa antes do commit.
 
-## Features enterprise no ambiente local
-
-Ativadas em 28/08 (legal para dev/teste — ver ADR-001 em `architecture-map.md`):
+## Sync com o oficial (Chatwoot)
 
 ```bash
-docker compose -f docker-compose.local.yaml exec rails bundle exec rails runner "InstallationConfig.find_or_initialize_by(name: 'INSTALLATION_PRICING_PLAN').update!(value: 'enterprise'); InstallationConfig.find_or_initialize_by(name: 'INSTALLATION_PRICING_PLAN_QUANTITY').update!(value: 100); GlobalConfig.clear_cache; Account.find_each { |a| a.enable_features!('sla','custom_roles','audit_logs','disable_branding','companies','captain_integration','advanced_search') }"
+git fetch upstream
+git checkout develop && git merge --ff-only upstream/develop
+git checkout staydesk-revisado && git merge develop
 ```
 
-## Arquivos locais (não versionados)
-
-`.env` · `docker-compose.local.yaml` · `docker-compose.dev.local.yaml`
-
-## Sync com upstream (Chatwoot oficial)
-
-```bash
-git fetch upstream && git checkout develop && git merge upstream/develop
-```
+`develop` só avança por fast-forward: nada nosso entra nele. Os conflitos se
+resolvem no merge para `staydesk-revisado`, mantendo a lógica do upstream e as
+classes e ganchos da camada. Depois do merge, rodar o gate e os specs.
 
 ## Dados fictícios para ver as telas
 
@@ -74,5 +103,14 @@ docker compose exec rails bundle exec rails staydesk:demo RESET=1
 Popula a conta (`ACCOUNT_ID=1` por padrão) com o que as telas do StayDesk precisam para fazer sentido: quatro agentes com times, quatro caixas (dois chats e dois e-mails), etiquetas, catálogo de status do ticket, catálogo de status do agente com carga por fila, calendário e duas políticas de SLA, três visualizações por time, área de trabalho em tabela, vinte contatos e 45 conversas espalhadas por fila, status, responsável e prioridade, com mensagens.
 
 - `RESET=1` apaga as conversas e os contatos fictícios antes; sem ele, as conversas são somadas às existentes.
+- `SOMENTE=historico` só acrescenta o histórico dos clientes.
 - Não roda em produção (use `FORCE=1` por sua conta e risco).
 - Agentes criados: `ana@`, `bruno@`, `carla@`, `diego@staydesk.test`, senha `Staydesk#2026`. Entrar como um deles mostra a área de trabalho do time, diferente da visão do administrador.
+
+## Configurar a operação
+
+```bash
+docker compose exec rails bundle exec rails staydesk:configurar ACCOUNT_ID=1 FILE=configuracao.yml
+```
+
+O que o arquivo cobre está em [api-e-mcp.md](api-e-mcp.md#configuração-em-arquivo).

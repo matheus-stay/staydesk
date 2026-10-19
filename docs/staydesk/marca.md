@@ -28,6 +28,9 @@ O remetente de e-mail vem de `MAILER_SENDER_EMAIL` no ambiente (`StayDesk <ender
   `apple-icon.png`, `apple-touch-icon*.png`, `android-icon` 36 a 192 e `ms-icon` 70/144/150/310.
   Depende de `@resvg/resvg-js`, instalado à parte: `pnpm --dir custom/bin/icones install --ignore-workspace`.
 - `public/manifest.json` (nome, cores) e `public/browserconfig.xml` (cor do tile) editados à mão.
+- O símbolo pequeno (`public/brand-assets/logo_thumbnail.svg`) tem margem cortada e traço reforçado e é
+  usado a 20 px na barra lateral. Não reduzir abaixo disso: a 16 px o traço da nuvem fica abaixo de 1
+  pixel e o símbolo vira um borrão.
 
 Arquivo em `public/` é o único caso de "editar" arquivo do upstream sem gancho: é binário, e no sync a
 versão que vale é a nossa.
@@ -62,3 +65,32 @@ Contratos de código: `window.chatwootSDK`, `window.$chatwoot`, `window.chatwoot
 (SDK do widget nos sites dos clientes), o cookie `cw_conversation`, o módulo `Chatwoot` do Rails,
 `ChatwootApp`, `ChatwootHub`, `ChatwootExceptionTracker`, o pacote `@chatwoot/chatwoot`, a tarefa
 `db:chatwoot_prepare`, as variáveis `CHATWOOT_*`, nomes de tabela e de fila. A varredura já os ignora.
+
+## 6. E-mail ao cliente
+
+A resposta ao cliente por e-mail saía sem layout: texto solto, sem marca, sem
+assinatura, e o pedido de avaliação virava um link cru no meio da frase. Hoje
+sai como o Zendesk entrega (SPEC-18):
+
+- **Layout da marca.** `Custom::ConversationReplyMailer` troca o layout das
+  respostas ao cliente por `layouts/mailer/staydesk.html.erb`, com a logo (URL
+  absoluta com a impressão digital do arquivo, para o cliente de e-mail não
+  guardar a velha), o nome da conta e o endereço para onde o cliente responde.
+- **Assinatura.** Assina quem respondeu, com nome e foto; mensagem automática
+  não leva assinatura.
+- **Idioma da conta.** O e-mail sai no idioma da conta, não no padrão do
+  servidor: sem isso, a resposta de uma conta em português saía em inglês.
+- **Aviso de recebimento.** Ação de gatilho `staydesk_aviso_de_recebimento`
+  (`Custom::AutomationRules::ActionService`): a mensagem é marcada e o e-mail a
+  mostra como o cartão do chamado (número, assunto, canal, data e o botão do
+  **painel do cliente**). O endereço do painel vem da seção `conta` do arquivo
+  de configuração (`painel_do_cliente`).
+- **Pesquisa de satisfação depois da resposta.** A pesquisa espera antes de
+  sair (`Staydesk::Csat::SurveyJob`, gancho em `csat_survey_listener.rb`), para
+  não chegar antes da resposta que resolveu. O atraso é por canal, em
+  `csat_config.staydesk_atraso_em_minutos` (padrão 5); no arquivo,
+  `pesquisa_apos_minutos` na seção `caixas`. A pesquisa vai como bloco próprio
+  no e-mail, não como link no meio do texto.
+- **Nota pré-marcada.** O cliente clica na nota no e-mail e a pesquisa abre
+  com ela marcada (`?rating=`, `staydesk/helpers/csat.js`, gancho em
+  `survey/views/Response.vue`), sem sobrescrever resposta já dada.

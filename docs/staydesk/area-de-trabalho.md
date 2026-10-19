@@ -30,7 +30,8 @@ admin sobrepõe por conta e por time.
   `CustomAttribute` do upstream; no cabeçalho, o selo de SLA e o "Avançar".
 - `components/SubmitAs.vue`: "Enviar como <status>", montado abaixo da caixa de resposta por um gancho
   no `ReplyBox.vue`; depois de enviar, fica, abre a próxima (`useNextConversation`) ou volta à lista,
-  conforme `composer.after_send`.
+  conforme `composer.after_send`. Sem texto na caixa, só muda o status (resolver sem escrever).
+  Resolver com campo obrigatório vazio abre a janela que pede os campos.
 - `pages/WorkspaceSettings.vue`: administração por time. Listas vazias herdam; sobreposição por papel
   só pela API por enquanto.
 - Ganchos de uma linha: `Sidebar.vue` (menu principal e "mais"), `ContactPanel.vue` (seções),

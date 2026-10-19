@@ -39,6 +39,6 @@ O SLA é configurado, calculado e vigiado dentro do StayDesk. O dashboard só l�
 
 ## Telas (`app/javascript/staydesk/`)
 
-Configurações › Políticas de SLA (`SlaSettings.vue`, `SlaPolicyForm.vue` com o `ConditionRow` do upstream e a
-grade de alvos), Configurações › Calendários (`CalendarsSettings.vue`, `CalendarForm.vue`) e o bloco SLA no
+Central › Prazos › Políticas de SLA (`SlaSettings.vue`, `SlaPolicyForm.vue` com o `ConditionRow` do upstream e a
+grade de alvos), Central › Prazos › Calendários (`CalendarsSettings.vue`, `CalendarForm.vue`) e o bloco SLA no
 painel de campos (`SlaDetail.vue`).

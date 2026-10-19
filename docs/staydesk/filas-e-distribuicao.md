@@ -74,8 +74,8 @@ Regras de capacidade; API `staydesk/capacity_rules`; no arquivo, a seção
 
 A conta é: o agente recebe uma conversa se o **status** dele recebe aquele canal,
 a **regra de capacidade** dele ainda tem vaga nesse canal, ele está num **grupo**
-da fila (principal, ou secundário liberado), é **membro da caixa** e está
-**conectado**. Grupo decide de quem é o trabalho; status decide que tipo ele
+da fila (principal, ou secundário liberado), é **membro do canal** (calculado das
+filas, ver "Canal, não caixa") e está **conectado**. Grupo decide de quem é o trabalho; status decide que tipo ele
 pega agora; capacidade decide quanto.
 
 ## Canal, não caixa
@@ -93,7 +93,11 @@ está no grupo atende o canal que a fila mandar. O StayDesk segue o Zendesk:
   secundário dela atende aqueles canais. O Chatwoot só entrega e só mostra a
   conversa de um canal a quem é membro dele, então os membros de cada canal são
   calculados das filas (`Staydesk::QueueMembership`): na varredura de cada
-  minuto, ao salvar uma fila e na importação. A aba "Colaboradores" da caixa
+  minuto, ao salvar uma fila e na importação. Além dos grupos das filas, são
+  membros do canal enquanto a conversa estiver aberta: o responsável por ela e
+  todos os membros do grupo para o qual ela foi mandada, mesmo um grupo fora das
+  filas (comercial, financeiro). Quem não está em nenhum desses casos é retirado
+  do canal na varredura seguinte. A aba "Colaboradores" da caixa
   some, porque seria desfeita. Conta sem fila ativa não é tocada. Até
   2026-10-19 a regra era "todo agente em todos os canais".
 - **O status também segue as filas.** O agente só escolhe status que recebem
@@ -103,8 +107,13 @@ está no grupo atende o canal que a fila mandar. O StayDesk segue o Zendesk:
   `available_to_me` e o servidor recusa os outros. Administrador escolhe
   qualquer um.
 - **Transferência é livre.** "Atribuir para" lista todos os agentes da conta,
-  como no Zendesk: o ticket que alguém manda ao N1 chega a ele, e ele passa a
-  ser membro do canal na hora, enquanto a conversa estiver aberta com ele.
+  como no Zendesk: o ticket que alguém manda ao N1 chega a ele. Quem recebe a
+  conversa, ou o grupo inteiro para o qual ela é mandada, passa a ser membro do
+  canal na hora (`Custom::Conversation#staydesk_acesso_do_responsavel`), e
+  continua enquanto a conversa estiver aberta. A lista vem de
+  `Custom::Api::V1::Accounts::AssignableAgentsController`, que troca "membros do
+  canal" por "agentes da conta". Por isso o spec do upstream de atribuíveis
+  diverge aqui: ele espera só os membros do canal.
 - Quem recebe o quê é grupo + status + capacidade + conexão. O que o agente vê é
   das visualizações por grupo e dos papéis.
 
@@ -127,9 +136,23 @@ secundários nunca entram e a conversa espera por quem não está atendendo.
 
 Quando alguém "coloca online e não cai nada", a resposta está em Central ›
 Distribuição de trabalho › Status dos agentes › **Quem recebe o quê**: para cada
-agente e cada fila, se a distribuição entrega e, se não, qual condição falta
-(conexão, status, canal de trabalho, vaga ou grupo). Pela API é `GET staydesk/distribution_checks`. Nove em dez vezes
+agente e cada fila, se a distribuição entrega e, se não, qual condição falta.
+São seis: `connected` (conectado), `available` (status online), `receives_channel`
+(o status recebe o canal de trabalho), `has_capacity` (vaga na regra de
+capacidade), `in_group` (grupo principal ou secundário da fila) e `inbox_member`
+(membro do canal). `missing_inbox_ids` lista os canais da fila em que o agente
+não está. Pela API é `GET staydesk/distribution_checks`. Nove em dez vezes
 é grupo: o agente precisa estar num grupo principal ou secundário da fila.
+
+**Por que esta conversa não foi oferecida?** `GET
+staydesk/distribution_checks?conversation_id=<id>` refaz, sem mudar nada, o
+caminho da varredura (`Staydesk::DistributionTrace`) e diz em que etapa a
+conversa para (`para_em`). As etapas, em ordem: aberta e sem responsável, sem
+bot responsável, sem convite pendente, distribuição ligada no canal, tem grupo,
+tem fila, alguém na roda do canal, alguém elegível na fila, alguém online entre
+os elegíveis, rodízio tem o candidato. `para_em` nulo quer dizer que ela deveria
+ir para quem aparece em `escolheria`. A etapa do bot existe porque o Chatwoot
+pula, sem aviso, a conversa que está com um robô.
 
 ## Aceite
 
@@ -153,6 +176,16 @@ estavam com ele voltam para a fila. Conta só desde que entrou no status atual;
 ao escolher um status de novo, zera. No arquivo: `convites_perdidos_seguidos`
 e `convites_perdidos_para` na regra.
 
+Por dentro: `Staydesk::OfferService#offer!` cria o convite (`Staydesk::Offer`)
+e agenda `Staydesk::Offers::ExpireJob` para o fim do prazo; `accept!` atribui e
+`decline!` (também usado no vencimento, com `status: 'expirada'`) devolve a
+conversa à roda sem quem não pegou. Se o job de vencimento se perder, a
+varredura vence o convite na volta seguinte (ver "Varredura da fila"). Na tela,
+o cartão (`components/OfferCard.vue`, montado no `App.vue` por um gancho)
+consulta `GET staydesk/offers` a cada 3 segundos pelo `useOffers`, toca o som,
+mostra o aviso do navegador quando a permissão foi dada e chama
+`offers/:id/accept` ou `decline`.
+
 A aceitação vira número: Central › Status dos agentes mostra, por agente, quantos
 convites recebeu, aceitou, recusou, deixou vencer e em quanto tempo respondeu.
 A taxa é aceitos sobre oferecidos; cada convite vencido ou recusado conta contra
@@ -164,7 +197,12 @@ O Chatwoot só distribui quando a conversa nasce ou recebe mensagem. Quem entrou
 antes de o agente ficar disponível ficaria esperando para sempre.
 
 A varredura (`Staydesk::Queues::SweepJob`) roda **a cada minuto** e **assim que
-alguém muda de status**. Ela pega o que está aberto e sem responsável, encaminha
+alguém muda de status**. A cada volta, ela primeiro acerta os membros de cada
+canal pelas filas (`QueueMembership.sync!`) e depois vence os convites pendentes
+que já passaram do prazo. O vencimento normal é um job agendado
+(`Staydesk::Offers::ExpireJob`), e ele pode se perder num deploy ou num Redis
+reiniciado; sem essa rede, a conversa ficava parada para sempre, porque a
+varredura pula conversa com convite pendente. Só então distribui: pega o que está aberto e sem responsável, encaminha
 quem ficou sem grupo e chama a distribuição, na ordem que cada fila manda: fila
 de cima primeiro; dentro dela, `chegada` entrega o mais antigo e `sla` entrega
 quem está mais perto de vencer, olhando a métrica ainda aberta mais próxima.
@@ -177,11 +215,14 @@ transbordo por tempo.
 
 | Endpoint | O que faz |
 |---|---|
-| `GET staydesk/queues` | Lista as filas de encaminhamento |
+| `GET/POST/PATCH/DELETE staydesk/queues` | Lista, cria, altera e remove as filas de encaminhamento |
+| `PUT staydesk/queues/reorder` | Muda a ordem das filas (a primeira que casar leva) |
 | `staydesk/capacity_rules` | Regras de capacidade (CRUD) |
-| `POST/PATCH/DELETE staydesk/queues` | Cria, altera e remove |
-| `GET staydesk/load_queues` | Lista as filas de carga |
-| `PATCH staydesk/load_queues/:id` | Altera canais e caixas de uma fila de carga |
-| `GET staydesk/agent_loads` | Carga de cada agente agora, contra o limite |
+| `GET staydesk/load_queues` | Lista os canais de trabalho (`load_queues`) |
+| `POST/PATCH/DELETE staydesk/load_queues` | Cria, altera canais e caixas, e remove um canal de trabalho |
+| `GET staydesk/agent_loads` | Carga de cada agente agora, contra o teto da regra de capacidade |
+| `GET staydesk/distribution_checks` | Quem recebe o quê, condição por condição. Com `conversation_id`, o caminho daquela conversa até onde para |
 | `GET staydesk/offers` | Convites pendentes de quem está atendendo |
+| `POST staydesk/offers/:id/accept` | Aceita o convite: a conversa vira do agente |
+| `POST staydesk/offers/:id/decline` | Recusa: a conversa vai para o próximo disponível |
 | `GET staydesk/offer_stats` | Aceitação por agente no período |

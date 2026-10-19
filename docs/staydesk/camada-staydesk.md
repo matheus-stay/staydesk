@@ -7,12 +7,12 @@ Como o StayDesk acrescenta código ao Chatwoot sem transformar o sync com o ofic
 | Camada | Pasta | Como entra no Chatwoot |
 |---|---|---|
 | Backend próprio | `custom/` | Autoload, views, initializers, migrations, rake e rotas registrados por `custom/config/boot.rb`, chamado em duas linhas de `config/application.rb`; módulos `Custom::` entram pelo gancho `prepend_mod_with` que o núcleo já tem. Detalhe em `custom/README.md` |
-| Frontend próprio | `app/javascript/staydesk/` | Plugin `app.use(StayDesk, { i18n })` em `entrypoints/dashboard.js`; rotas por spread em `dashboard/routes/index.js`; textos por `mergeLocaleMessage` nos três entrypoints; alias `staydesk` em `vite.shared` |
+| Frontend próprio | `app/javascript/staydesk/` | Plugin `app.use(StayDesk, { i18n })` em `entrypoints/dashboard.js`; rotas por `withStaydeskRoutes(dashboard.routes)` em `dashboard/routes/index.js`, que as injeta como filhas da rota da conta; textos por `mergeLocaleMessage` nos três entrypoints; alias `staydesk` em `vite.shared` |
 | Tokens e marca | `theme/`, `tailwind.config.js`, `public/brand-assets/`, `InstallationConfig` | Pontos de extensão que o próprio Chatwoot oferece |
 | Testes | `spec/staydesk/`, `app/javascript/staydesk/**/specs/` | Rodam com a suíte normal |
 | Esquema do banco | `db/schema.rb` | Gerado por `rails db:migrate` e commitado com as tabelas `staydesk_*`: numa instalação nova, `db:chatwoot_prepare` carrega o esquema e roda `db:seed` antes das migrations, e o seed aborta se houver migration pendente |
 
-## As quatro formas de tocar arquivo do núcleo
+## As formas de tocar arquivo do núcleo
 
 | Tipo | O que é | Limite |
 |---|---|---|
@@ -20,6 +20,7 @@ Como o StayDesk acrescenta código ao Chatwoot sem transformar o sync com o ofic
 | `gancho` | Uma linha que chama composable ou componente da camada, com `staydesk` no texto | Uma linha; a lógica fica em `app/javascript/staydesk/` |
 | `montagem` | Import ou uso único da camada nos arquivos de entrada | Lista fixa, abaixo |
 | `view` | Partial ERB copiada para `custom/app/views` no mesmo caminho relativo | Só ERB pequena; o original não muda |
+| `legado` | Edição no lugar herdada do ramo de UX, de antes desta regra | Transitório: não é checado e deve ser migrado para uma das quatro formas acima |
 
 Copiar um componente Vue do upstream para editar **não é permitido**: a cópia diverge a cada sync.
 Se um componente não dá para compor nem para ganchar com uma linha, isso é decisão de arquitetura, não atalho.
@@ -38,7 +39,7 @@ migrados aos poucos para classe-só ou para a camada.
 | `app/javascript/entrypoints/dashboard.js` | `app.use(StayDesk, { i18n })` |
 | `app/javascript/entrypoints/widget.js` | `mergeStaydeskWidgetMessages(i18n)` |
 | `app/javascript/entrypoints/survey.js` | `mergeStaydeskSurveyMessages(i18n)` |
-| `app/javascript/dashboard/routes/index.js` | `...staydeskRoutes` |
+| `app/javascript/dashboard/routes/index.js` | `withStaydeskRoutes(dashboard.routes)` |
 
 ## Rodando
 
@@ -48,3 +49,6 @@ node custom/bin/marca.mjs varredura          # nenhum texto visível diz Chatwoo
 pnpm exec vitest --no-watch app/javascript/staydesk
 bundle exec rspec spec/staydesk
 ```
+
+No ambiente local em Docker, os mesmos comandos dentro do container estão em
+[runbook-local.md](runbook-local.md#testes-e-conferências).

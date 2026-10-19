@@ -29,7 +29,7 @@ enxergam, colunas e ordenação; o agente vê as views dos seus times na barra l
 - `api/teamViews.js`, `store/teamViews.js` (Pinia) e `composables/useTeamViews.js` (carga, contagens a
   cada 60 s, `asFolder`).
 - `composables/useStaydeskSidebar.js`: o grupo "Visualizações" na barra de conversas e a entrada em
-  Configurações. `Sidebar.vue` os recebe por spread em dois ganchos de uma linha.
+  Central › Atendimento. `Sidebar.vue` os recebe por spread em dois ganchos de uma linha.
 - Rotas `staydesk_view_conversations` e `staydesk_view_conversation` (`/staydesk/views/:id`) reaproveitam a
   `ConversationView` passando `foldersId = staydesk-<id>`. No `ChatList.vue`, um gancho faz a view valer
   como pasta ativa (mesmo fluxo de busca por `conversations/filter`) e outro esconde as ações de pasta
@@ -39,6 +39,8 @@ enxergam, colunas e ordenação; o agente vê as views dos seus times na barra l
 
 ## Limites conhecidos
 
-- A ordenação da view (`sort_by`) é aplicada pela API da view; na tela, até a tabela da SPEC-04, vale a
-  ordenação escolhida pelo usuário na lista, como nas pastas.
-- `columns` fica guardado e passa a ser usado pela lista em tabela (SPEC-04).
+- A ordenação da view (`sort_by`) é aplicada pela API da view (`team_views/:id/conversations`); na tela,
+  que busca pelo mesmo fluxo das pastas, vale a ordenação escolhida pelo usuário na lista.
+- A lista em tabela da SPEC-04 já existe (`ConversationTable.vue`), mas as colunas dela vêm da
+  [área de trabalho](area-de-trabalho.md), por time e por papel. O `columns` da view fica guardado e
+  volta na API, sem uso na tela.
