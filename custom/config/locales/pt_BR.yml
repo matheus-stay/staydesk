@@ -11,6 +11,10 @@ pt_BR:
       description: Eventos webhook fornecem atualizações sobre atividades em tempo real na sua conta StayDesk. Você pode se inscrever em seus eventos preferidos, e o StayDesk enviará as chamadas HTTP com
         as atualizações.
   staydesk:
+    subject:
+      none: 'Sem assunto'
+      chat_with: 'Chat com %{name}'
+      unknown_contact: 'cliente'
     ticket_fields:
       required_to_resolve: 'Preencha antes de resolver: %{fields}'
     email:

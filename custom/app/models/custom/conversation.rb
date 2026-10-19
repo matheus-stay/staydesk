@@ -50,8 +50,8 @@ module Custom::Conversation
     faltando = Staydesk::TicketFieldService.new(account).faltando(self)
     return if faltando.empty?
 
-    errors.add(:status, I18n.t('staydesk.ticket_fields.required_to_resolve',
-                               fields: faltando.map(&:attribute_display_name).join(', ')))
+    errors.add(:base, I18n.t('staydesk.ticket_fields.required_to_resolve',
+                             fields: faltando.map(&:attribute_display_name).join(', ')))
   end
 
   def staydesk_after_update

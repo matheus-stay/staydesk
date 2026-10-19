@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { assuntoDaConversa } from '../helpers/assunto';
 import { useRoute, useRouter } from 'vue-router';
 import { useMapGetter } from 'dashboard/composables/store';
 import { frontendURL, conversationUrl } from 'dashboard/helper/URLHelper';
@@ -36,11 +37,7 @@ const visibleColumns = computed(() =>
 const inboxName = id =>
   inboxes.value.find(inbox => inbox.id === id)?.name || '';
 
-const subject = conversation =>
-  conversation.custom_attributes?.assunto ||
-  conversation.additional_attributes?.mail_subject ||
-  conversation.last_non_activity_message?.content ||
-  '';
+const subject = conversation => assuntoDaConversa(conversation, t);
 
 const seconds = value => tempoRelativo(value, locale.value);
 

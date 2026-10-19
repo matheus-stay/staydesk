@@ -850,6 +850,11 @@
         "UNLIMITED": "{load} · no limit",
         "NONE": "does not receive"
       }
+    },
+    "SUBJECT": {
+      "NONE": "No subject",
+      "CHAT_WITH": "Chat with {name}",
+      "UNKNOWN_CONTACT": "customer"
     }
   },
   "AUTOMATION": {

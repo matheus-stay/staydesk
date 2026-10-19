@@ -11,6 +11,7 @@ import { useTeamViews } from '../composables/useTeamViews';
 import { useAgentStatusStore } from '../store/agentStatus';
 import SlaBadge from '../components/SlaBadge.vue';
 import { emDuracao } from '../helpers/duracao';
+import { assuntoDaConversa } from '../helpers/assunto';
 
 // A porta de entrada do Hub, para quem atende: o status de agora com troca
 // rápida, as visualizações com a contagem, e o que está com a pessoa neste
@@ -76,11 +77,7 @@ const abrirConversa = conversa =>
     accountScopedRoute('inbox_conversation', { conversation_id: conversa.id })
   );
 
-const assunto = conversa =>
-  conversa.custom_attributes?.assunto ||
-  conversa.additional_attributes?.mail_subject ||
-  conversa.messages?.at(-1)?.content ||
-  '';
+const assunto = conversa => assuntoDaConversa(conversa, t);
 const esperaDesde = conversa =>
   conversa.last_activity_at
     ? emDuracao(Date.now() / 1000 - conversa.last_activity_at)

@@ -36,8 +36,11 @@ const applyStatus = async ticketStatus => {
     );
     await store.dispatch('updateConversation', data);
     useAlert(t('STAYDESK.TICKET_STATUS.PICKER.SUCCESS'));
-  } catch {
-    useAlert(t('STAYDESK.TICKET_STATUS.PICKER.ERROR'));
+  } catch (error) {
+    // O servidor diz o que impede (os campos que faltam para resolver).
+    useAlert(
+      error?.response?.data?.message || t('STAYDESK.TICKET_STATUS.PICKER.ERROR')
+    );
   } finally {
     isSaving.value = false;
   }

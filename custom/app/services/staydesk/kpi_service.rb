@@ -30,7 +30,8 @@ class Staydesk::KpiService
       aceitacao: aceitacao,
       volumes: volume_service.volumes,
       sla: volume_service.sla,
-      por_dia: por_dia
+      por_dia: por_dia,
+      por_campo: por_campo
     }
   end
 
@@ -185,6 +186,24 @@ class Staydesk::KpiService
 
   # O KPI de tempo online: média entre os agentes que tiveram algum tempo online
   # no período, no total e por dia trabalhado.
+  # Contagem de tickets pelos campos do ticket (listas: Tipo de Demanda, Tipo
+  # de Produto, Classificação, Servidor…). Régua: tickets criados no período,
+  # com os recortes de canal e grupo; "sem_valor" é quem não tem o campo
+  # preenchido. É o número que hoje sai das views e relatórios do Zendesk.
+  def por_campo
+    base = conversas_filtradas.where(created_at: periodo)
+    total = base.count
+    campos_de_lista.to_h do |campo|
+      coluna = Arel.sql("conversations.custom_attributes ->> #{Conversation.connection.quote(campo.attribute_key)}")
+      valores = base.group(coluna).count.transform_keys { |valor| valor.presence || 'sem_valor' }
+      [campo.attribute_key, { nome: campo.attribute_display_name, total: total, valores: valores.sort_by { |_, n| -n }.to_h }]
+    end
+  end
+
+  def campos_de_lista
+    @account.custom_attribute_definitions.where(attribute_model: 'conversation_attribute', attribute_display_type: 'list').order(:id)
+  end
+
   def resumo_dos_agentes
     linhas = agentes.select { |linha| linha[:segundos_online].positive? }
     return { agentes_com_tempo_online: 0, tempo_online_medio_segundos: 0, media_diaria_online_segundos: 0 } if linhas.empty?

@@ -28,6 +28,7 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/views/api/v1/models/_custom_attribute_definition.json.jbuilder` | view | Campos | Sobreposição em `custom/app/views` com a marcação de obrigatório |
 | `app/javascript/dashboard/routes/dashboard/settings/attributes/AddAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
 | `app/javascript/dashboard/routes/dashboard/settings/attributes/EditAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
+| `app/javascript/dashboard/composables/useConversationRequiredAttributes.js` | gancho | Campos | Os campos obrigatórios do StayDesk entram na janela do produto que pede os campos antes de resolver |
 | `app/javascript/dashboard/routes/dashboard/conversation/contact/ContactInfo.vue` | gancho | UX | O nome do cliente abre o perfil; a edição fica no lápis |
 | `app/javascript/dashboard/routes/dashboard/settings/inbox/Settings.vue` | gancho | Canais | A aba Colaboradores sai: quem atende o canal vem dos grupos das filas (2 linhas) |
 | `app/services/auto_assignment/agent_assignment_service.rb` | gancho | SPEC-16 | `prepend_mod_with` para a fila com aceite convidar em vez de atribuir (1 linha) |

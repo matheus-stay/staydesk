@@ -3,6 +3,7 @@ import { useMapGetter } from 'dashboard/composables/store';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import { ATTRIBUTE_TYPES } from 'dashboard/components-next/ConversationWorkflow/constants';
+import { obrigatoriosStaydesk } from 'staydesk/helpers/camposObrigatorios'; // staydesk:hook campo obrigatório
 
 /**
  * Composable for managing conversation required attributes workflow
@@ -27,7 +28,7 @@ export function useConversationRequiredAttributes() {
   );
 
   const requiredAttributeKeys = computed(() => {
-    if (!isFeatureEnabled.value) return [];
+    if (!isFeatureEnabled.value) return obrigatoriosStaydesk(); // staydesk:hook campo obrigatório
     return (
       currentAccount.value?.settings?.conversation_required_attributes || []
     );

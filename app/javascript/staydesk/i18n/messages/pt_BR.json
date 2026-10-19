@@ -874,6 +874,11 @@
         "UNLIMITED": "{load} · sem limite",
         "NONE": "não recebe"
       }
+    },
+    "SUBJECT": {
+      "NONE": "Sem assunto",
+      "CHAT_WITH": "Chat com {name}",
+      "UNKNOWN_CONTACT": "cliente"
     }
   },
   "AUTOMATION": {
