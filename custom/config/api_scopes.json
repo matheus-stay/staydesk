@@ -1,5 +1,7 @@
 {
   "_comentario": "Escopos dos tokens de API. Cada grupo cobre os controllers cujos caminhos começam por um dos prefixos; ganha o prefixo mais específico, então 'conta' é guarda-chuva sem engolir os outros. Todo grupo tem leitura (GET, HEAD) e escrita (o resto). O que nenhum grupo cobrir não passa — é por isso que as APIs de plataforma, de widget e públicas não estão aqui: token de conta não fala com elas.",
+  "fora_do_token_comentario": "Caminhos que nenhum token de API alcança, seja qual for o escopo: o perfil devolve o token pessoal do usuário (acesso total), e criar token ou entrar como outra pessoa transformaria um token restrito em acesso maior. Isso fica só para quem está logado.",
+  "fora_do_token": ["api/v1/profiles", "api/v1/profile", "api/v1/accounts/staydesk/api_tokens", "api/v1/accounts/staydesk/impersonations"],
   "grupos": [
     {
       "chave": "conversas",

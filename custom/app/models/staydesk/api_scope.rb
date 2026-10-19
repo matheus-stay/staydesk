@@ -9,10 +9,14 @@ class Staydesk::ApiScope
 
   class << self
     def grupos
-      # Em desenvolvimento lê o arquivo a cada vez: editar o JSON aparece na hora.
-      return @grupos = JSON.parse(File.read(CATALOGO))['grupos'] if Rails.env.development?
+      catalogo['grupos']
+    end
 
-      @grupos ||= JSON.parse(File.read(CATALOGO))['grupos']
+    def catalogo
+      # Em desenvolvimento lê o arquivo a cada vez: editar o JSON aparece na hora.
+      return JSON.parse(File.read(CATALOGO)) if Rails.env.development?
+
+      @catalogo ||= JSON.parse(File.read(CATALOGO))
     end
 
     def chaves
@@ -28,9 +32,21 @@ class Staydesk::ApiScope
       todos.include?(escopo.to_s)
     end
 
+    # Caminhos que nenhum token alcança (perfil com o token pessoal, criar token,
+    # entrar como outra pessoa): sem eles, um token restrito vira acesso total.
+    def fora_do_token
+      catalogo['fora_do_token'] || []
+    end
+
+    def fora_do_token?(controller_path)
+      fora_do_token.any? { |prefixo| controller_path.to_s.start_with?(prefixo) }
+    end
+
     # Qual grupo responde por este controller: o do prefixo mais longo.
     def grupo_de(controller_path)
       caminho = controller_path.to_s
+      return if fora_do_token?(caminho)
+
       candidatos = grupos.flat_map do |grupo|
         grupo['prefixos'].filter_map { |prefixo| [prefixo.length, grupo['chave']] if caminho.start_with?(prefixo) }
       end
