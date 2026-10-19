@@ -44,7 +44,8 @@ class Staydesk::DistributionCheckService
     agente = { status: status, times: times, caixas: caixas, id: usuario.id, carga: carga, limite: limite, em_uso: em_uso }
     checks = checks_de(fila, caixas_da_fila, agente)
     { queue_id: fila.id, queue: fila.name, team: fila.team.name, load_queue: carga,
-      capacity: limite, load: em_uso, checks: checks, receives: checks.values.all? }
+      capacity: limite, load: em_uso, checks: checks, receives: checks.values.all?,
+      missing_inbox_ids: faltando(caixas_da_fila, caixas) }
   end
 
   def checks_de(fila, caixas_da_fila, agente)
@@ -55,8 +56,14 @@ class Staydesk::DistributionCheckService
       receives_channel: status.present? && (agente[:carga].nil? || status.receives?(agente[:carga])),
       has_capacity: agente[:limite].nil? || agente[:em_uso] < agente[:limite],
       in_group: (fila.team_ids + fila.fallback_team_ids).intersect?(agente[:times]),
-      inbox_member: caixas_da_fila.map(&:id).intersect?(agente[:caixas])
+      inbox_member: caixas_da_fila.any? && faltando(caixas_da_fila, agente[:caixas]).empty?
     }
+  end
+
+  # Os canais da fila em que o agente não está. O Chatwoot só entrega a
+  # conversa de um canal a quem é membro dele.
+  def faltando(caixas_da_fila, caixas_do_agente)
+    caixas_da_fila.map(&:id) - caixas_do_agente
   end
 
   def regras

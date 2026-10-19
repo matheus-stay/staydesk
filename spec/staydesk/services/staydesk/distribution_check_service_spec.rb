@@ -36,6 +36,18 @@ RSpec.describe Staydesk::DistributionCheckService do
     expect(fila_do_agente).to include(load_queue: 'ticket', capacity: 20, load: 0)
   end
 
+  # Estar em um canal da fila não basta: o Chatwoot só entrega a conversa de um
+  # canal a quem é membro dele, e foi assim que um WhatsApp sem ninguém parou.
+  it 'names the queue channel the agent is missing from' do
+    create(:team_member, team: n2, user: agent)
+    create(:inbox_member, inbox: email, user: agent)
+    outro = create(:inbox, account: account, channel: create(:channel_email, account: account))
+    outro.inbox_members.where(user_id: agent.id).delete_all
+
+    expect(fila_do_agente[:checks]).to include(inbox_member: false)
+    expect(fila_do_agente[:missing_inbox_ids]).to eq([outro.id])
+  end
+
   it 'flags the channel when the status does not take that queue' do
     create(:team_member, team: n2, user: agent)
     create(:inbox_member, inbox: email, user: agent)

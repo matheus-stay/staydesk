@@ -12,6 +12,14 @@ module Custom::Inbox
     super(user_ids.map(&:to_i) - inbox_members.pluck(:user_id))
   end
 
+  # A tela de agentes do canal (e o assistente de criação) manda a lista
+  # escolhida e o Chatwoot tira quem ficou de fora. Foi assim que um canal de
+  # WhatsApp ficou sem ninguém e a fila dele parou sem erro nenhum. Quem é da
+  # conta fica em todos os canais; só sai do canal quem já saiu da conta.
+  def remove_members(user_ids)
+    super(user_ids.map(&:to_i) - account.account_users.pluck(:user_id))
+  end
+
   # A fila com aceite (SPEC-16) vive na distribuição legada: é ela que chama
   # `find_assignee`, guarda o convidado e dispara o convite. A distribuição v2 do
   # upstream é assíncrona, passa por um job por caixa e, quando ligada, desvia o
