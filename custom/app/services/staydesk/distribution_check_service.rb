@@ -56,12 +56,12 @@ class Staydesk::DistributionCheckService
       receives_channel: status.present? && (agente[:carga].nil? || status.receives?(agente[:carga])),
       has_capacity: agente[:limite].nil? || agente[:em_uso] < agente[:limite],
       in_group: (fila.team_ids + fila.fallback_team_ids).intersect?(agente[:times]),
-      inbox_member: caixas_da_fila.any? && faltando(caixas_da_fila, agente[:caixas]).empty?
+      inbox_member: caixas_da_fila.map(&:id).intersect?(agente[:caixas])
     }
   end
 
-  # Os canais da fila em que o agente não está. O Chatwoot só entrega a
-  # conversa de um canal a quem é membro dele.
+  # Os canais da fila em que o agente não está: conversa desses canais não
+  # chega a ele, porque o Chatwoot só entrega a quem é membro do canal.
   def faltando(caixas_da_fila, caixas_do_agente)
     caixas_da_fila.map(&:id) - caixas_do_agente
   end

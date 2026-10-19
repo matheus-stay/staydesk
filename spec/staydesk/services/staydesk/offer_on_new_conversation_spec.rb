@@ -12,6 +12,7 @@ RSpec.describe 'conversa nova cai na fila antes de ser distribuída' do
 
   before do
     create(:team_member, team: n2, user: ana)
+    create(:inbox_member, inbox: email, user: ana)
     Staydesk::Queue.create!(account: account, name: 'Tickets', team: n2, position: 0,
                             accept_required: true, accept_timeout_seconds: 30,
                             channel_types: ['Channel::Email'])

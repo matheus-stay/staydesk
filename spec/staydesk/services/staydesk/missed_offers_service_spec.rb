@@ -11,6 +11,7 @@ RSpec.describe Staydesk::MissedOffersService do
 
   before do
     create(:team_member, team: n1, user: ana)
+    create(:inbox_member, inbox: chat, user: ana)
     Staydesk::Queue.create!(account: account, name: 'Chat', team: n1, position: 0, accept_required: true, accept_timeout_seconds: 30)
     Staydesk::CapacityRule.create!(account: account, name: 'Padrão', is_default: true, limits: { 'chat' => 10 },
                                    missed_offers_limit: 3, missed_offers_to_status: ausente)

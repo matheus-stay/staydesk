@@ -10,7 +10,10 @@ RSpec.describe Staydesk::OfferService do
   let(:bruno) { create(:user, account: account, role: :agent) }
 
   before do
-    [ana, bruno].each { |agente| create(:team_member, team: n1, user: agente) }
+    [ana, bruno].each do |agente|
+      create(:team_member, team: n1, user: agente)
+      create(:inbox_member, inbox: chat, user: agente)
+    end
     Staydesk::Queue.create!(account: account, name: 'Chat', team: n1, position: 0,
                             accept_required: true, accept_timeout_seconds: 30)
     online([ana, bruno])

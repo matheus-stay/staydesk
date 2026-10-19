@@ -542,7 +542,7 @@
         "CentralAtendimento": "The screen and the states of whoever handles work: the ticket status catalog, each group's views and the workspace.",
         "CentralPrazos": "Deadlines: SLA policies and the business hours that pause them.",
         "CentralPessoas": "Who works in the account and what each one can do: agents, groups, roles with granular permissions and integration keys.",
-        "CentralCanais": "Where customers come from: channels by type (WhatsApp, email, chat, API) and message templates. Every agent serves every channel.",
+        "CentralCanais": "Where customers come from: channels by type (WhatsApp, email, chat, API) and message templates. In each channel you pick which agents serve it.",
         "CentralRegras": "What runs on its own and what the agent reuses: automations, macros, canned responses, bots, labels and ticket fields.",
         "CentralConta": "The account itself: general data, API documentation, integrations, audit, security and billing.",
         "CentralOutros": "Product screens without a section of their own yet.",
@@ -554,7 +554,7 @@
         "StaydeskQueuesSettings": "What enters each queue and which groups it goes to: primary, secondary, delivery order and acceptance.",
         "StaydeskCapacityRulesSettings": "How many conversations of each channel an agent takes at once: the default rule and the ones assigned to agents.",
         "StaydeskAgentStatusesSettings": "What each status receives (chat, ticket), timeout, online time, and the who-gets-what diagnosis.",
-        "StaydeskChannelsSettings": "The account channels grouped by type, with each one's settings. Every agent serves all of them.",
+        "StaydeskChannelsSettings": "The account channels grouped by type, with each one's settings and who serves each one.",
         "Settings Inboxes": "The product list, not grouped by type.",
         "StaydeskKpis": "CSAT, reply and resolution time per work channel, waiting queue, online time and acceptance per agent, for the period you pick."
       },
@@ -751,12 +751,12 @@
     },
     "CHANNELS": {
       "SETTINGS_TITLE": "Channels",
-      "SETTINGS_DESCRIPTION": "Where customers come from, grouped by type as in Zendesk. Every agent serves every channel; who gets what is decided by queues, status and capacity.",
+      "SETTINGS_DESCRIPTION": "Where customers come from, grouped by type as in Zendesk. In each channel you pick which agents serve it; among them, who gets what is decided by queues, status and capacity.",
       "NEW": "New channel",
       "CONFIGURE": "Configure",
       "EMPTY": "No channels yet.",
       "COUNT": "{count} channel | {count} channels",
-      "MEMBERS_NOTE": "Every agent of the account serves this channel."
+      "MEMBERS_NOTE": "Who serves it is picked in the channel's agents tab."
     },
     "KPIS": {
       "TITLE": "Operation indicators",

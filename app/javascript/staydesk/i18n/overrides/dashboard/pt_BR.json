@@ -117,7 +117,7 @@
         "FINISH_MESSAGE_NO_FORWARDING": "Seu canal de e-mail foi criada com sucesso! É necessário configurar as credenciais de SMTP e IMAP para enviar e receber e-mails. Sem essas configurações, nenhum e-mail será processado."
       },
       "AGENTS": {
-        "DESC": "Todo agente da conta já atende este canal automaticamente, como no Zendesk. Esta etapa fica aqui só por compatibilidade: pode seguir sem marcar ninguém.",
+        "DESC": "Escolha quem atende este canal. Conversa daqui só chega a quem estiver marcado; dá para mudar depois na aba de agentes do canal.",
         "VALIDATION_ERROR": "Escolha ao menos um agente ou siga adiante: todos já atendem o canal.",
         "PICK_AGENTS": "Escolha agentes para o canal"
       },
@@ -171,7 +171,7 @@
       "BRANDING_TEXT": "Desenvolvido por StayDesk"
     },
     "HEADER": "Canais",
-    "DESCRIPTION": "Por onde o cliente chega: WhatsApp, e-mail, chat do site, API. Todo agente atende todos os canais; quem recebe o quê é decidido pelas filas, pelo status e pela capacidade.",
+    "DESCRIPTION": "Por onde o cliente chega: WhatsApp, e-mail, chat do site, API. Em cada canal você escolhe quais agentes atendem; entre eles, quem recebe o quê é decidido pelas filas, pelo status e pela capacidade.",
     "LEARN_MORE": "Saiba mais sobre os canais",
     "COUNT": "{n} canal | {n} canais",
     "SEARCH_PLACEHOLDER": "Pesquisar canais...",

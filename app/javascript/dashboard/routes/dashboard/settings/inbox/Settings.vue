@@ -27,7 +27,6 @@ import VoiceConfigurationPage from './settingsPage/VoiceConfigurationPage.vue';
 import WhatsappCallingPage from './settingsPage/WhatsappCallingPage.vue';
 import CustomerSatisfactionPage from './settingsPage/CustomerSatisfactionPage.vue';
 import CollaboratorsPage from './settingsPage/CollaboratorsPage.vue';
-import { semColaboradores } from 'staydesk/helpers/inboxTabs';
 import BotConfiguration from './components/BotConfiguration.vue';
 import AccountHealth from './components/AccountHealth.vue';
 import TwilioHealth from './components/TwilioHealth.vue';
@@ -301,7 +300,7 @@ export default {
         ];
       }
 
-      return semColaboradores(visibleToAllChannelTabs); // staydesk: todo agente atende todos os canais
+      return visibleToAllChannelTabs;
     },
     currentInboxId() {
       return this.$route.params.inboxId;

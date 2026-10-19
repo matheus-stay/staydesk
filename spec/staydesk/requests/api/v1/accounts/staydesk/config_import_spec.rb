@@ -20,7 +20,7 @@ RSpec.describe 'StayDesk Config Import API', type: :request do
          params: { yaml: yaml }, headers: admin.create_new_auth_token, as: :json
 
     expect(response).to have_http_status(:success)
-    expect(response.parsed_body.keys).to include('times', 'etiquetas', 'status_do_agente', 'canais')
+    expect(response.parsed_body.keys).to include('times', 'etiquetas', 'status_do_agente')
     expect(account.teams.pluck(:name)).to eq(['Suporte N1'])
     expect(account.labels.pluck(:title)).to eq(['hospedagem'])
     expect(Staydesk::AgentStatus.where(account: account).pluck(:name)).to include('Só chat')

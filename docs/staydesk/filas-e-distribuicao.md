@@ -88,10 +88,12 @@ está no grupo atende o canal que a fila mandar. O StayDesk segue o Zendesk:
 - Na tela tudo se chama **canal**: a lista de canais fica agrupada por tipo em
   Central › Canais, e nas filas e canais de trabalho há um campo só, *Canais*,
   com o tipo inteiro e cada canal.
-- **Todo agente atende todos os canais**, sempre. Agente novo entra em todos;
-  canal novo nasce com todos (`Staydesk::ChannelMembership`, ganchos em
-  `AccountUser` e `Inbox`; a importação e uma migração fecham o que faltava). A
-  aba "Colaboradores" da caixa some.
+- **Quem atende cada canal é escolhido** na aba de agentes do canal (e no
+  assistente de criação). Agente novo não entra em canal nenhum sozinho; canal
+  novo nasce com quem foi escolhido no assistente. Conversa de um canal só chega
+  a quem é membro dele, então o diagnóstico da distribuição lista os canais da
+  fila que cada agente não atende (`missing_inbox_ids`). Até 2026-10-19 a regra
+  era "todo agente em todos os canais"; mudou a pedido da operação.
 - Quem recebe o quê é grupo + status + capacidade + conexão. O que o agente vê é
   das visualizações por grupo e dos papéis.
 
@@ -102,7 +104,7 @@ Na API e no arquivo de configuração os nomes do Chatwoot continuam (`inbox_ids
 
 A conta é, nesta ordem:
 
-1. Quem está no canal (todo agente está em todos, ver abaixo).
+1. Quem atende o canal (é membro dele, ver abaixo).
 2. Quem está **conectado de verdade**, não só marcado como online no banco.
 3. Quem está num status que **recebe** o canal de trabalho daquela caixa.
 4. Quem ainda tem vaga nesse canal pela **regra de capacidade** dele.

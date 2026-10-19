@@ -1,23 +1,10 @@
 # Entra na Inbox pelo gancho prepend_mod_with: a distribuição automática legada
 # pergunta quem ainda tem vaga, e quem bateu o limite do próprio status sai da lista.
 module Custom::Inbox
-  def self.prepended(base)
-    base.after_create_commit :staydesk_add_everyone
-  end
-
-  # Canal novo já nasce com todos os agentes da conta, como no Zendesk
-  # (Staydesk::ChannelMembership). O assistente do Chatwoot ainda pergunta quem
-  # adicionar; quem já está entra sem erro.
+  # Quem atende cada canal é escolhido na aba de agentes do canal. Adicionar quem
+  # já está não falha: o assistente e a tela podem mandar a lista inteira.
   def add_members(user_ids)
     super(user_ids.map(&:to_i) - inbox_members.pluck(:user_id))
-  end
-
-  # A tela de agentes do canal (e o assistente de criação) manda a lista
-  # escolhida e o Chatwoot tira quem ficou de fora. Foi assim que um canal de
-  # WhatsApp ficou sem ninguém e a fila dele parou sem erro nenhum. Quem é da
-  # conta fica em todos os canais; só sai do canal quem já saiu da conta.
-  def remove_members(user_ids)
-    super(user_ids.map(&:to_i) - account.account_users.pluck(:user_id))
   end
 
   # A fila com aceite (SPEC-16) vive na distribuição legada: é ela que chama
@@ -38,10 +25,6 @@ module Custom::Inbox
   end
 
   private
-
-  def staydesk_add_everyone
-    account.account_users.pluck(:user_id).each { |user_id| inbox_members.find_or_create_by!(user_id: user_id) }
-  end
 
   # Quem tem conexão viva agora. O Chatwoot só entrega a quem está conectado, mas
   # só checa isso no fim: sem cortar aqui, o grupo dono parece cheio de gente, o
