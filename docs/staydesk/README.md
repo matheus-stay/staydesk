@@ -13,6 +13,8 @@ O produto tem dois espaços, com nome próprio:
 
 ## Por onde começar
 
+> **Front novo:** o contrato técnico para quem vai construir o front novo do StayDesk está em [front-novo/README.md](front-novo/README.md).
+
 | Documento | O que cobre |
 |---|---|
 | [api-zendesk.md](api-zendesk.md) | A API compatível com o Zendesk que o dashboard consome: caminhos, formatos e de-para |
