@@ -65,7 +65,7 @@
 
 # Mapeamento → Chatwoot (plano de implementação)
 
-O Chatwoot centraliza cor de marca na paleta `woot` ([theme/colors.js](../../../theme/colors.js), hoje = Radix blue) consumida pelo [tailwind.config.js](../../../tailwind.config.js). **Trocar a escala `woot` re-branda o dashboard inteiro.**
+O Chatwoot centraliza cor de marca na paleta `woot` ([theme/colors.js](../../../../theme/colors.js), hoje = Radix blue) consumida pelo [tailwind.config.js](../../../../tailwind.config.js). **Trocar a escala `woot` re-branda o dashboard inteiro.**
 
 ## Escala `woot` → indigo StayDesk (draft — calibrar visualmente no Histoire)
 

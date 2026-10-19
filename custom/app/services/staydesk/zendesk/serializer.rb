@@ -117,16 +117,7 @@ class Staydesk::Zendesk::Serializer
   # Como no Zendesk: ticket (e-mail e API) tem o assunto do chamado; chat e
   # WhatsApp viram "Chat com <cliente>", não a primeira mensagem.
   def assunto(conversa)
-    I18n.with_locale(@account.locale.presence || I18n.default_locale) do
-      next assunto_do_ticket(conversa) if %w[Channel::Email Channel::Api].include?(conversa.inbox&.channel_type)
-
-      I18n.t('staydesk.subject.chat_with', name: conversa.contact&.name.presence || I18n.t('staydesk.subject.unknown_contact'))
-    end
-  end
-
-  def assunto_do_ticket(conversa)
-    conversa.additional_attributes['mail_subject'].presence || conversa.custom_attributes['assunto'].presence ||
-      conversa.additional_attributes['assunto'].presence || I18n.t('staydesk.subject.none')
+    Staydesk::ConversationSubject.new(conversa).to_s
   end
 
   def primeira_mensagem(conversa)

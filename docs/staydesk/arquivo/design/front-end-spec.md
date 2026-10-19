@@ -1,7 +1,7 @@
 # StayDesk — Front-end Spec v1
 
 > 2026-08-28 · @design (Nexus) + FABLE CTO · Base: Guardian tokens + Chatwoot `components-next` + IA do Zendesk Agent Workspace
-> Companion: [staydesk-tokens.md](staydesk-tokens.md) · [architecture-map.md](../architecture-map.md)
+> Companion: [staydesk-tokens.md](staydesk-tokens.md) · [architecture-map.md](../../architecture-map.md)
 
 ## Princípio-guia
 

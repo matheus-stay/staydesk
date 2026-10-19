@@ -19,6 +19,7 @@ class Staydesk::AgentStatusService
     # Ficou disponível: o que está parado na fila é oferecido agora, não no
     # próximo minuto do cron nem na próxima mensagem do cliente.
     Staydesk::Queues::SweepJob.perform_later(@account_user.account_id) if agent_status.availability == 'online'
+    Staydesk::Broadcast.status_do_agente(@account_user, agent_status)
     agent_status
   end
 
@@ -49,6 +50,7 @@ class Staydesk::AgentStatusService
 
     fechar_periodo_aberto(at)
     alinhar_disponibilidade('offline')
+    Staydesk::Broadcast.status_do_agente(@account_user, nil)
     nil
   end
 
@@ -59,6 +61,7 @@ class Staydesk::AgentStatusService
 
     fechar_periodo_aberto(at)
     alinhar_disponibilidade('offline')
+    Staydesk::Broadcast.status_do_agente(@account_user, nil)
     nil
   end
 

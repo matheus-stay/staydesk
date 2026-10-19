@@ -55,7 +55,9 @@ Rails.application.routes.draw do
                 put :reorder
               end
             end
+            resource :presence, only: [:create]
             resources :conversations, only: [] do
+              resource :reply, only: [:create], controller: 'conversation_replies'
               resource :ticket_fields, only: [:show, :update], controller: 'ticket_fields'
               resource :sla, only: [:show], controller: 'conversation_slas'
               resource :ticket_status, only: [:create], controller: 'conversation_ticket_statuses'

@@ -24,7 +24,7 @@ class Api::V1::Accounts::Staydesk::TeamViewsController < Api::V1::Accounts::Stay
   end
 
   def conversations
-    result = filter_service(@team_view, page: params[:page]).perform
+    result = filter_service(@team_view, page: params[:page], sort_by: params[:sort_by]).perform
     @conversations = result[:conversations]
     @conversations_count = result[:count]
     render 'api/v1/accounts/conversations/filter'
@@ -53,9 +53,11 @@ class Api::V1::Accounts::Staydesk::TeamViewsController < Api::V1::Accounts::Stay
     @team_view = visible_team_views.find(params[:id])
   end
 
-  def filter_service(view, page: nil)
+  # `sort_by` do pedido vence o da visualização quando é uma ordem que o produto conhece.
+  def filter_service(view, page: nil, sort_by: nil)
+    ordem = ::Conversations::SortService::SORT_OPTIONS.key?(sort_by.to_s) ? sort_by : view.sort_by
     filter_params = ActionController::Parameters.new(
-      payload: view.payload(Current.user), page: page, sort_by: view.sort_by
+      payload: view.payload(Current.user), page: page, sort_by: ordem
     ).permit!
     ::Conversations::FilterService.new(filter_params, Current.user, Current.account)
   end

@@ -26,6 +26,12 @@ class Staydesk::Offer < ApplicationRecord
 
   validates :status, inclusion: { in: STATUSES }
 
+  # Em tempo real para o agente convidado (Staydesk::Broadcast), venha a mudança
+  # de onde vier: distribuição, aceite, recusa, job de vencimento ou varredura.
+  EVENTOS = { 'aceita' => 'accepted', 'recusada' => 'declined', 'expirada' => 'expired' }.freeze
+  after_create_commit { Staydesk::Broadcast.convite(self, 'created') }
+  after_update_commit { Staydesk::Broadcast.convite(self, EVENTOS[status]) if saved_change_to_status? && EVENTOS[status] }
+
   scope :pendentes, -> { where(status: 'pendente') }
   scope :vencidas, -> { pendentes.where(expires_at: ...Time.current) }
 

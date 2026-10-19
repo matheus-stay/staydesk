@@ -60,8 +60,8 @@
      "metodo": "POST",
      "caminho": "staydesk/config_import",
      "titulo": "Aplicar a configuração da operação de uma vez",
-     "resumo": "Recebe o mesmo YAML do comando `rails staydesk:configurar` e aplica na conta: times, etiquetas, campos do ticket, caixas, status, filas de carga, regras de capacidade, calendário, SLA, filas, visualizações e área de trabalho.",
-     "detalhes": "É o jeito de subir um ambiente novo sem console: manda o arquivo e a conta fica pronta. Idempotente: rodar de novo só atualiza o que mudou. Aceita o YAML como texto em `yaml` ou a mesma estrutura já em JSON em `config`. A seção `times` também põe agentes nos grupos de uma vez (por e-mail), o que evita atribuir pessoa por pessoa. Só o administrador chama. Nomes de caixa que não existem na conta são ignorados na hora de amarrar visualizações, SLA e filas, então crie os canais antes ou rode de novo depois.",
+     "resumo": "Recebe o mesmo YAML do comando `rails staydesk:configurar` e aplica na conta: conta (painel do cliente), times, etiquetas, campos do ticket, caixas, status, filas de carga, regras de capacidade, calendário, SLA, filas, gatilhos (`automacoes`), macros, visualizações e área de trabalho.",
+     "detalhes": "É o jeito de subir um ambiente novo sem console: manda o arquivo e a conta fica pronta. Idempotente: rodar de novo só atualiza o que mudou. Aceita o YAML como texto em `yaml` ou a mesma estrutura já em JSON em `config`. A seção `times` também põe agentes nos grupos de uma vez (por e-mail), o que evita atribuir pessoa por pessoa. Só o administrador chama. Nomes de caixa que não existem na conta são ignorados na hora de amarrar visualizações, SLA e filas, então crie os canais antes ou rode de novo depois. Nome de grupo, e-mail ou status do ticket que não existe na conta, dentro de um gatilho ou de uma macro, é ignorado sem derrubar a importação: a ação fica de fora. Ao fim, os membros de cada canal são recalculados pelas filas, e `canais` traz quantos vínculos entraram e saíram. O resumo traz, em cada seção, os nomes do que entrou.",
      "escopo": "operacao:escrita",
      "payload": {
       "yaml": "times:\n  - Suporte N1\netiquetas:\n  - { nome: hospedagem, cor: '#545DFF' }\n"
@@ -81,20 +81,33 @@
       }
      ],
      "resposta": {
-      "times": 1,
-      "etiquetas": 1,
-      "atributos": 0,
-      "caixas": 0,
-      "status_do_ticket": 0,
-      "filas_de_carga": 0,
-      "status_do_agente": 0,
-      "regras_de_capacidade": 0,
+      "conta": null,
+      "times": [
+       "Suporte N1"
+      ],
+      "etiquetas": [
+       "hospedagem"
+      ],
+      "atributos": [],
+      "caixas": [],
+      "status_do_ticket": [],
+      "filas_de_carga": [
+       "chat",
+       "ticket"
+      ],
+      "status_do_agente": [],
+      "regras_de_capacidade": [],
       "calendario": null,
-      "politicas_de_sla": 0,
-      "filas": 0,
-      "visualizacoes": 0,
+      "politicas_de_sla": [],
+      "filas": [],
+      "automacoes": [],
+      "macros": [],
+      "visualizacoes": [],
       "area_de_trabalho": null,
-      "canais": "0 vínculo(s) de agente com canal criado(s)"
+      "canais": {
+       "adicionados": 0,
+       "removidos": 0
+      }
      }
     }
    ]
@@ -342,7 +355,7 @@
      "titulo": "Diagnosticar a distribuição",
      "resumo": "Para cada agente e cada fila de encaminhamento, se ele recebe trabalho dela e, se não, qual condição falta.",
      "detalhes": "Responde à pergunta \"coloquei online e não caiu nada\". A distribuição só entrega a quem passa em seis condições, e o diagnóstico mostra cada uma com sim ou não:\n\n`connected` — tem conexão viva agora, não só o status marcado no banco.\n`available` — o status atual é de disponibilidade `online`.\n`receives_channel` — o status atual recebe o canal de trabalho daquela fila (chat, ticket).\n`has_capacity` — a regra de capacidade ainda tem vaga nesse canal (`load` abaixo de `capacity`).\n`in_group` — está num grupo principal ou secundário da fila.\n`inbox_member` — atende ao menos um canal que a fila pega. `missing_inbox_ids` lista os canais da fila que ele não atende: conversa desses canais não chega a ele. Quem atende cada canal vem dos grupos das filas que pegam o canal.\n\n`receives` é o E lógico das seis. A condição que falta é o que corrigir: normalmente é grupo ou caixa.",
-     "escopo": "relatorios:leitura",
+     "escopo": "operacao:leitura",
      "mcp": "staydesk_diagnostico_da_distribuicao",
      "query": [
       {
@@ -582,7 +595,7 @@
      "titulo": "Trocar o próprio status",
      "resumo": "Registra a troca de status de quem está chamando. Fecha o período aberto, abre o novo e alinha a disponibilidade do Chatwoot.",
      "detalhes": "É o que o menu de disponibilidade do agente chama. Ao ficar disponível, a varredura da fila roda na hora, então o que estava parado é oferecido sem esperar o próximo minuto. Um bot ou um relógio de ponto pode chamar isto para colocar o agente online e offline. Só vale status que recebe canais das filas dos grupos de quem chama (`available_to_me` na lista de status); os outros respondem 422. Administrador escolhe qualquer um.",
-     "escopo": "operacao:escrita",
+     "escopo": "relatorios:escrita",
      "respostas": [
       {
        "codigo": 200,
@@ -620,7 +633,7 @@
      "titulo": "Ficar offline",
      "resumo": "Tira quem está chamando de qualquer status: o período aberto fecha e a disponibilidade vai a offline.",
      "detalhes": "É o item Offline do menu de disponibilidade. O agente só volta a receber quando escolher um status de novo. A resposta traz `current_status_id` nulo.",
-     "escopo": "operacao:escrita",
+     "escopo": "relatorios:escrita",
      "respostas": [
       {
        "codigo": 200,
@@ -642,7 +655,7 @@
      "titulo": "Avisar que a aba fechou",
      "resumo": "O navegador chama ao fechar a aba. Depois de 45 segundos, se não sobrou nenhuma aba conectada, o agente sai do status.",
      "detalhes": "F5 e uma segunda aba aberta também disparam o aviso; por isso a decisão é adiada até a presença do navegador expirar, e só desliga quem de fato saiu. Sai pelo mesmo caminho do tempo limite: se o status tiver destino de desconexão, o agente cai nele; senão, fica offline.",
-     "escopo": "operacao:escrita",
+     "escopo": "relatorios:escrita",
      "respostas": [
       {
        "codigo": 202,
@@ -659,12 +672,90 @@
      ]
     },
     {
+     "metodo": "POST",
+     "caminho": "staydesk/presence",
+     "titulo": "Sinal de vida do agente (presença por HTTP)",
+     "resumo": "Marca quem chama como conectado agora, pelo mesmo registro que o WebSocket usa. Chamar a cada 20 segundos ou menos enquanto a pessoa estiver com o StayDesk aberto.",
+     "detalhes": "O front atual manda a presença pelo WebSocket (RoomChannel#update_presence a cada 20 s). Um front que não use o WebSocket para isso chama este endpoint no mesmo ritmo. Sem o sinal, o tempo limite do status e a saída ao fechar a aba tiram o agente do status e a distribuição para de entregar a ele. A resposta traz o status atual e por quantos segundos o sinal vale (`valid_for_seconds`).",
+     "escopo": "operacao:escrita",
+     "respostas": [
+      {
+       "codigo": 200,
+       "descricao": "Sinal registrado. Traz `online`, `current_status_id`, `availability` e `valid_for_seconds`."
+      },
+      {
+       "codigo": 401,
+       "descricao": "Token inválido, suspenso ou vencido, ou o papel de quem chama não alcança este recurso."
+      },
+      {
+       "codigo": 403,
+       "descricao": "O token de API não tem o escopo exigido. A mensagem diz qual."
+      }
+     ]
+    },
+    {
+     "metodo": "POST",
+     "caminho": "staydesk/conversations/{conversation_id}/reply",
+     "titulo": "Responder e definir o status numa chamada só",
+     "resumo": "\"Enviar como <status>\": grava campos do ticket, manda a resposta (ou nota) e aplica o status do ticket, tudo ou nada.",
+     "detalhes": "`conversation_id` é o número da conversa (display_id). Corpo: `content` (opcional; sem ele só grava campos e status, como resolver sem escrever), `private` (true = nota interna), `ticket_status_id` (opcional), `custom_attributes` (objeto com os campos do ticket a gravar antes do status). Se faltar campo obrigatório para resolver, nada é gravado (nem a mensagem) e a resposta é 422 com `missing_to_resolve` (as chaves dos campos). Responde com a conversa, incluindo o bloco `staydesk`.",
+     "escopo": "operacao:escrita",
+     "respostas": [
+      {
+       "codigo": 200,
+       "descricao": "Gravado. O corpo traz a conversa atualizada."
+      },
+      {
+       "codigo": 401,
+       "descricao": "Token inválido, suspenso ou vencido, ou o papel de quem chama não alcança este recurso."
+      },
+      {
+       "codigo": 403,
+       "descricao": "O token de API não tem o escopo exigido. A mensagem diz qual."
+      },
+      {
+       "codigo": 422,
+       "descricao": "Faltam campos obrigatórios para resolver: `message` explica e `missing_to_resolve` lista as chaves. Nada foi gravado."
+      }
+     ],
+     "corpo": [
+      {
+       "nome": "content",
+       "tipo": "texto",
+       "descricao": "Texto da resposta ou da nota. Opcional."
+      },
+      {
+       "nome": "private",
+       "tipo": "booleano",
+       "descricao": "true manda como nota interna."
+      },
+      {
+       "nome": "ticket_status_id",
+       "tipo": "inteiro",
+       "descricao": "Status do ticket a aplicar depois da mensagem."
+      },
+      {
+       "nome": "custom_attributes",
+       "tipo": "objeto",
+       "descricao": "Campos do ticket a gravar, por chave."
+      }
+     ],
+     "payload": {
+      "content": "Pronto, ajustamos o apontamento.",
+      "ticket_status_id": 6,
+      "custom_attributes": {
+       "servidor": "tito",
+       "tipo_de_demanda": "suporte_tecnico"
+      }
+     }
+    },
+    {
      "metodo": "GET",
      "caminho": "staydesk/conversations/{conversation_id}/sla",
      "titulo": "Ler o SLA de uma conversa",
      "resumo": "A política aplicada a esta conversa, os alvos, o que já foi cumprido e o que está correndo.",
      "detalhes": "É o que o painel do agente mostra ao lado da conversa. Traz a política, cada métrica com alvo, prazo e status, e se o relógio está pausado por status ou por estar fora do horário.",
-     "escopo": "relatorios:leitura",
+     "escopo": "operacao:leitura",
      "respostas": [
       {
        "codigo": 200,

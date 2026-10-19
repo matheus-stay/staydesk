@@ -1,8 +1,8 @@
 # Entra na Inbox pelo gancho prepend_mod_with: a distribuição automática legada
 # pergunta quem ainda tem vaga, e quem bateu o limite do próprio status sai da lista.
 module Custom::Inbox
-  # Quem atende cada canal é escolhido na aba de agentes do canal. Adicionar quem
-  # já está não falha: o assistente e a tela podem mandar a lista inteira.
+  # Quem atende cada canal vem das filas (Staydesk::QueueMembership). Adicionar
+  # quem já está não falha: o assistente e a tela podem mandar a lista inteira.
   def add_members(user_ids)
     super(user_ids.map(&:to_i) - inbox_members.pluck(:user_id))
   end

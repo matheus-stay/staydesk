@@ -26,6 +26,7 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `lib/current.rb` | gancho | API | O token de API do pedido viaja em Current (2 linhas) |
 | `app/controllers/api/v1/accounts/custom_attribute_definitions_controller.rb` | gancho | Campos | Permite `staydesk_required_to_resolve` (1 linha) |
 | `app/views/api/v1/models/_custom_attribute_definition.json.jbuilder` | view | Campos | Sobreposição em `custom/app/views` com a marcação de obrigatório |
+| `app/views/api/v1/conversations/partials/_conversation.json.jbuilder` | gancho | API | Bloco `staydesk` na conversa: assunto, status do ticket e campos que faltam para resolver (1 linha) |
 | `app/javascript/dashboard/routes/dashboard/settings/attributes/AddAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
 | `app/javascript/dashboard/routes/dashboard/settings/attributes/EditAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
 | `app/javascript/dashboard/composables/useConversationRequiredAttributes.js` | gancho | Campos | Os campos obrigatórios do StayDesk entram na janela do produto que pede os campos antes de resolver |
@@ -124,7 +125,7 @@ for reduzido a classe-só (passa a `classe`) ou quando a mudança for movida par
 | `app/javascript/dashboard/components/widgets/conversation/ConversationHeader.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/widgets/conversation/ConversationSidebar.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/widgets/conversation/MessagesView.vue` | legado | UX | Edição no lugar do ramo de UX |
-| `app/javascript/dashboard/components/widgets/conversation/ReplyBox.vue` | legado | UX | Edição no lugar do ramo de UX; leva 3 linhas `staydesk:hook` da SPEC-04 (Enviar como) |
+| `app/javascript/dashboard/components/widgets/conversation/ReplyBox.vue` | legado | UX | Edição no lugar do ramo de UX; leva 2 linhas `staydesk:hook` da SPEC-04 (Enviar como) e o `<StaydeskSubmitAs>` no template, que recebe `sem-texto` para o Enviar como funcionar também com a caixa vazia |
 | `app/javascript/dashboard/components/widgets/conversation/conversationBulkActions/BulkLabelActions.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/components/widgets/conversation/conversationBulkActions/Index.vue` | legado | UX | Edição no lugar do ramo de UX |
 | `app/javascript/dashboard/i18n/locale/en/chatlist.json` | legado | UX | Edição no lugar do ramo de UX |

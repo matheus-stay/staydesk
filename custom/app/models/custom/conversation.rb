@@ -1,6 +1,7 @@
 # Entra em Conversation pelo gancho prepend_mod_with('Conversation').
 module Custom::Conversation
   def self.prepended(base)
+    base.prepend(Staydesk::ConversationEventData)
     base.attr_accessor :staydesk_convidar
     base.validate :staydesk_required_ticket_fields
     # Os after_commit rodam em ordem inversa: o convite guardado na criação sai
