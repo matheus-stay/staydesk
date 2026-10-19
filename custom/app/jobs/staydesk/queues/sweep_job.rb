@@ -13,10 +13,26 @@ class Staydesk::Queues::SweepJob < ApplicationJob
 
   # Sem conta, varre todas (cron). Com conta, varre só a dela (troca de status).
   def perform(account_id = nil)
+    vencer_esquecidos(account_id)
     ordenar(esperando(account_id)).each { |conversa| distribuir(conversa) }
   end
 
   private
+
+  # Convite pendente fora do prazo é convite cujo vencimento se perdeu (job
+  # descartado num deploy, Redis reiniciado). Como a fila pula conversa com
+  # convite pendente, ela ficaria parada para sempre: vence aqui, pelo mesmo
+  # caminho do job de expiração, e a conversa volta para a roda. Um convite com
+  # problema não pode travar a varredura da conta inteira.
+  def vencer_esquecidos(account_id)
+    escopo = Staydesk::Offer.vencidas.includes(:conversation)
+    escopo = escopo.where(account_id: account_id) if account_id.present?
+    escopo.find_each do |convite|
+      Staydesk::OfferService.new(convite.conversation).decline!(convite, status: 'expirada')
+    rescue StandardError => e
+      ChatwootExceptionTracker.new(e, account: convite.account).capture_exception
+    end
+  end
 
   # Conversa com convite pendente já está com alguém decidindo: fica de fora.
   def esperando(account_id)
