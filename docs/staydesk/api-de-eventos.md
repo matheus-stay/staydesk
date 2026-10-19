@@ -12,4 +12,4 @@ e prioridade (gravadas pela camada).
   `limit` (até 500). Resposta `{ reporting_events: [...], conversation_events: [...] }`, cada lista em
   ordem de id; para varrer, repita com o último id de cada lista.
 
-Contrato em `swagger/staydesk/openapi.yml`.
+Contrato em `swagger/staydesk/openapi.json`.

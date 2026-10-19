@@ -129,7 +129,7 @@ Total fora de `custom/`, `app/javascript/staydesk/`, `docs/staydesk/`, `spec/sta
 | Tokens/marca | `theme/colors.js`, `public/brand-assets/*`, `public/fonts/geist/*`, ícones/manifesto em `public/` | — | ignorados pelo gate por regra (`OWN_PATHS`) |
 | Esquema | `db/schema.rb` | — | ignorado pelo gate por regra |
 | CI | `.github/workflows/staydesk_gate.yml`, `staydesk_image.yml` | — | ignorados por regra |
-| API | `swagger/staydesk/openapi.yml` | — | próprio |
+| API | `swagger/staydesk/openapi.json` | — | próprio |
 
 **Achados sobre o registro e o gate**
 

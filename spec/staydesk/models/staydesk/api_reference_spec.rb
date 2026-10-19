@@ -7,7 +7,7 @@ RSpec.describe Staydesk::ApiReference do
   def rotas_do_staydesk
     Rails.application.routes.routes.filter_map do |rota|
       controller = rota.defaults[:controller]
-      next unless controller&.start_with?('api/v1/accounts/staydesk', 'staydesk/zendesk')
+      next unless controller&.start_with?('api/v1/accounts/staydesk', 'staydesk/zendesk', 'platform/api/v1/staydesk')
 
       rota.verb.to_s.split('|').map do |verbo|
         [verbo.gsub(/[^A-Z]/, ''), rota.path.spec.to_s.sub('(.:format)', '')]
@@ -33,8 +33,11 @@ RSpec.describe Staydesk::ApiReference do
     expect(faltando).to be_empty, "rota sem documentação: #{faltando.map { |m, c| "#{m} #{c}" }.join(', ')}"
   end
 
+  # A superadministração (/platform/...) autentica com o token de um Platform App,
+  # não com token de API com escopo.
   it 'asks for a scope the catalog knows, on every endpoint' do
-    desconhecidos = described_class.endpoints.map { |e| e['escopo'] }.uniq.reject { |escopo| Staydesk::ApiScope.conhece?(escopo) }
+    com_escopo = described_class.endpoints.reject { |e| e['base'].to_s.start_with?('/platform') }
+    desconhecidos = com_escopo.map { |e| e['escopo'] }.uniq.reject { |escopo| Staydesk::ApiScope.conhece?(escopo) }
 
     expect(desconhecidos).to be_empty
   end

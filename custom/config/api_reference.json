@@ -5209,6 +5209,86 @@
      ]
     }
    ]
+  },
+  {
+   "titulo": "Superadministração (Platform API)",
+   "texto": "Para gerar e listar instâncias (contas) do StayDesk. Autentica com o token de um Platform App, criado no super admin (/super_admin › Platform Apps), no cabeçalho api_access_token. A Platform API do produto (/platform/api/v1/accounts, users, account_users) continua valendo para administrar contas e usuários.",
+   "endpoints": [
+    {
+     "metodo": "POST",
+     "caminho": "instances",
+     "base": "/platform/api/v1/staydesk",
+     "titulo": "Gerar instância nova",
+     "resumo": "Cria a conta no padrão StayDesk, o administrador e, se vier, aplica a configuração da operação. Tudo numa transação.",
+     "detalhes": "A conta nasce sem a marca do produto, sem campanhas e central de ajuda e com os papéis prontos. Quem já tem usuário com o e-mail do administrador é só vinculado. `config_yaml` (texto) ou `config` (JSON) é o mesmo arquivo do config_import. A resposta traz `login_url`, link de acesso de uso único; sem `password`, é por ele que o administrador entra e define a senha.",
+     "respostas": [
+      {
+       "codigo": 201,
+       "descricao": "Criada. Traz `account`, `admin`, `login_url` e `configuration` (resumo da importação)."
+      },
+      {
+       "codigo": 401,
+       "descricao": "Sem token de Platform App, ou token inválido."
+      },
+      {
+       "codigo": 422,
+       "descricao": "Dados inválidos ou configuração com erro: nada foi criado."
+      }
+     ],
+     "corpo": [
+      {
+       "nome": "account",
+       "tipo": "objeto",
+       "descricao": "`name` (obrigatório), `locale` (padrão pt_BR), `support_email`.",
+       "obrigatorio": true
+      },
+      {
+       "nome": "admin",
+       "tipo": "objeto",
+       "descricao": "`name`, `email` (obrigatórios) e `password` (opcional).",
+       "obrigatorio": true
+      },
+      {
+       "nome": "config_yaml",
+       "tipo": "texto",
+       "descricao": "Configuração da operação em YAML (opcional)."
+      },
+      {
+       "nome": "config",
+       "tipo": "objeto",
+       "descricao": "A mesma configuração em JSON (opcional)."
+      }
+     ],
+     "payload": {
+      "account": {
+       "name": "Cliente X",
+       "locale": "pt_BR"
+      },
+      "admin": {
+       "name": "Ana",
+       "email": "ana@clientex.com"
+      },
+      "config_yaml": "times:\n  - Suporte N1\n"
+     }
+    },
+    {
+     "metodo": "GET",
+     "caminho": "instances",
+     "base": "/platform/api/v1/staydesk",
+     "titulo": "Listar instâncias",
+     "resumo": "As contas que o Platform App administra, com nome, idioma, situação, data de criação e quantidade de pessoas.",
+     "respostas": [
+      {
+       "codigo": 200,
+       "descricao": "Lista de instâncias."
+      },
+      {
+       "codigo": 401,
+       "descricao": "Sem token de Platform App, ou token inválido."
+      }
+     ]
+    }
+   ]
   }
  ]
 }
