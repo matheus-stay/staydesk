@@ -20,6 +20,7 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/entrypoints/survey.js` | montagem | SPEC-00 | Textos StayDesk da pesquisa de satisfação |
 | `app/javascript/dashboard/routes/index.js` | montagem | SPEC-00 | Rotas da camada, injetadas como filhas da rota da conta por `withStaydeskRoutes` |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | gancho | SPEC-03 | Central de administração abre em aba própria (2 linhas) |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | classe | Marca | Símbolo da barra lateral a 20 px (`size-5`); a 16 px o traço da nuvem some |
 | `tailwind.config.js` | gancho | UX | A camada StayDesk entra no scan do Tailwind (2 linhas) |
 | `app/controllers/concerns/access_token_auth_helper.rb` | gancho | API | Token de API do StayDesk entra na autenticação (1 linha) |
 | `lib/current.rb` | gancho | API | O token de API do pedido viaja em Current (2 linhas) |
