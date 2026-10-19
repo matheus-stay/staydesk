@@ -581,7 +581,7 @@
      "caminho": "staydesk/agent_status_periods",
      "titulo": "Trocar o próprio status",
      "resumo": "Registra a troca de status de quem está chamando. Fecha o período aberto, abre o novo e alinha a disponibilidade do Chatwoot.",
-     "detalhes": "É o que o menu de disponibilidade do agente chama. Ao ficar disponível, a varredura da fila roda na hora, então o que estava parado é oferecido sem esperar o próximo minuto. Um bot ou um relógio de ponto pode chamar isto para colocar o agente online e offline.",
+     "detalhes": "É o que o menu de disponibilidade do agente chama. Ao ficar disponível, a varredura da fila roda na hora, então o que estava parado é oferecido sem esperar o próximo minuto. Um bot ou um relógio de ponto pode chamar isto para colocar o agente online e offline. Só vale status que recebe canais das filas dos grupos de quem chama (`available_to_me` na lista de status); os outros respondem 422. Administrador escolhe qualquer um.",
      "escopo": "operacao:escrita",
      "respostas": [
       {
@@ -2417,7 +2417,7 @@
      "caminho": "staydesk/agent_statuses",
      "titulo": "Listar status do agente",
      "resumo": "Os status de agente da conta e qual é o atual de quem chama.",
-     "detalhes": "Cada status traz disponibilidade, os canais de trabalho que recebe (`work_channels`) e as caixas que atende. Quanto recebe é da regra de capacidade (`capacity_rules`). `current_status_id` é o de quem está chamando.\n\nCada status traz também o **tempo limite**: `offline_after_seconds` e `offline_to_status_id`. Quem fecha a aba e passa desse tempo cai do status sozinho, e o tempo online para de contar.",
+     "detalhes": "Cada status traz disponibilidade, os canais de trabalho que recebe (`work_channels`), as caixas que atende e `available_to_me`: se quem chama pode escolhê-lo, pelas filas dos grupos dele. Quanto recebe é da regra de capacidade (`capacity_rules`). `current_status_id` é o de quem está chamando.\n\nCada status traz também o **tempo limite**: `offline_after_seconds` e `offline_to_status_id`. Quem fecha a aba e passa desse tempo cai do status sozinho, e o tempo online para de contar.",
      "escopo": "operacao:leitura",
      "respostas": [
       {

@@ -5,6 +5,7 @@ class Api::V1::Accounts::Staydesk::AgentStatusesController < Api::V1::Accounts::
   def index
     @agent_statuses = scope.ordered
     @current_status = Staydesk::AgentStatusService.new(Current.account_user).current
+    @liberados = Staydesk::AgentStatusAccess.new(Current.account_user).ids_liberados(@agent_statuses)
   end
 
   def create

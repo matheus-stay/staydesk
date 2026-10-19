@@ -38,7 +38,10 @@ const primeiroNome = computed(
 // de exibir o primeiro status como se fosse o atual.
 const OFFLINE = 'offline';
 const opcoesDeStatus = computed(() => [
-  ...statuses.active.map(status => ({ value: status.id, label: status.name })),
+  ...statuses.choosable.map(status => ({
+    value: status.id,
+    label: status.name,
+  })),
   {
     value: OFFLINE,
     label: t('PROFILE_SETTINGS.FORM.AVAILABILITY.STATUS.OFFLINE'),

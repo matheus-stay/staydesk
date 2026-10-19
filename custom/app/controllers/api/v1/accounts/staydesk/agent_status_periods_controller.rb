@@ -15,6 +15,10 @@ class Api::V1::Accounts::Staydesk::AgentStatusPeriodsController < Api::V1::Accou
 
   def create
     agent_status = Staydesk::AgentStatus.active.where(account: Current.account).find(params.require(:agent_status_id))
+    unless Staydesk::AgentStatusAccess.new(Current.account_user).liberado?(agent_status)
+      return render json: { message: 'Este status recebe um canal que as filas dos seus grupos não atendem.' }, status: :unprocessable_entity
+    end
+
     @current_status = Staydesk::AgentStatusService.new(Current.account_user).change_to(agent_status)
     render 'api/v1/accounts/staydesk/agent_statuses/current'
   end

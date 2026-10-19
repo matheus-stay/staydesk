@@ -19,6 +19,12 @@ export const useAgentStatusStore = defineStore('staydeskAgentStatus', {
 
   getters: {
     active: state => state.statuses.filter(status => status.active),
+    // O que o agente pode escolher: só status que recebem canais das filas dos
+    // grupos dele (o servidor marca `available_to_me` e recusa os outros).
+    choosable: state =>
+      state.statuses.filter(
+        status => status.active && status.available_to_me !== false
+      ),
     current: state =>
       state.statuses.find(status => status.id === state.currentStatusId) ||
       null,

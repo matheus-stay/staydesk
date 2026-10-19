@@ -96,6 +96,15 @@ está no grupo atende o canal que a fila mandar. O StayDesk segue o Zendesk:
   minuto, ao salvar uma fila e na importação. A aba "Colaboradores" da caixa
   some, porque seria desfeita. Conta sem fila ativa não é tocada. Até
   2026-10-19 a regra era "todo agente em todos os canais".
+- **O status também segue as filas.** O agente só escolhe status que recebem
+  canais de trabalho das filas dos grupos dele: o N1 que está só na fila de
+  chat vê "Só chat" e os status sem canal (almoço, reunião), não vê "Só
+  tickets" nem o "Disponível" que pega ticket. A lista de status marca
+  `available_to_me` e o servidor recusa os outros. Administrador escolhe
+  qualquer um.
+- **Transferência é livre.** "Atribuir para" lista todos os agentes da conta,
+  como no Zendesk: o ticket que alguém manda ao N1 chega a ele, e ele passa a
+  ser membro do canal na hora, enquanto a conversa estiver aberta com ele.
 - Quem recebe o quê é grupo + status + capacidade + conexão. O que o agente vê é
   das visualizações por grupo e dos papéis.
 

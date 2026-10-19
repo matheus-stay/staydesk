@@ -55,11 +55,22 @@ module Custom::Conversation
 
   def staydesk_after_update
     mudancas = saved_changes.to_h
+    staydesk_acesso_do_responsavel(mudancas)
     staydesk_follow_assignee_team(mudancas)
     staydesk_status_on_assign(mudancas)
     staydesk_record_events(mudancas)
     staydesk_align_ticket_status(mudancas)
     staydesk_lancar_convite!
+  end
+
+  # Quem recebe a conversa por transferência, fora das filas dele, passa a ser
+  # membro do canal na hora: sem isso o Chatwoot não mostra a conversa a ele. A
+  # varredura mantém o acesso enquanto a conversa estiver aberta com ele
+  # (Staydesk::QueueMembership).
+  def staydesk_acesso_do_responsavel(mudancas)
+    return unless mudancas.key?('assignee_id') && assignee_id.present?
+
+    inbox.inbox_members.find_or_create_by!(user_id: assignee_id)
   end
 
   # O grupo da fila entra antes de a conversa ser gravada, porque a distribuição

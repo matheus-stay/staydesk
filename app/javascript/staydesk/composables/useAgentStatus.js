@@ -41,7 +41,7 @@ export const useAgentStatus = () => {
   // Antes ele exibia o primeiro status como ativo, e quem reabria o StayDesk
   // parecia disponível sem ter escolhido nada.
   const menuItems = computed(() => [
-    ...store.active.map(status => ({
+    ...store.choosable.map(status => ({
       label: status.name,
       value: `${PREFIX}${status.id}`,
       color: DOT_CLASSES[status.availability],

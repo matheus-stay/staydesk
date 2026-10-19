@@ -48,6 +48,13 @@ class Staydesk::AgentStatus < ApplicationRecord
     work_channels.include?(queue.to_s)
   end
 
+  # O agente só escolhe status que recebem canais que ele atende pelas filas dos
+  # grupos dele: quem está só na fila de chat não vê "Só tickets" nem o
+  # "Disponível" que pega ticket. Status sem canal (almoço, reunião) vale a todos.
+  def liberado_para?(canais_do_agente)
+    (work_channels - Array(canais_do_agente)).empty?
+  end
+
   private
 
   # Só chaves que a conta conhece, na ordem das filas de carga.
