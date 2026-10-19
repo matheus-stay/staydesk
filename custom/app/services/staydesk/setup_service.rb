@@ -33,25 +33,32 @@ class Staydesk::SetupService
     criar_papeis_prontos
   end
 
+  # Uma conta só, no padrão StayDesk: flags e papéis prontos. É o que a criação
+  # de instância nova (Staydesk::InstanceProvisioner) usa.
+  def preparar_conta(account)
+    account.enable_features(*ACCOUNT_FEATURES)
+    account.disable_features(*DISABLED_FEATURES)
+    account.save!
+    criar_papeis_da_conta(account)
+  end
+
   private
 
   def criar_papeis_prontos
-    Account.find_each do |account|
-      BUILT_IN_ROLES.each_with_index do |dados, indice|
-        papel = Staydesk::Role.find_or_initialize_by(account: account, name: dados[:name])
-        next if papel.persisted?
+    Account.find_each { |account| criar_papeis_da_conta(account) }
+  end
 
-        papel.update!(description: dados[:description], permissions: dados[:permissions], built_in: true, position: indice)
-      end
+  def criar_papeis_da_conta(account)
+    BUILT_IN_ROLES.each_with_index do |dados, indice|
+      papel = Staydesk::Role.find_or_initialize_by(account: account, name: dados[:name])
+      next if papel.persisted?
+
+      papel.update!(description: dados[:description], permissions: dados[:permissions], built_in: true, position: indice)
     end
   end
 
   def aplicar_nas_contas
-    Account.find_each do |account|
-      account.enable_features(*ACCOUNT_FEATURES)
-      account.disable_features(*DISABLED_FEATURES)
-      account.save!
-    end
+    Account.find_each { |account| preparar_conta(account) }
   end
 
   # O padrão de conta nova mora numa InstallationConfig que o Chatwoot reconcilia

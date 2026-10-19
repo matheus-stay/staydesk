@@ -4,6 +4,17 @@
 # porque config/application.rb o adiciona em config.paths['config/routes.rb'].
 # Toda rota nossa fica sob /api/v1/accounts/:account_id/staydesk/.
 Rails.application.routes.draw do
+  # Superadministração: gerar e listar instâncias, com o token de um Platform App.
+  namespace :platform, defaults: { format: 'json' } do
+    namespace :api do
+      namespace :v1 do
+        namespace :staydesk do
+          resources :instances, only: [:index, :create]
+        end
+      end
+    end
+  end
+
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
       resources :accounts, only: [] do

@@ -354,3 +354,33 @@ mesma regra que o servidor aplica. Use-o para montar o menu da Central.
 `GET staydesk/team_views/:id/conversations` aceita `page` e `sort_by`. O `sort_by`
 precisa ser uma das ordens do produto (`Conversations::SortService::SORT_OPTIONS`);
 sem ele, vale a ordem da visualização.
+
+## Superadministração: gerar instâncias
+
+A instância nova (uma conta do StayDesk) se cria pela Platform API, com o token de
+um **Platform App** gerado no super admin (`/super_admin`, Platform Apps), no
+cabeçalho `api_access_token`. É o mesmo mecanismo da Platform API do produto
+(`/platform/api/v1/accounts`, `users`, `account_users`), que continua valendo para
+administrar contas e usuários depois.
+
+| Método | Caminho | O quê |
+|---|---|---|
+| `POST` | `/platform/api/v1/staydesk/instances` | Cria a conta no padrão StayDesk (sem a marca do produto, sem campanhas e central de ajuda, com os papéis prontos), o administrador e, se vier, aplica a configuração da operação |
+| `GET` | `/platform/api/v1/staydesk/instances` | Lista as instâncias que o Platform App administra |
+
+Corpo do `POST`:
+
+```json
+{
+  "account": { "name": "Cliente X", "locale": "pt_BR", "support_email": "suporte@clientex.com" },
+  "admin": { "name": "Ana", "email": "ana@clientex.com", "password": "opcional" },
+  "config_yaml": "times:\n  - Suporte N1\n..."
+}
+```
+
+`config_yaml` (texto YAML) ou `config` (o mesmo em JSON) é o arquivo da operação,
+o mesmo do `config_import`. Quem já tem usuário com aquele e-mail é só vinculado
+como administrador. A resposta traz `account`, `admin`, `login_url` (link de
+acesso de uso único: sem `password`, é por ele que o administrador entra e define
+a senha) e `configuration` (o resumo da importação). Tudo acontece numa transação:
+se a configuração falhar, nada é criado.
