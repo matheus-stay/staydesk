@@ -50,6 +50,22 @@ RSpec.describe Staydesk::QueueMembership do
     expect(chat.reload.members).to be_empty
   end
 
+  # Conversa mandada a um grupo fora das filas (comercial, financeiro, plugin ao
+  # N1) fica visível a quem está nele enquanto aberta, na hora e na varredura.
+  it 'shows a conversation sent to a group to the people in that group' do
+    [chat, email]
+    fila('Tickets', n2, ['Channel::Email'])
+    described_class.sync!(account)
+    expect(email.reload.members).not_to include(ana)
+
+    conversa = create(:conversation, account: account, inbox: email, status: :open)
+    conversa.update!(team: n1)
+    expect(email.reload.members).to include(ana)
+
+    described_class.sync!(account)
+    expect(email.reload.members).to include(ana)
+  end
+
   it 'leaves an account without queues alone' do
     create(:inbox_member, inbox: chat, user: ana)
     create(:inbox_member, inbox: chat, user: bruno)

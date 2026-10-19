@@ -33,11 +33,9 @@ class Staydesk::QueueMembership
   # por transferência continua enxergando o que é seu.
   def membros_por_canal
     @membros_por_canal ||= begin
-      mapa = filas.each_with_object(Hash.new { |hash, id| hash[id] = [] }) do |fila, acumulado|
-        agentes = Staydesk::Queue.membros(fila.team_ids + fila.fallback_team_ids) & agentes_da_conta
-        @account.inboxes.select { |canal| fila.atende_canal?(canal) }.each { |canal| acumulado[canal.id] |= agentes }
-      end
+      mapa = pelas_filas
       responsaveis.each { |(canal_id, user_id)| mapa[canal_id] |= [user_id] }
+      grupos_com_conversa.each { |canal_id, agentes| mapa[canal_id] |= agentes }
       mapa
     end
   end
@@ -59,10 +57,27 @@ class Staydesk::QueueMembership
     @filas ||= Staydesk::Queue.active.where(account: @account).to_a
   end
 
+  def pelas_filas
+    filas.each_with_object(Hash.new { |hash, id| hash[id] = [] }) do |fila, mapa|
+      agentes = Staydesk::Queue.membros(fila.team_ids + fila.fallback_team_ids) & agentes_da_conta
+      @account.inboxes.select { |canal| fila.atende_canal?(canal) }.each { |canal| mapa[canal.id] |= agentes }
+    end
+  end
+
   def chaves_da_fila(fila)
     return fila.load_queue_keys if fila.load_queue_keys.present?
 
     @account.inboxes.select { |canal| fila.atende_canal?(canal) }.filter_map { |canal| Staydesk::LoadQueue.for_inbox(canal)&.key }
+  end
+
+  # Conversa mandada a um grupo fora das filas (comercial, financeiro, o
+  # ticket de plugin que vai ao N1) fica visível a quem está nele enquanto aberta.
+  def grupos_com_conversa
+    pares = @account.conversations.where.not(status: :resolved).where.not(team_id: nil).distinct.pluck(:inbox_id, :team_id)
+    membros = TeamMember.where(team_id: pares.map(&:last).uniq).pluck(:team_id, :user_id).group_by(&:first)
+    pares.each_with_object(Hash.new { |hash, id| hash[id] = [] }) do |(canal_id, time_id), mapa|
+      mapa[canal_id] |= (membros[time_id] || []).map(&:last) & agentes_da_conta
+    end
   end
 
   def responsaveis

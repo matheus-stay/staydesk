@@ -7,6 +7,7 @@ module Custom::Conversation
     # depois de a conversa passar pela fila.
     base.before_create :staydesk_route_to_queue_inline
     base.before_create :staydesk_status_inicial
+    base.before_save :staydesk_assunto_unico
     base.after_create_commit :staydesk_lancar_convite!
     base.after_create_commit :staydesk_route_to_queue
     # Um despacho só: os after_commit rodam em ordem inversa e alguns deles
@@ -68,9 +69,21 @@ module Custom::Conversation
   # varredura mantém o acesso enquanto a conversa estiver aberta com ele
   # (Staydesk::QueueMembership).
   def staydesk_acesso_do_responsavel(mudancas)
-    return unless mudancas.key?('assignee_id') && assignee_id.present?
+    novos = []
+    novos << assignee_id if mudancas.key?('assignee_id') && assignee_id.present?
+    novos += team.members.ids if mudancas.key?('team_id') && team.present?
+    (novos.uniq - inbox.inbox_members.pluck(:user_id)).each { |user_id| inbox.inbox_members.create!(user_id: user_id) }
+  end
 
-    inbox.inbox_members.find_or_create_by!(user_id: assignee_id)
+  # O assunto do ticket mora em lugares diferentes: o e-mail grava em
+  # `mail_subject`, o ticket que chega pela API (WHMCS) grava em `assunto`.
+  # Copiado para `mail_subject`, uma regra por assunto (fila do N3, prioridade
+  # urgente, cancelamento) vale para os dois.
+  def staydesk_assunto_unico
+    assunto = custom_attributes.to_h['assunto'].presence || additional_attributes.to_h['assunto'].presence
+    return if assunto.blank? || additional_attributes.to_h['mail_subject'].present?
+
+    self.additional_attributes = additional_attributes.to_h.merge('mail_subject' => assunto)
   end
 
   # O grupo da fila entra antes de a conversa ser gravada, porque a distribuição

@@ -24,9 +24,7 @@ module Staydesk::ConfigImport::Automacoes
   end
 
   def acoes_da_automacao(dados)
-    dados.fetch('acoes').map do |acao|
-      { 'action_name' => acao.fetch('tipo'), 'action_params' => Array(acao['valores'] || acao['valor']) }
-    end
+    acoes_pelo_nome(dados.fetch('acoes'))
   end
 
   # O avaliador de condições precisa de pelo menos uma linha; sem filtro de

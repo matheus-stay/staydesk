@@ -7,6 +7,7 @@
 class Staydesk::ConfigImportService
   include Staydesk::ConfigImport::Catalogo
   include Staydesk::ConfigImport::Automacoes
+  include Staydesk::ConfigImport::Macros
   include Staydesk::ConfigImport::Times
   include Staydesk::ConfigImport::Visualizacoes
 
@@ -30,6 +31,7 @@ class Staydesk::ConfigImportService
       politicas_de_sla: importar_politicas,
       filas: importar_filas,
       automacoes: importar_automacoes,
+      macros: importar_macros,
       visualizacoes: importar_visualizacoes,
       area_de_trabalho: importar_area_de_trabalho,
       canais: Staydesk::QueueMembership.sync!(@account)
@@ -72,7 +74,9 @@ class Staydesk::ConfigImportService
       definicao.update!(
         attribute_display_name: dados.fetch('nome'),
         attribute_display_type: dados['tipo'] || 'text',
-        attribute_values: dados['valores'] || []
+        attribute_values: dados['valores'] || [],
+        # Sem a chave no arquivo, fica o que está marcado na tela.
+        staydesk_required_to_resolve: dados.fetch('obrigatorio_para_resolver', definicao.staydesk_required_to_resolve || false)
       )
       definicao.attribute_key
     end
@@ -126,11 +130,15 @@ class Staydesk::ConfigImportService
   # chat", "o SLA do ticket") e é o que o avaliador de condições entende. Sem
   # isso, política sem condição casa com qualquer conversa e a primeira da
   # ordem leva todas, inclusive as dos outros canais.
+  # Várias condições se ligam por E, salvo quando a linha diz `query_operator: OR`;
+  # a última não leva ligação, como o produto exige.
   def condicoes(dados, caixas = nil)
-    condicoes = Array(dados['condicoes'])
-    return condicoes if caixas.blank?
-
-    condicoes + [{ 'attribute_key' => 'inbox_id', 'filter_operator' => 'equal_to', 'values' => caixas }]
+    condicoes = Array(dados['condicoes']).map(&:to_h)
+    condicoes += [{ 'attribute_key' => 'inbox_id', 'filter_operator' => 'equal_to', 'values' => caixas }] if caixas.present?
+    ultima = condicoes.size - 1
+    condicoes.each_with_index.map do |condicao, indice|
+      indice == ultima ? condicao.except('query_operator') : condicao.reverse_merge('query_operator' => 'AND')
+    end
   end
 
   # As caixas que a regra alcança: nil quando ela não fala de canal (vale para

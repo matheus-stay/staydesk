@@ -165,7 +165,7 @@ rails staydesk:configurar ACCOUNT_ID=1 FILE=configuracao.yml
 
 O arquivo cobre times, etiquetas, atributos, caixas, status do ticket, filas de
 carga, status do agente, calendário, políticas de SLA, filas, visualizações e
-área de trabalho, mais os **gatilhos** (seção `automacoes`). É idempotente: rodar de novo só atualiza o que mudou.
+área de trabalho, mais os **gatilhos** (seção `automacoes`) e as **macros** (seção `macros`). É idempotente: rodar de novo só atualiza o que mudou.
 
 O mesmo arquivo entra pela API, sem console, com o token de um administrador:
 
@@ -214,4 +214,31 @@ nenhum dos dois, o gatilho vale para toda conversa aberta. O texto aceita as
 variáveis do produto (`conversation.display_id`, `contact.name`, `agent.name`,
 `inbox.name`, `account.name`), resolvidas no envio. Mensagem de gatilho não
 conta como primeira resposta no SLA nem nos indicadores.
+
+Várias `condicoes` se ligam por E; a linha com `query_operator: OR` liga à
+seguinte por OU. O assunto do ticket (`mail_subject`) vale para e-mail e para o
+ticket que chega pela API: o `assunto` gravado pela API é copiado para lá. Nas
+ações, `assign_team` aceita o nome do grupo, `assign_agent` o e-mail do agente e
+`staydesk_set_ticket_status` o nome do status; `staydesk_set_attribute` recebe
+`[chave, valor]`.
+
+### Macros
+
+```yaml
+macros:
+  - nome: Devolver pra fila (N2)
+    acoes:
+      - { tipo: assign_team, valor: Suporte N2 }
+      - { tipo: staydesk_set_ticket_status, valor: Aberto }
+      - { tipo: send_message, valor: "Olá {{contact.first_name}}, ..." }
+```
+
+Entram como macros da conta, visíveis a todos, reconhecidas pelo nome (importar
+de novo atualiza). Ações: as do produto (`send_message`, `add_private_note`,
+`add_label`, `change_priority`, `resolve_conversation`…) mais as do StayDesk.
+
+### Campo obrigatório para resolver
+
+Na seção `atributos`, `obrigatorio_para_resolver: true` trava o encerramento do
+ticket enquanto o campo estiver vazio. Sem a chave, fica o que está marcado na tela.
 
