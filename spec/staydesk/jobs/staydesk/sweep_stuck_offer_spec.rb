@@ -50,6 +50,19 @@ RSpec.describe 'varredura entrega o que ficou parado na fila' do
     expect(Staydesk::Offer.pendentes.find_by(conversation: conversa)).to be_present
   end
 
+  # O caso real do staging: o canal de WhatsApp tinha ficado sem nenhum membro.
+  # Quem atende vem da fila, então a varredura acerta o canal e oferece.
+  it 'puts the queue group back in an empty channel and offers its conversation' do
+    conversa = parada_desde(25.days.ago)
+    InboxMember.where(inbox: whatsapp).delete_all
+
+    online([ana])
+    Staydesk::Queues::SweepJob.new.perform(account.id)
+
+    expect(whatsapp.reload.members).to include(ana)
+    expect(Staydesk::Offer.pendentes.find_by(conversation: conversa)).to have_attributes(user_id: ana.id)
+  end
+
   it 'leaves an invite still within its time alone' do
     conversa = parada_desde(1.minute.ago)
     vigente = Staydesk::Offer.create!(account: account, conversation: conversa, user: ana, expires_at: 20.seconds.from_now)

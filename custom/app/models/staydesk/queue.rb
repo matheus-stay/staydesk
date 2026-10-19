@@ -50,6 +50,9 @@ class Staydesk::Queue < ApplicationRecord
   validate :grupos_da_conta
   validate :secundario_nao_e_principal
 
+  # Quem atende cada canal sai das filas: mudou a fila, mudam os canais.
+  after_commit { Staydesk::QueueMembership.sync!(account) if account.present? }
+
   scope :ordered, -> { order(:position, :id) }
   scope :active, -> { where(active: true) }
 

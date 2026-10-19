@@ -542,7 +542,7 @@
         "CentralAtendimento": "The screen and the states of whoever handles work: the ticket status catalog, each group's views and the workspace.",
         "CentralPrazos": "Deadlines: SLA policies and the business hours that pause them.",
         "CentralPessoas": "Who works in the account and what each one can do: agents, groups, roles with granular permissions and integration keys.",
-        "CentralCanais": "Where customers come from: channels by type (WhatsApp, email, chat, API) and message templates. In each channel you pick which agents serve it.",
+        "CentralCanais": "Where customers come from: channels by type (WhatsApp, email, chat, API) and message templates. Who serves each channel comes from the queue groups.",
         "CentralRegras": "What runs on its own and what the agent reuses: automations, macros, canned responses, bots, labels and ticket fields.",
         "CentralConta": "The account itself: general data, API documentation, integrations, audit, security and billing.",
         "CentralOutros": "Product screens without a section of their own yet.",
@@ -751,12 +751,12 @@
     },
     "CHANNELS": {
       "SETTINGS_TITLE": "Channels",
-      "SETTINGS_DESCRIPTION": "Where customers come from, grouped by type as in Zendesk. In each channel you pick which agents serve it; among them, who gets what is decided by queues, status and capacity.",
+      "SETTINGS_DESCRIPTION": "Where customers come from, grouped by type as in Zendesk. Who serves each channel comes from the groups of the queues that take it; who gets what is decided by queue, status and capacity.",
       "NEW": "New channel",
       "CONFIGURE": "Configure",
       "EMPTY": "No channels yet.",
       "COUNT": "{count} channel | {count} channels",
-      "MEMBERS_NOTE": "Who serves it is picked in the channel's agents tab."
+      "MEMBERS_NOTE": "Who serves it comes from the groups of the queues that take this channel."
     },
     "KPIS": {
       "TITLE": "Operation indicators",

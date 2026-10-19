@@ -13,11 +13,20 @@ class Staydesk::Queues::SweepJob < ApplicationJob
 
   # Sem conta, varre todas (cron). Com conta, varre só a dela (troca de status).
   def perform(account_id = nil)
+    acertar_canais(account_id)
     vencer_esquecidos(account_id)
     ordenar(esperando(account_id)).each { |conversa| distribuir(conversa) }
   end
 
   private
+
+  # Quem atende cada canal sai das filas (Staydesk::QueueMembership). Grupo muda
+  # pela tela do produto sem passar por nós; a cada volta, os canais acompanham.
+  def acertar_canais(account_id)
+    contas = Account.where(id: Staydesk::Queue.active.select(:account_id))
+    contas = contas.where(id: account_id) if account_id.present?
+    contas.find_each { |conta| Staydesk::QueueMembership.sync!(conta) }
+  end
 
   # Convite pendente fora do prazo é convite cujo vencimento se perdeu (job
   # descartado num deploy, Redis reiniciado). Como a fila pula conversa com

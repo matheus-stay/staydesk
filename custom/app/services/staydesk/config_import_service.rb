@@ -31,7 +31,8 @@ class Staydesk::ConfigImportService
       filas: importar_filas,
       automacoes: importar_automacoes,
       visualizacoes: importar_visualizacoes,
-      area_de_trabalho: importar_area_de_trabalho
+      area_de_trabalho: importar_area_de_trabalho,
+      canais: Staydesk::QueueMembership.sync!(@account)
     }
   end
 

@@ -29,6 +29,7 @@ Tipos: `montagem` (ponto de entrada da camada, lista fixa), `gancho` (uma linha 
 | `app/javascript/dashboard/routes/dashboard/settings/attributes/AddAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
 | `app/javascript/dashboard/routes/dashboard/settings/attributes/EditAttribute.vue` | montagem | Campos | Chave de obrigatório para resolver no formulário |
 | `app/javascript/dashboard/routes/dashboard/conversation/contact/ContactInfo.vue` | gancho | UX | O nome do cliente abre o perfil; a edição fica no lápis |
+| `app/javascript/dashboard/routes/dashboard/settings/inbox/Settings.vue` | gancho | Canais | A aba Colaboradores sai: quem atende o canal vem dos grupos das filas (2 linhas) |
 | `app/services/auto_assignment/agent_assignment_service.rb` | gancho | SPEC-16 | `prepend_mod_with` para a fila com aceite convidar em vez de atribuir (1 linha) |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Botão de compactar a barra lateral |
 | `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | montagem | UX | Rodapé da barra (compactar e Central) fora da parte que rola |

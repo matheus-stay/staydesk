@@ -542,7 +542,7 @@
         "CentralAtendimento": "A tela e os estados de quem atende: o catálogo de status do ticket, as visualizações de cada grupo e a área de trabalho.",
         "CentralPrazos": "Os prazos: as políticas de SLA e o horário comercial que faz o prazo parar.",
         "CentralPessoas": "Quem trabalha na conta e o que cada um pode: agentes, grupos, papéis com permissão granular e as chaves de integração.",
-        "CentralCanais": "Por onde o cliente chega: os canais por tipo (WhatsApp, e-mail, chat, API) e os modelos de mensagem. Em cada canal você escolhe quais agentes atendem.",
+        "CentralCanais": "Por onde o cliente chega: os canais por tipo (WhatsApp, e-mail, chat, API) e os modelos de mensagem. Quem atende cada canal vem dos grupos das filas.",
         "CentralRegras": "O que roda sozinho e o que o agente reaproveita: automações, macros, respostas prontas, robôs, etiquetas e os campos do ticket.",
         "CentralConta": "A conta em si: dados gerais, a documentação da API, integrações, auditoria, segurança e cobrança.",
         "CentralOutros": "Telas do produto que ainda não têm seção própria.",
@@ -775,12 +775,12 @@
     },
     "CHANNELS": {
       "SETTINGS_TITLE": "Canais",
-      "SETTINGS_DESCRIPTION": "Por onde o cliente chega, agrupado por tipo como no Zendesk. Em cada canal você escolhe quais agentes atendem; entre eles, quem recebe o quê é decidido pelas filas, pelo status e pela capacidade.",
+      "SETTINGS_DESCRIPTION": "Por onde o cliente chega, agrupado por tipo como no Zendesk. Quem atende cada canal vem dos grupos das filas que pegam o canal; quem recebe o quê é decidido pela fila, pelo status e pela capacidade.",
       "NEW": "Novo canal",
       "CONFIGURE": "Configurar",
       "EMPTY": "Nenhum canal ainda.",
       "COUNT": "{count} canal | {count} canais",
-      "MEMBERS_NOTE": "Quem atende é escolhido na aba de agentes do canal."
+      "MEMBERS_NOTE": "Quem atende vem dos grupos das filas que pegam este canal."
     },
     "KPIS": {
       "TITLE": "Indicadores da operação",

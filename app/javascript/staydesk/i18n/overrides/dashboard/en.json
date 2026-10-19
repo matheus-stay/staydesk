@@ -132,7 +132,7 @@
         "FINISH_MESSAGE_NO_FORWARDING": "Your email channel has been created successfully! You need to configure SMTP and IMAP credentials to send and receive emails. Without these settings, no emails will be processed."
       },
       "AGENTS": {
-        "DESC": "Pick who serves this channel. Conversations from here only reach the agents you mark; you can change it later in the channel's agents tab.",
+        "DESC": "Who serves this channel comes from the queues: the groups of the queue that takes this channel serve it, as in Zendesk. You can move on without picking anyone.",
         "VALIDATION_ERROR": "Add at least one agent to your new Channel",
         "PICK_AGENTS": "Pick agents for the channel"
       },
@@ -207,7 +207,7 @@
       "BRANDING_TEXT": "Powered by StayDesk"
     },
     "HEADER": "Channels",
-    "DESCRIPTION": "Where customers come from: WhatsApp, email, website chat, API. In each channel you pick which agents serve it; among them, who gets what is decided by queues, status and capacity.",
+    "DESCRIPTION": "Where customers come from: WhatsApp, email, website chat, API. Who serves each channel comes from the queues: a queue's groups serve the channels it takes. Who gets what is decided by queue, status and capacity.",
     "LEARN_MORE": "Learn more about channels",
     "COUNT": "{n} channel | {n} channels",
     "SEARCH_PLACEHOLDER": "Search channel name, channel, or identifier...",
