@@ -54,4 +54,21 @@ describe('estaNaCentral', () => {
     expect(estaNaCentral('/app/accounts/1/reports')).toBe(true);
     expect(estaNaCentral('/app/accounts/1/staydesk/hub')).toBe(false);
   });
+
+  it('recognizes the profile and the settings entry without a trailing slash', () => {
+    expect(estaNaCentral('/app/accounts/1/profile/settings')).toBe(true);
+    expect(estaNaCentral('/app/accounts/1/settings')).toBe(true);
+    expect(estaNaCentral('/app/accounts/1/campaigns/ongoing')).toBe(true);
+  });
+
+  it('keeps the attendance screens in the Hub', () => {
+    [
+      '/app/accounts/1/dashboard',
+      '/app/accounts/1/conversations/10',
+      '/app/accounts/1/staydesk/views/2',
+      '/app/accounts/1/contacts/5',
+      '/app/accounts/1/inbox/3',
+      '/app/accounts/1/team/6',
+    ].forEach(caminho => expect(estaNaCentral(caminho)).toBe(false));
+  });
 });

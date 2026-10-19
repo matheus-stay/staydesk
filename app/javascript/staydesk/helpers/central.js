@@ -1,9 +1,24 @@
 // A central de administração do StayDesk: o que se configura e o que se
 // acompanha. Fica numa aba própria, com a barra lateral virando o menu dela.
-export const CAMINHOS_DA_CENTRAL = ['/settings/', '/reports'];
+// Reconhece pelo trecho do endereço (segmento inteiro), não por texto: o perfil
+// mora em /profile/settings e a entrada das configurações em /settings, sem a
+// barra final, e as duas caíam no Hub. Campanhas, central de ajuda e Captain
+// ficam desligados no StayDesk, mas se alguém abrir, é tela de administração.
+export const CAMINHOS_DA_CENTRAL = [
+  'settings',
+  'reports',
+  'profile',
+  'campaigns',
+  'portals',
+  'captain',
+];
+
+const TRECHOS_DA_CENTRAL = new RegExp(
+  `/(${CAMINHOS_DA_CENTRAL.join('|')})(/|$|\\?)`
+);
 
 export const estaNaCentral = caminho =>
-  CAMINHOS_DA_CENTRAL.some(trecho => String(caminho || '').includes(trecho));
+  TRECHOS_DA_CENTRAL.test(String(caminho || ''));
 
 // Para onde o link "Central" do rodapé leva. A Central é organizada em seções,
 // então o destino é a home dela; quem não é administrador só entra se alguma
