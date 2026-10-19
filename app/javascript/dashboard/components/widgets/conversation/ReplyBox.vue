@@ -1542,7 +1542,8 @@ export default {
       v-if="!copilot.isActive.value"
       :conversation-id="conversationId"
       :send="onSendReply"
-      :disabled="isReplyButtonDisabled"
+      :disabled="isEditorDisabled"
+      :sem-texto="isReplyButtonDisabled"
     />
 
     <WhatsappTemplates

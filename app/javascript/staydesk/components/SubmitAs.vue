@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router';
 import { useStore, useMapGetter } from 'dashboard/composables/store';
 import { useAlert } from 'dashboard/composables';
 import Button from 'dashboard/components-next/button/Button.vue';
+import { useConversationRequiredAttributes } from 'dashboard/composables/useConversationRequiredAttributes';
+import ConversationResolveAttributesModal from 'dashboard/components-next/ConversationWorkflow/ConversationResolveAttributesModal.vue';
 import { useWorkspace } from '../composables/useWorkspace';
 import { useNextConversation } from '../composables/useNextConversation';
 import { useTicketStatusStore } from '../store/ticketStatus';
@@ -12,10 +14,13 @@ import { useTicketStatusStore } from '../store/ticketStatus';
 // "Enviar como <status>", como no Zendesk: um botão dividido. A parte grande
 // manda a resposta e muda o status numa ação só; a seta escolhe outro status
 // para enviar. Depois, conforme a área de trabalho: fica, abre a próxima ou fecha.
+// Sem texto na caixa, como no Zendesk, o botão só muda o status (resolver sem
+// precisar escrever nada).
 const props = defineProps({
   conversationId: { type: [Number, String], required: true },
   send: { type: Function, required: true },
   disabled: { type: Boolean, default: false },
+  semTexto: { type: Boolean, default: false },
 });
 
 const STATUSES = ['open', 'pending', 'snoozed', 'resolved'];
@@ -27,6 +32,8 @@ const { composer, role } = useWorkspace();
 const { goToNext, goToList } = useNextConversation();
 const currentChat = useMapGetter('getSelectedChat');
 const ticketStatuses = useTicketStatusStore();
+const { checkMissingAttributes } = useConversationRequiredAttributes();
+const resolveAttributesModalRef = ref(null);
 
 const status = ref(null);
 const isSubmitting = ref(false);
@@ -95,17 +102,64 @@ const afterSend = async () => {
   if (mode === 'close') await goToList(router);
 };
 
-const submit = async () => {
-  if (props.disabled || isSubmitting.value) return;
+// Sem texto e sem troca de status não há o que fazer.
+const nadaAFazer = computed(
+  () => props.semTexto && selected.value === currentValue.value
+);
+
+// O status escolhido encerra o ticket?
+const vaiResolver = computed(() => {
+  const valor = String(selected.value);
+  if (!valor.startsWith('ts:')) return valor === 'resolved';
+  const escolhido = ticketStatuses.active.find(
+    item => item.id === Number(valor.slice(3))
+  );
+  return escolhido?.base_status === 'resolved';
+});
+
+const enviar = async () => {
   isSubmitting.value = true;
   try {
-    await props.send();
+    if (!props.semTexto) await props.send();
     await changeStatus();
     await afterSend();
-  } catch {
-    useAlert(t('STAYDESK.SUBMIT_AS.ERROR'));
+  } catch (error) {
+    // O servidor diz o que impede (os campos que faltam para resolver).
+    useAlert(error?.response?.data?.message || t('STAYDESK.SUBMIT_AS.ERROR'));
   } finally {
     isSubmitting.value = false;
+  }
+};
+
+// Resolver com campo obrigatório vazio abre a janela que pede os campos, como
+// o botão Resolver e o seletor de status; preenchidos, segue o envio.
+const submit = () => {
+  if (props.disabled || nadaAFazer.value || isSubmitting.value) return;
+  if (vaiResolver.value) {
+    const atributos = currentChat.value.custom_attributes || {};
+    const { hasMissing, missing } = checkMissingAttributes(atributos);
+    if (hasMissing) {
+      resolveAttributesModalRef.value?.open(missing, atributos, {
+        id: props.conversationId,
+      });
+      return;
+    }
+  }
+  enviar();
+};
+
+const comCamposPreenchidos = async ({ attributes }) => {
+  try {
+    await store.dispatch('updateCustomAttributes', {
+      conversationId: props.conversationId,
+      customAttributes: {
+        ...(currentChat.value.custom_attributes || {}),
+        ...attributes,
+      },
+    });
+    await enviar();
+  } catch {
+    useAlert(t('STAYDESK.SUBMIT_AS.ERROR'));
   }
 };
 </script>
@@ -122,7 +176,7 @@ const submit = async () => {
         solid
         blue
         class="rounded-e-none"
-        :disabled="disabled"
+        :disabled="disabled || nadaAFazer"
         :is-loading="isSubmitting"
         @click="submit"
       >
@@ -159,5 +213,9 @@ const submit = async () => {
         </button>
       </li>
     </ul>
+    <ConversationResolveAttributesModal
+      ref="resolveAttributesModalRef"
+      @submit="comCamposPreenchidos"
+    />
   </div>
 </template>
