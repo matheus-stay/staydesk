@@ -70,7 +70,8 @@ class Staydesk::Kpi::VolumeService
   def calcular_fcr(ids)
     return { percentual: nil, base: 0 } if ids.empty?
 
-    respostas = Message.where(conversation_id: ids, message_type: :outgoing, private: false).group(:conversation_id).count
+    # A ordem padrão das mensagens (created_at) não convive com o agrupamento no Postgres.
+    respostas = Message.where(conversation_id: ids, message_type: :outgoing, private: false).reorder(nil).group(:conversation_id).count
     reabertas_ids = Staydesk::ConversationEvent.where(conversation_id: ids, kind: 'status_changed', from_value: 'resolved', to_value: 'open')
                                                .distinct.pluck(:conversation_id)
     de_primeira = ids.count { |id| respostas.fetch(id, 0) <= 1 && reabertas_ids.exclude?(id) }
