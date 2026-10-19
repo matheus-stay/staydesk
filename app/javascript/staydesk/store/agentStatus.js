@@ -72,6 +72,12 @@ export const useAgentStatusStore = defineStore('staydeskAgentStatus', {
       return data;
     },
 
+    async goOffline() {
+      const { data } = await AgentStatusesAPI.goOffline();
+      this.currentStatusId = data.current_status_id;
+      return { ...data, availability: data.availability || 'offline' };
+    },
+
     async save(id, payload) {
       this.uiFlags.isSaving = true;
       try {

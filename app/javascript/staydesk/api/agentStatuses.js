@@ -48,6 +48,27 @@ class AgentStatusesAPI extends ApiClient {
       agent_status_id: agentStatusId,
     });
   }
+
+  // Sai de qualquer status e fica offline até escolher outro
+  goOffline() {
+    return axios.post(`${this.url}/agent_status_periods/offline`);
+  }
+
+  // Aviso de aba fechada. Vai por fetch com keepalive porque o axios morre
+  // junto com a página; o keepalive deixa a requisição terminar depois dela.
+  leave() {
+    const { common = {} } = axios.defaults.headers;
+    return fetch(`${this.url}/agent_status_periods/leave`, {
+      method: 'POST',
+      keepalive: true,
+      headers: {
+        'access-token': common['access-token'],
+        'token-type': common['token-type'],
+        client: common.client,
+        uid: common.uid,
+      },
+    });
+  }
 }
 
 export default new AgentStatusesAPI();

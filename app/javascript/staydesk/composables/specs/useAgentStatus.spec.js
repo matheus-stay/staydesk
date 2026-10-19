@@ -4,10 +4,10 @@ import { useAgentStatus } from '../useAgentStatus';
 
 vi.mock('dashboard/composables/store', () => ({
   useStore: () => ({ dispatch: vi.fn() }),
-  useMapGetter: name => ({
-    value: name === 'getCurrentUserAvailability' ? 'busy' : 1,
-  }),
+  useMapGetter: () => ({ value: 1 }),
 }));
+
+vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: () => 'Offline' }) }));
 
 describe('useAgentStatus', () => {
   beforeEach(() => setActivePinia(createPinia()));
@@ -41,7 +41,9 @@ describe('useAgentStatus', () => {
     return store;
   };
 
-  it('always marks one item as active so the upstream menu can render', () => {
+  // Quem reabre o StayDesk sem status escolhido está offline, e o menu diz
+  // isso; antes ele exibia um status como ativo sem ninguém ter escolhido.
+  it('shows Offline as the active item until the agent picks a status', () => {
     seed();
     const { hasStatuses, menuItems } = useAgentStatus();
 
@@ -49,8 +51,12 @@ describe('useAgentStatus', () => {
     expect(menuItems.value.map(item => item.label)).toEqual([
       'Só chat',
       'Ausente',
+      'Offline',
     ]);
-    expect(menuItems.value.find(item => item.active).label).toBe('Ausente');
+    expect(menuItems.value.filter(item => item.active)).toHaveLength(1);
+    expect(menuItems.value.find(item => item.active).value).toBe(
+      'staydesk:offline'
+    );
   });
 
   it('prefers the status the agent chose', () => {
@@ -67,5 +73,14 @@ describe('useAgentStatus', () => {
     const { handle } = useAgentStatus();
 
     expect(handle('online')).toBe(false);
+  });
+
+  it('goes offline through its own endpoint', () => {
+    const store = seed();
+    store.goOffline = vi.fn().mockResolvedValue({ availability: 'offline' });
+    const { handle } = useAgentStatus();
+
+    expect(handle('staydesk:offline')).toBe(true);
+    expect(store.goOffline).toHaveBeenCalled();
   });
 });

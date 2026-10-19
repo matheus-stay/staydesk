@@ -34,9 +34,16 @@ const saudacao = computed(() => {
 const primeiroNome = computed(
   () => String(currentUser.value?.name || '').split(' ')[0]
 );
-const opcoesDeStatus = computed(() =>
-  statuses.active.map(status => ({ value: status.id, label: status.name }))
-);
+// Sem status escolhido o agente está offline; o seletor mostra isso em vez
+// de exibir o primeiro status como se fosse o atual.
+const OFFLINE = 'offline';
+const opcoesDeStatus = computed(() => [
+  ...statuses.active.map(status => ({ value: status.id, label: status.name })),
+  {
+    value: OFFLINE,
+    label: t('PROFILE_SETTINGS.FORM.AVAILABILITY.STATUS.OFFLINE'),
+  },
+]);
 // O seletor não escreve direto na store: ele espelha o status atual e só troca
 // quando a pessoa escolhe outro de fato. Sem isso, o componente de seleção
 // dispara ao montar e muda o status do agente sem ninguém pedir.
@@ -44,13 +51,14 @@ const statusAtual = ref(null);
 watch(
   () => statuses.currentStatusId,
   id => {
-    statusAtual.value = id;
+    statusAtual.value = id || OFFLINE;
   },
   { immediate: true }
 );
 const trocarStatus = id => {
-  if (!id || id === statuses.currentStatusId) return;
-  statuses.changeMine(id);
+  if (!id || id === (statuses.currentStatusId || OFFLINE)) return;
+  if (id === OFFLINE) statuses.goOffline();
+  else statuses.changeMine(id);
 };
 const esperandoNasMinhasFilas = computed(() =>
   views.value.reduce((soma, view) => soma + (countFor(view.id) || 0), 0)

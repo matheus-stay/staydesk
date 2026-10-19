@@ -9,4 +9,12 @@ class Staydesk::AgentStatusPeriodPolicy < ApplicationPolicy
   def create?
     true
   end
+
+  def offline?
+    true
+  end
+
+  def leave?
+    true
+  end
 end

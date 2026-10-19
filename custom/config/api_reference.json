@@ -608,6 +608,50 @@
      }
     },
     {
+     "metodo": "POST",
+     "caminho": "staydesk/agent_status_periods/offline",
+     "titulo": "Ficar offline",
+     "resumo": "Tira quem está chamando de qualquer status: o período aberto fecha e a disponibilidade vai a offline.",
+     "detalhes": "É o item Offline do menu de disponibilidade. O agente só volta a receber quando escolher um status de novo. A resposta traz `current_status_id` nulo.",
+     "escopo": "operacao:escrita",
+     "respostas": [
+      {
+       "codigo": 200,
+       "descricao": "Deu certo. O corpo traz o status atual (nulo)."
+      },
+      {
+       "codigo": 401,
+       "descricao": "Token inválido, suspenso ou vencido, ou o papel de quem chama não alcança este recurso."
+      },
+      {
+       "codigo": 403,
+       "descricao": "O token de API não tem o escopo exigido. A mensagem diz qual."
+      }
+     ]
+    },
+    {
+     "metodo": "POST",
+     "caminho": "staydesk/agent_status_periods/leave",
+     "titulo": "Avisar que a aba fechou",
+     "resumo": "O navegador chama ao fechar a aba. Depois de 45 segundos, se não sobrou nenhuma aba conectada, o agente sai do status.",
+     "detalhes": "F5 e uma segunda aba aberta também disparam o aviso; por isso a decisão é adiada até a presença do navegador expirar, e só desliga quem de fato saiu. Sai pelo mesmo caminho do tempo limite: se o status tiver destino de desconexão, o agente cai nele; senão, fica offline.",
+     "escopo": "operacao:escrita",
+     "respostas": [
+      {
+       "codigo": 202,
+       "descricao": "Aviso recebido; a conferência roda em segundo plano."
+      },
+      {
+       "codigo": 401,
+       "descricao": "Token inválido, suspenso ou vencido, ou o papel de quem chama não alcança este recurso."
+      },
+      {
+       "codigo": 403,
+       "descricao": "O token de API não tem o escopo exigido. A mensagem diz qual."
+      }
+     ]
+    },
+    {
      "metodo": "GET",
      "caminho": "staydesk/conversations/{conversation_id}/sla",
      "titulo": "Ler o SLA de uma conversa",

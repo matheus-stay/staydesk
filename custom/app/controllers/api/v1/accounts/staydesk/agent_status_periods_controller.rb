@@ -18,4 +18,18 @@ class Api::V1::Accounts::Staydesk::AgentStatusPeriodsController < Api::V1::Accou
     @current_status = Staydesk::AgentStatusService.new(Current.account_user).change_to(agent_status)
     render 'api/v1/accounts/staydesk/agent_statuses/current'
   end
+
+  # O agente sai de qualquer status e fica offline, até escolher outro.
+  def offline
+    @current_status = Staydesk::AgentStatusService.new(Current.account_user).afastar!(nil)
+    render 'api/v1/accounts/staydesk/agent_statuses/current'
+  end
+
+  # A aba foi fechada. Não desliga na hora: F5 e uma segunda aba aberta também
+  # disparam o aviso. O job confere a presença depois que ela teria expirado.
+  def leave
+    Staydesk::AgentStatuses::LeaveJob.set(wait: Staydesk::AgentStatuses::LeaveJob::ESPERA)
+                                     .perform_later(Current.account_user.id)
+    head :accepted
+  end
 end

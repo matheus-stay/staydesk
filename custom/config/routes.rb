@@ -34,7 +34,12 @@ Rails.application.routes.draw do
             end
             resources :applied_slas, only: [:index]
             resources :agent_statuses, only: [:index, :create, :update, :destroy]
-            resources :agent_status_periods, only: [:index, :create]
+            resources :agent_status_periods, only: [:index, :create] do
+              collection do
+                post :offline
+                post :leave
+              end
+            end
             resources :agent_loads, only: [:index]
             resources :distribution_checks, only: [:index]
             resources :load_queues, only: [:index, :create, :update, :destroy]
