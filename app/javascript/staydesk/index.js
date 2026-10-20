@@ -2,6 +2,7 @@ import dashboardOverrides from './i18n/dashboard';
 import { mergeStaydeskMessages } from './i18n/merge';
 import { applyDefaultColorScheme } from './config/theme';
 import { avisarSaidaDaAba } from './helpers/saidaDaAba';
+import { atualizarContagensEmTempoReal } from './helpers/contagensEmTempoReal';
 import './assets/staydesk.css';
 
 // Plugin da camada StayDesk para o dashboard. Montado uma vez, em
@@ -11,5 +12,9 @@ export default {
     mergeStaydeskMessages(i18n, dashboardOverrides);
     applyDefaultColorScheme();
     avisarSaidaDaAba();
+    atualizarContagensEmTempoReal({
+      store: app.config.globalProperties.$store,
+      pinia: app.config.globalProperties.$pinia,
+    });
   },
 };

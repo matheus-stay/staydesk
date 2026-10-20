@@ -16,6 +16,11 @@ enxergam, colunas e ordenação; o agente vê as views dos seus times na barra l
   daquele canal, pela mesma regra da distribuição. Caixa criada depois entra sozinha na view certa. No YAML
   da operação, `canais_de_trabalho: [chat]` na visualização gera essa linha; é o jeito preferido de separar
   chat de ticket (`caixas` e `caixas_exceto` congelam os ids da importação).
+- `resolved_query` em cada view é a consulta já resolvida (canal de trabalho em caixas, `me` em quem
+  pede). É ela que a lista usa no filtro de conversas do produto, que não conhece os marcadores da
+  camada; `query` é a que se edita.
+- O número ao lado de cada view é pedido de novo a cada mudança de conversa que chega em tempo real
+  (`helpers/contagensEmTempoReal.js`, agrupando rajadas em 1,5 s), e a cada 30 s como rede de segurança.
 - API, sob `/api/v1/accounts/:account_id/staydesk/team_views`:
 
 | Rota | Quem | O que faz |
@@ -23,7 +28,7 @@ enxergam, colunas e ordenação; o agente vê as views dos seus times na barra l
 | `GET /` | todos | Views visíveis ao usuário, em ordem (admin vê todas) |
 | `POST /`, `PATCH /:id`, `DELETE /:id` | admin | Manutenção; corpo em `team_view` |
 | `GET /:id/conversations?page=` | todos | Lista da view pelo `Conversations::FilterService`, mesma resposta de `conversations/filter` |
-| `GET /counts` | todos | `{ counts: { id: n } }` para as views do usuário; cache de 30 s por usuário |
+| `GET /counts` | todos | `{ counts: { id: n } }` para as views do usuário, sem cache: bate com a lista na hora |
 
 - Importação em lote: `rails staydesk:team_views:importar ACCOUNT_ID=1 FILE=views.yml`
   (`Staydesk::TeamViewImportService`); o YAML é uma lista de `name`, `description`, `color`, `icon`,

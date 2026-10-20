@@ -3,7 +3,9 @@ import { useIntervalFn } from '@vueuse/core';
 import { resolveCurrentAgent } from '../helpers/teamViewQuery';
 import { useTeamViewsStore } from '../store/teamViews';
 
-const COUNTS_INTERVAL = 60 * 1000;
+// Rede de segurança: a contagem também é pedida a cada mudança de conversa que
+// chega em tempo real (helpers/contagensEmTempoReal.js).
+const COUNTS_INTERVAL = 30 * 1000;
 
 export const useTeamViews = () => {
   const store = useTeamViewsStore();
@@ -16,7 +18,6 @@ export const useTeamViews = () => {
     await store.fetch();
   };
 
-  // Contadores das views no ritmo do cache do servidor (30 s) sem martelar a API.
   const pollCounts = () => {
     const { pause } = useIntervalFn(
       () => store.fetchCounts(),
@@ -33,17 +34,19 @@ export const useTeamViews = () => {
     counts,
     ensureLoaded,
     pollCounts,
-    // A pasta que a lista recebe já vai com o responsável resolvido: o marcador
-    // "o próprio agente" vira o id de quem está olhando, antes de a consulta sair.
+    // A pasta que a lista recebe vai com a consulta que o servidor já resolveu
+    // (canal de trabalho em caixas, "o próprio agente" no id de quem olha): o
+    // filtro de conversas do produto não conhece os marcadores da camada.
     asFolder: (foldersId, currentUserId) => {
       const folder = store.asFolder(foldersId);
       if (!folder) return folder;
 
+      const query = folder.resolved_query || folder.query;
       return {
         ...folder,
         query: {
-          ...folder.query,
-          payload: resolveCurrentAgent(folder.query?.payload, currentUserId),
+          ...query,
+          payload: resolveCurrentAgent(query?.payload, currentUserId),
         },
       };
     },

@@ -1,6 +1,4 @@
 class Api::V1::Accounts::Staydesk::TeamViewsController < Api::V1::Accounts::Staydesk::BaseController
-  COUNTS_TTL = 30.seconds
-
   before_action { check_authorization(Staydesk::TeamView) }
   before_action :fetch_team_view, only: [:show, :update, :destroy, :conversations]
 
@@ -35,11 +33,10 @@ class Api::V1::Accounts::Staydesk::TeamViewsController < Api::V1::Accounts::Stay
     render_could_not_create_error(e.message)
   end
 
+  # Sem cache: o número ao lado da visualização tem de bater com a lista na hora,
+  # e a tela pede de novo a cada mudança de conversa que chega em tempo real.
   def counts
-    views = visible_team_views.to_a
-    @counts = Rails.cache.fetch(counts_cache_key(views), expires_in: COUNTS_TTL) do
-      views.to_h { |view| [view.id, filter_service(view).perform[:count][:all_count]] }
-    end
+    @counts = visible_team_views.to_h { |view| [view.id, filter_service(view).perform[:count][:all_count]] }
   end
 
   private
@@ -60,10 +57,6 @@ class Api::V1::Accounts::Staydesk::TeamViewsController < Api::V1::Accounts::Stay
       payload: view.payload(Current.user), page: page, sort_by: ordem
     ).permit!
     ::Conversations::FilterService.new(filter_params, Current.user, Current.account)
-  end
-
-  def counts_cache_key(views)
-    "staydesk/team_views/counts/#{Current.account.id}/#{Current.user.id}/#{views.map(&:id).join('-')}"
   end
 
   def permitted_payload

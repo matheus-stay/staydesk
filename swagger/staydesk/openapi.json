@@ -3864,7 +3864,7 @@
           "Visualizações e área de trabalho"
         ],
         "summary": "Contar as visualizações",
-        "description": "Quantas conversas há em cada visualização agora.\n\nÉ o número que aparece ao lado de cada uma na barra do Hub. Tem cache curto no servidor.\n\nEscopo do token de API: `operacao:leitura`.",
+        "description": "Quantas conversas há em cada visualização agora.\n\nÉ o número que aparece ao lado de cada uma na barra do Hub. Sem cache: bate com a lista de `team_views/{id}/conversations` na hora. Peça de novo a cada evento de conversa em tempo real.\n\nEscopo do token de API: `operacao:leitura`.",
         "parameters": [
           {
             "name": "account_id",
@@ -5574,7 +5574,7 @@
           "Superadministração (Platform API)"
         ],
         "summary": "Gerar instância nova",
-        "description": "Cria a conta no padrão StayDesk, o administrador e, se vier, aplica a configuração da operação. Tudo numa transação.\n\nA conta nasce sem a marca do produto, sem campanhas e central de ajuda e com os papéis prontos. Quem já tem usuário com o e-mail do administrador é só vinculado. `config_yaml` (texto) ou `config` (JSON) é o mesmo arquivo do config_import. A resposta traz `login_url`, link de acesso de uso único; sem `password`, é por ele que o administrador entra e define a senha.",
+        "description": "Cria a conta no padrão StayDesk, o administrador e, se vier, aplica a configuração da operação. Tudo numa transação.\n\nA conta nasce sem a marca do produto, sem campanhas e central de ajuda e com os papéis prontos. Quem já tem usuário com o e-mail do administrador é só vinculado. `config_yaml` (texto) ou `config` (JSON) é o mesmo arquivo do config_import. A resposta traz `login_url`, link de acesso de uso único; sem `password`, é por ele que o administrador entra e define a senha.\n\nEscopo do token de API: `token de Platform App (sem escopo)`.",
         "parameters": [],
         "responses": {
           "201": {
@@ -5587,6 +5587,7 @@
             "description": "Dados inválidos ou configuração com erro: nada foi criado."
           }
         },
+        "x-staydesk-escopo": "token de Platform App (sem escopo)",
         "requestBody": {
           "content": {
             "application/json": {
@@ -5635,7 +5636,7 @@
           "Superadministração (Platform API)"
         ],
         "summary": "Listar instâncias",
-        "description": "As contas que o Platform App administra, com nome, idioma, situação, data de criação e quantidade de pessoas.",
+        "description": "As contas que o Platform App administra, com nome, idioma, situação, data de criação e quantidade de pessoas.\n\nEscopo do token de API: `token de Platform App (sem escopo)`.",
         "parameters": [],
         "responses": {
           "200": {
@@ -5644,7 +5645,8 @@
           "401": {
             "description": "Sem token de Platform App, ou token inválido."
           }
-        }
+        },
+        "x-staydesk-escopo": "token de Platform App (sem escopo)"
       }
     }
   }

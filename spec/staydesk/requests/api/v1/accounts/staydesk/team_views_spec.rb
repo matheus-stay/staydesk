@@ -91,4 +91,52 @@ RSpec.describe 'StayDesk Team Views API', type: :request do
       expect(response.parsed_body['counts']).to eq(team_view.id.to_s => 0)
     end
   end
+
+  # A lista na tela usa o filtro de conversas do produto, que não conhece o canal
+  # de trabalho: ela precisa da consulta já resolvida, e o número ao lado tem de
+  # bater com ela na hora, sem cache.
+  describe 'work channel view' do
+    let(:chat) { create(:inbox, account: account) }
+    let(:email) { create(:inbox, :with_email, account: account) }
+    let!(:fila_chat) do
+      Staydesk::TeamView.create!(
+        account: account, name: 'Fila - Chat',
+        query: { 'payload' => [
+          { 'attribute_key' => 'staydesk_load_queue', 'filter_operator' => 'equal_to', 'values' => ['chat'], 'query_operator' => 'and' },
+          { 'attribute_key' => 'status', 'filter_operator' => 'equal_to', 'values' => ['open'], 'query_operator' => nil }
+        ] }
+      )
+    end
+
+    before do
+      create(:conversation, account: account, inbox: chat, status: :open)
+      create(:conversation, account: account, inbox: email, status: :open)
+    end
+
+    def contagem
+      get "/api/v1/accounts/#{account.id}/staydesk/team_views/counts", headers: admin.create_new_auth_token, as: :json
+      response.parsed_body['counts'][fila_chat.id.to_s]
+    end
+
+    it 'hands the list a query the product filter understands, matching the count' do
+      get "/api/v1/accounts/#{account.id}/staydesk/team_views", headers: admin.create_new_auth_token, as: :json
+      resolvida = response.parsed_body.find { |view| view['id'] == fila_chat.id }['resolved_query']
+
+      expect(resolvida['payload'].first).to include('attribute_key' => 'inbox_id')
+      expect(resolvida['payload'].first['values']).not_to include(email.id)
+
+      post "/api/v1/accounts/#{account.id}/conversations/filter", params: { payload: resolvida['payload'] },
+                                                                  headers: admin.create_new_auth_token, as: :json
+      expect(response).to have_http_status(:success)
+      expect(response.parsed_body.dig('meta', 'all_count')).to eq(contagem)
+    end
+
+    it 'counts a new conversation right away' do
+      expect(contagem).to eq(1)
+
+      create(:conversation, account: account, inbox: chat, status: :open)
+
+      expect(contagem).to eq(2)
+    end
+  end
 end

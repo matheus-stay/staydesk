@@ -3542,7 +3542,7 @@
      "caminho": "staydesk/team_views/counts",
      "titulo": "Contar as visualizações",
      "resumo": "Quantas conversas há em cada visualização agora.",
-     "detalhes": "É o número que aparece ao lado de cada uma na barra do Hub. Tem cache curto no servidor.",
+     "detalhes": "É o número que aparece ao lado de cada uma na barra do Hub. Sem cache: bate com a lista de `team_views/{id}/conversations` na hora. Peça de novo a cada evento de conversa em tempo real.",
      "escopo": "operacao:leitura",
      "respostas": [
       {
@@ -5219,6 +5219,7 @@
    ]
   },
   {
+   "chave": "superadministracao",
    "titulo": "Superadministração (Platform API)",
    "texto": "Para gerar e listar instâncias (contas) do StayDesk. Autentica com o token de um Platform App, criado no super admin (/super_admin › Platform Apps), no cabeçalho api_access_token. A Platform API do produto (/platform/api/v1/accounts, users, account_users) continua valendo para administrar contas e usuários.",
    "endpoints": [
@@ -5227,6 +5228,7 @@
      "caminho": "instances",
      "base": "/platform/api/v1/staydesk",
      "titulo": "Gerar instância nova",
+     "escopo": "token de Platform App (sem escopo)",
      "resumo": "Cria a conta no padrão StayDesk, o administrador e, se vier, aplica a configuração da operação. Tudo numa transação.",
      "detalhes": "A conta nasce sem a marca do produto, sem campanhas e central de ajuda e com os papéis prontos. Quem já tem usuário com o e-mail do administrador é só vinculado. `config_yaml` (texto) ou `config` (JSON) é o mesmo arquivo do config_import. A resposta traz `login_url`, link de acesso de uso único; sem `password`, é por ele que o administrador entra e define a senha.",
      "respostas": [
@@ -5284,6 +5286,7 @@
      "caminho": "instances",
      "base": "/platform/api/v1/staydesk",
      "titulo": "Listar instâncias",
+     "escopo": "token de Platform App (sem escopo)",
      "resumo": "As contas que o Platform App administra, com nome, idioma, situação, data de criação e quantidade de pessoas.",
      "respostas": [
       {

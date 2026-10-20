@@ -44,4 +44,33 @@ describe('useTeamViews', () => {
     expect(folder.query.payload[0].values).toEqual([7]);
     expect(asFolder('1', 7)).toBeUndefined();
   });
+
+  // O filtro de conversas do produto não conhece o canal de trabalho: a lista
+  // usa a consulta que o servidor já resolveu, senão a fila vinha vazia com o
+  // número ao lado dizendo que havia conversa.
+  it('uses the query the server already resolved', async () => {
+    TeamViewsAPI.get.mockResolvedValue({
+      data: [
+        {
+          id: 2,
+          name: 'Fila - Chat',
+          position: 0,
+          query: {
+            payload: [
+              { attribute_key: 'staydesk_load_queue', values: ['chat'] },
+            ],
+          },
+          resolved_query: {
+            payload: [{ attribute_key: 'inbox_id', values: [1, 3] }],
+          },
+        },
+      ],
+    });
+    const { ensureLoaded, asFolder } = useTeamViews();
+    await ensureLoaded();
+
+    expect(asFolder('staydesk-2', 7).query.payload).toEqual([
+      { attribute_key: 'inbox_id', values: [1, 3] },
+    ]);
+  });
 });
