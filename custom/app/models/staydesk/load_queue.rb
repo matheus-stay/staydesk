@@ -6,9 +6,10 @@ class Staydesk::LoadQueue < ApplicationRecord
   self.table_name = 'staydesk_load_queues'
 
   # Só vale enquanto a conta não define as suas: chat pega tudo, e-mail é ticket.
+  # Chat reaberto pelo cliente volta para a fila; ticket fica com quem atendia.
   DEFAULTS = [
-    { key: 'chat', name: 'Chat', channel_types: [], inbox_ids: [], catch_all: true, position: 0 },
-    { key: 'ticket', name: 'Ticket', channel_types: ['Channel::Email'], inbox_ids: [], catch_all: false, position: 1 }
+    { key: 'chat', name: 'Chat', channel_types: [], inbox_ids: [], catch_all: true, position: 0, reopen_to_queue: true },
+    { key: 'ticket', name: 'Ticket', channel_types: ['Channel::Email'], inbox_ids: [], catch_all: false, position: 1, reopen_to_queue: false }
   ].freeze
 
   belongs_to :account

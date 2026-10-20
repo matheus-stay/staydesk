@@ -30,6 +30,6 @@ class Api::V1::Accounts::Staydesk::LoadQueuesController < Api::V1::Accounts::Sta
   end
 
   def permitted_payload
-    params.require(:load_queue).permit(:key, :name, :catch_all, :position, channel_types: [], inbox_ids: [])
+    params.require(:load_queue).permit(:key, :name, :catch_all, :reopen_to_queue, :position, channel_types: [], inbox_ids: [])
   end
 end

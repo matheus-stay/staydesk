@@ -7,6 +7,13 @@ module Custom::Message
 
   private
 
+  # Marca a conversa reaberta pelo cliente, para a camada saber que não foi o
+  # agente quem reabriu (Custom::Conversation#staydesk_reabrir_na_fila).
+  def reopen_resolved_conversation
+    conversation.staydesk_reaberta_pelo_cliente = true
+    super
+  end
+
   def staydesk_light_sender_writes_private_notes_only
     return if private || !sender.is_a?(User)
 

@@ -38,7 +38,7 @@ class Staydesk::TicketStatusService
     ticket_status = current
     return if ticket_status&.base_status == @conversation.status
 
-    default = Staydesk::TicketStatus.default_for(@conversation.account, @conversation.status)
+    default = status_para_a_base
     attributes = (@conversation.custom_attributes || {})
     new_attributes = default ? attributes.merge(ATTRIBUTE_KEY => default.name) : attributes.except(ATTRIBUTE_KEY)
     return if new_attributes == attributes
@@ -47,6 +47,16 @@ class Staydesk::TicketStatusService
   end
 
   private
+
+  # Aberta e com responsável (ticket reaberto pelo cliente, por exemplo) é
+  # trabalho em curso, não caso novo.
+  def status_para_a_base
+    if @conversation.status == 'open' && @conversation.assignee_id.present?
+      em_andamento = Staydesk::TicketStatus.on_assign(@conversation.account)
+      return em_andamento if em_andamento
+    end
+    Staydesk::TicketStatus.default_for(@conversation.account, @conversation.status)
+  end
 
   def assumir(em_andamento)
     return unless @conversation.status == 'open'

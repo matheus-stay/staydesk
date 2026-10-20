@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_18_950000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_20_100000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1606,6 +1606,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_18_950000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "inbox_ids", default: [], null: false, array: true
+    t.boolean "reopen_to_queue", default: false, null: false
     t.index ["account_id", "key"], name: "index_staydesk_load_queues_on_account_id_and_key", unique: true
     t.index ["account_id"], name: "index_staydesk_load_queues_on_account_id"
   end

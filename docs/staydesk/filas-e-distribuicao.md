@@ -59,9 +59,26 @@ trabalho › Canais de trabalho; na API e no arquivo continuam sendo
 | Chave | `chat`, `ticket`, o que a operação definir. É o que aparece no status e na regra de capacidade |
 | Canais | O tipo inteiro ou canais específicos, no mesmo campo. O canal específico vence o tipo |
 | Pega o que sobrar | O coringa: fica com os canais que nenhum outro pegou |
+| Reabre na fila (`reopen_to_queue`, `reabrir_na_fila` no arquivo) | Conversa resolvida que o cliente reabre volta para a fila, sem o agente anterior, e é oferecida de novo |
 
 Sem nenhum configurado, vale o padrão do produto: chat pega tudo e e-mail é
 ticket.
+
+### Quando o cliente volta a escrever
+
+Como no Zendesk:
+
+- **Chat** (canal com "reabre na fila"): a conversa resolvida que o cliente
+  reabre perde o responsável, volta ao status inicial ("Novo") e entra de novo na
+  fila. Convite e rodízio seguem as regras de sempre. O agente anterior não tem
+  prioridade.
+- **Ticket**: continua com quem atendia e fica "em andamento" (o status marcado
+  para quando alguém assume).
+- Quem reabre a conversa **pelo painel** (o próprio agente) continua com ela.
+- O WhatsApp com "uma conversa só por contato" desligado já abre uma conversa
+  nova quando a anterior está resolvida, e ela entra na fila como qualquer outra.
+  No chat do site, "permitir mensagens depois de resolvido" desligado faz o widget
+  oferecer uma conversa nova.
 
 ## Regras de capacidade
 

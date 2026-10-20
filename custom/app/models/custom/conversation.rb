@@ -2,7 +2,7 @@
 module Custom::Conversation
   def self.prepended(base)
     base.prepend(Staydesk::ConversationEventData)
-    base.attr_accessor :staydesk_convidar
+    base.include(Staydesk::ConversationQueue)
     base.validate :staydesk_required_ticket_fields
     # Os after_commit rodam em ordem inversa. Os dois entram no começo da cadeia
     # (`prepend`) para rodar DEPOIS dos do núcleo: a fila com condição salva a
@@ -17,8 +17,9 @@ module Custom::Conversation
     # Um despacho só: os after_commit rodam em ordem inversa e alguns deles
     # salvam a conversa de novo, o que zera `saved_changes` para os seguintes
     # (o convite de aceite deixava de ser criado). A foto das mudanças é tirada
-    # uma vez e passada a todos, na ordem certa.
-    base.after_update_commit :staydesk_after_update
+    # uma vez e passada a todos, na ordem certa. Com `prepend`, roda depois dos do
+    # núcleo, que senão deixava de avisar "conversa aberta" e "resolvida".
+    base.after_update_commit :staydesk_after_update, prepend: true
     base.has_one :staydesk_applied_sla, class_name: 'Staydesk::AppliedSla', dependent: :destroy
   end
 
@@ -29,17 +30,6 @@ module Custom::Conversation
     return super if team.blank? || team.allow_auto_assign.blank?
 
     Staydesk::QueueOverflow.new(self).eligible_user_ids(disponiveis)
-  end
-
-  # Fila com aceite (SPEC-16): a distribuição guarda em `staydesk_convidar` o
-  # agente escolhido em vez de atribuir; aqui o convite é criado, já com a
-  # conversa gravada. Atribuição manual não passa por convite.
-  def staydesk_lancar_convite!
-    agente = staydesk_convidar
-    return if agente.blank? || !persisted?
-
-    self.staydesk_convidar = nil
-    Staydesk::OfferService.new(self).offer!(agente)
   end
 
   private
@@ -60,6 +50,7 @@ module Custom::Conversation
 
   def staydesk_after_update
     mudancas = saved_changes.to_h
+    staydesk_reabrir_na_fila(mudancas)
     staydesk_acesso_do_responsavel(mudancas)
     staydesk_follow_assignee_team(mudancas)
     staydesk_status_on_assign(mudancas)

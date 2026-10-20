@@ -1593,6 +1593,11 @@
                     "type": "boolean",
                     "description": "Fica com o que nenhuma outra reivindicou.",
                     "example": false
+                  },
+                  "reopen_to_queue": {
+                    "type": "boolean",
+                    "description": "Conversa resolvida que o cliente reabre volta para a fila, sem o agente anterior, como o chat no Zendesk. Desligado, ela fica com quem atendia, como o ticket.",
+                    "example": true
                   }
                 },
                 "required": [
@@ -1620,7 +1625,7 @@
           "Filas"
         ],
         "summary": "Alterar fila de carga",
-        "description": "Altera nome, canais, caixas ou a marcação de coringa.\n\nA chave não é alterável. Para trocar a chave, crie outra fila e ajuste os limites nos status.\n\nEscopo do token de API: `operacao:escrita`.",
+        "description": "Altera nome, canais, caixas, a marcação de coringa ou a reabertura na fila (`reopen_to_queue`).\n\nA chave não é alterável. Para trocar a chave, crie outra fila e ajuste os limites nos status.\n\nEscopo do token de API: `operacao:escrita`.",
         "parameters": [
           {
             "name": "account_id",

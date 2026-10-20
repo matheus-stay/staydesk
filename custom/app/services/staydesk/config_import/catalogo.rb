@@ -28,6 +28,7 @@ module Staydesk::ConfigImport::Catalogo
         channel_types: Array(fila['canais']),
         inbox_ids: caixas_por_nome(fila['caixas']),
         catch_all: fila['coringa'] || false,
+        reopen_to_queue: fila['reabrir_na_fila'] || false,
         position: posicao
       )
       registro.key

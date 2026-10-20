@@ -1533,6 +1533,7 @@
         "channel_types": [],
         "inbox_ids": [],
         "catch_all": true,
+        "reopen_to_queue": true,
         "position": 0
        },
        {
@@ -1546,6 +1547,7 @@
          7
         ],
         "catch_all": false,
+        "reopen_to_queue": false,
         "position": 1
        }
       ]
@@ -1610,6 +1612,12 @@
        "tipo": "booleano",
        "descricao": "Fica com o que nenhuma outra reivindicou.",
        "exemplo": false
+      },
+      {
+       "nome": "reopen_to_queue",
+       "tipo": "booleano",
+       "descricao": "Conversa resolvida que o cliente reabre volta para a fila, sem o agente anterior, como o chat no Zendesk. Desligado, ela fica com quem atendia, como o ticket.",
+       "exemplo": true
       }
      ],
      "payload": {
@@ -1626,7 +1634,7 @@
      "metodo": "PATCH",
      "caminho": "staydesk/load_queues/{id}",
      "titulo": "Alterar fila de carga",
-     "resumo": "Altera nome, canais, caixas ou a marcação de coringa.",
+     "resumo": "Altera nome, canais, caixas, a marcação de coringa ou a reabertura na fila (`reopen_to_queue`).",
      "detalhes": "A chave não é alterável. Para trocar a chave, crie outra fila e ajuste os limites nos status.",
      "escopo": "operacao:escrita",
      "respostas": [
