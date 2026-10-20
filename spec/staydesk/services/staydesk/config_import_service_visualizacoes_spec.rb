@@ -57,4 +57,37 @@ RSpec.describe Staydesk::ConfigImportService do
     expect { importar([base('caixas' => ['Chat do site'], 'caixas_exceto' => ['E-mail Suporte'])]) }
       .to raise_error(ArgumentError, /caixas.*caixas_exceto/)
   end
+
+  # A caixa de API do staging caiu na fila de chat porque a visualização dizia
+  # "tudo menos os e-mails". O canal de trabalho segue as filas de carga, como a
+  # distribuição, e é resolvido na hora da consulta.
+  describe 'canais_de_trabalho' do
+    before do
+      Staydesk::LoadQueue.create!(account: account, key: 'chat', name: 'Chat', catch_all: true, position: 0)
+      Staydesk::LoadQueue.create!(account: account, key: 'ticket', name: 'Tickets', channel_types: %w[Channel::Email Channel::Api], position: 1)
+    end
+
+    it 'stores the work channel, not inbox ids' do
+      importar([base('canais_de_trabalho' => ['chat'])])
+
+      expect(consulta_de('Fila').first).to include('attribute_key' => 'staydesk_load_queue', 'values' => ['chat'])
+    end
+
+    it 'resolves to the inboxes of that work channel when queried, including ones created later' do
+      importar([base('canais_de_trabalho' => ['chat']), base('nome' => 'Tickets', 'canais_de_trabalho' => ['ticket'])])
+      api = create(:inbox, account: account, name: 'Integração', channel: create(:channel_api, account: account))
+
+      chat_view = Staydesk::TeamView.find_by(account: account, name: 'Fila')
+      ticket_view = Staydesk::TeamView.find_by(account: account, name: 'Tickets')
+
+      expect(chat_view.payload.first).to include('attribute_key' => 'inbox_id', 'values' => [chat.id])
+      expect(ticket_view.payload.first['values']).to include(email.id, api.id)
+      expect(ticket_view.payload.first['values']).not_to include(chat.id)
+    end
+
+    it 'refuses a view that mixes work channels and inboxes' do
+      expect { importar([base('canais_de_trabalho' => ['chat'], 'caixas' => ['Chat do site'])]) }
+        .to raise_error(ArgumentError, /canais_de_trabalho/)
+    end
+  end
 end

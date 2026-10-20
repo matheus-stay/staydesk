@@ -11,6 +11,11 @@ enxergam, colunas e ordenação; o agente vê as views dos seus times na barra l
   vazio = conta inteira), `created_by_id`.
 - Modelo `Staydesk::TeamView`; política `Staydesk::TeamViewPolicy` (leitura para todos, escrita para
   administrador); `Staydesk::TeamView.visible_to(user, account)` resolve a visibilidade por time.
+- Marcadores resolvidos na hora da consulta (`TeamView#payload`): `me` em `assignee_id` vira quem pede, e a
+  linha `staydesk_load_queue` (valores: chaves de canal de trabalho, como `chat` e `ticket`) vira as caixas
+  daquele canal, pela mesma regra da distribuição. Caixa criada depois entra sozinha na view certa. No YAML
+  da operação, `canais_de_trabalho: [chat]` na visualização gera essa linha; é o jeito preferido de separar
+  chat de ticket (`caixas` e `caixas_exceto` congelam os ids da importação).
 - API, sob `/api/v1/accounts/:account_id/staydesk/team_views`:
 
 | Rota | Quem | O que faz |

@@ -17,10 +17,7 @@ module Staydesk::ConfigImport::Visualizacoes
   # `caixas` na visualização vira uma linha de filtro por caixa de entrada, para o
   # YAML falar de nomes e não de ids, que mudam de ambiente para ambiente.
   #
-  # `caixas_exceto` faz o contrário e é o que a fila de chat precisa: listar as
-  # caixas que NÃO entram (as de ticket) em vez de listar as que entram. Assim a
-  # visualização acompanha a fila de carga coringa — canal novo aparece sozinho,
-  # em vez de nascer invisível até alguém lembrar de citá-lo aqui.
+  # `caixas_exceto` faz o contrário: lista as caixas que NÃO entram.
   def consulta_da_visualizacao(dados)
     linhas = dados.fetch('consulta').map(&:dup)
     linhas = [linha_de_caixas(dados), linha_de_grupos(dados)].compact + linhas
@@ -30,13 +27,22 @@ module Staydesk::ConfigImport::Visualizacoes
     end
   end
 
-  # Uma das duas, nunca as duas: citar caixas e exceções na mesma visualização é
-  # contradição, e o silêncio de uma regra que não se aplica custa caro depois.
+  # Uma regra só por visualização: citar caixas e exceções (ou canal de
+  # trabalho junto) é contradição, e o silêncio de uma regra que não se aplica
+  # custa caro depois.
+  #
+  # `canais_de_trabalho` (chat, ticket) é o jeito preferido: segue as filas de
+  # carga e é resolvido na hora da consulta, então caixa nova cai no lugar certo.
+  # `caixas` e `caixas_exceto` viram os ids que existem na importação.
   def linha_de_caixas(dados)
     incluidas = caixas_por_nome(dados['caixas'])
     excluidas = caixas_por_nome(dados['caixas_exceto'])
-    raise ArgumentError, "Visualização #{dados['nome']}: use `caixas` ou `caixas_exceto`, não as duas" if incluidas.any? && excluidas.any?
+    canais = Array(dados['canais_de_trabalho']).map(&:to_s)
+    if [incluidas.any?, excluidas.any?, canais.any?].count(true) > 1
+      raise ArgumentError, "Visualização #{dados['nome']}: use só uma entre `canais_de_trabalho`, `caixas` e `caixas_exceto`"
+    end
 
+    return { 'attribute_key' => Staydesk::TeamView::LOAD_QUEUE_FIELD, 'filter_operator' => 'equal_to', 'values' => canais } if canais.any?
     return { 'attribute_key' => 'inbox_id', 'filter_operator' => 'equal_to', 'values' => incluidas } if incluidas.any?
     return { 'attribute_key' => 'inbox_id', 'filter_operator' => 'not_equal_to', 'values' => excluidas } if excluidas.any?
 

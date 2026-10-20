@@ -26,6 +26,7 @@ class Staydesk::TeamView < ApplicationRecord
   COLUMNS = %w[sla status subject contact inbox created_at waiting_since assignee team priority labels].freeze
   CURRENT_USER_TOKEN = 'me'.freeze
   USER_FIELDS = %w[assignee_id created_by_id].freeze
+  LOAD_QUEUE_FIELD = 'staydesk_load_queue'.freeze
   DEFAULT_COLUMNS = %w[sla status subject contact waiting_since assignee].freeze
 
   belongs_to :account
@@ -53,13 +54,25 @@ class Staydesk::TeamView < ApplicationRecord
   # Marcador dinâmico, como as views do Zendesk: `me` no valor de um filtro vira
   # o id de quem está pedindo. É o que faz a mesma view servir a todo agente.
   def payload(user = nil)
-    linhas = query['payload'] || []
+    linhas = (query['payload'] || []).map { |linha| resolver_fila_de_carga(linha) }
     return linhas if user.blank?
 
     linhas.map { |linha| resolver_marcador(linha, user) }
   end
 
   private
+
+  # `staydesk_load_queue` filtra pelo canal de trabalho (chat, ticket) e vira as
+  # caixas dele na hora da consulta, como a distribuição faz. Assim a fila de
+  # chat não mostra ticket que chegou por uma caixa nova, e a caixa nova entra
+  # sozinha na visualização certa.
+  def resolver_fila_de_carga(linha)
+    return linha unless linha['attribute_key'] == LOAD_QUEUE_FIELD
+
+    chaves = Array(linha['values']).map(&:to_s)
+    ids = account.inboxes.select { |caixa| chaves.include?(Staydesk::LoadQueue.for_inbox(caixa)&.key) }.map(&:id)
+    linha.merge('attribute_key' => 'inbox_id', 'values' => ids.presence || [0])
+  end
 
   def resolver_marcador(linha, user)
     return linha unless USER_FIELDS.include?(linha['attribute_key'].to_s)
