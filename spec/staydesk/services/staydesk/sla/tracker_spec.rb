@@ -28,6 +28,18 @@ RSpec.describe 'StayDesk SLA lifecycle' do
     expect(conversation.reload.custom_attributes).to include('sla_alvo' => 'Padrão', 'sla_status' => 'running')
   end
 
+  # O gatilho que marca urgente roda depois de o SLA nascer: no staging o ticket
+  # urgente ficava com o prazo do normal.
+  it 'moves the open deadlines when the priority changes after creation' do
+    conversation = new_conversation
+    Staydesk::Sla::Applier.new(conversation).perform
+    conversation.update!(priority: :urgent)
+    applied = Staydesk::Sla::Applier.new(conversation).perform
+
+    expect(applied.first_response_due_at).to be_within(1.second).of(conversation.created_at + 15.minutes)
+    expect(applied.resolution_due_at).to be_within(1.second).of(conversation.created_at + 480.minutes)
+  end
+
   it 'meets first response, restarts next response on contact messages and pauses on pending' do
     conversation = new_conversation
     Staydesk::Sla::Applier.new(conversation).perform

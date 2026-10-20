@@ -14,7 +14,7 @@ class Staydesk::Sla::Applier
       return nil
     end
 
-    return applied if applied && applied.sla_policy_id == policy.id && applied.status != 'met'
+    return reprazo(applied, policy) if applied && applied.sla_policy_id == policy.id && applied.status != 'met'
 
     applied ||= Staydesk::AppliedSla.new(account: @conversation.account, conversation: @conversation)
     applied.sla_policy = policy
@@ -36,6 +36,26 @@ class Staydesk::Sla::Applier
   end
 
   private
+
+  # Mesma política, mas a prioridade pode ter mudado depois da criação (o gatilho
+  # que marca urgente roda depois de o SLA nascer): os prazos ainda em aberto
+  # seguem o alvo da prioridade atual, contados da criação e somada a pausa.
+  def reprazo(applied, policy)
+    priority = @conversation.priority || 'default'
+    clock = policy.clock
+    pausa = applied.paused_seconds.to_i.seconds
+    { 'first_response' => applied.first_response_met_at, 'resolution' => applied.resolution_met_at }.each do |metric, met_at|
+      next if met_at.present? || applied.public_send("#{metric}_due_at").blank?
+
+      novo = due(clock, policy, metric, priority, @conversation.created_at)
+      applied.public_send("#{metric}_due_at=", novo + pausa) if novo
+    end
+    return applied unless applied.changed?
+
+    applied.save!
+    Staydesk::Sla::Tracker.new(@conversation).sync_attributes(applied)
+    applied
+  end
 
   def due(clock, policy, metric, priority, from)
     minutes = policy.target_minutes(metric, priority)
