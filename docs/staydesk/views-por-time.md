@@ -49,6 +49,10 @@ enxergam, colunas e ordenação; o agente vê as views dos seus times na barra l
 
 ## Limites conhecidos
 
+- A lista na tela ordena pelo seletor de ordenação do produto (padrão: última
+  atividade), não pelo `sort_by` da view. O endpoint `team_views/:id/conversations`
+  já respeita o `sort_by`; o front novo deve usá-lo.
+
 - A ordenação da view (`sort_by`) é aplicada pela API da view (`team_views/:id/conversations`); na tela,
   que busca pelo mesmo fluxo das pastas, vale a ordenação escolhida pelo usuário na lista.
 - A lista em tabela da SPEC-04 já existe (`ConversationTable.vue`), mas as colunas dela vêm da

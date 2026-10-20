@@ -151,6 +151,19 @@ nomes e e-mails da equipe. Formato e exemplos estão em [api-e-mcp.md](api-e-mcp
   `after_create_commit` que ainda não rodaram. Por isso os da camada entram com
   `prepend: true` e rodam depois dos do núcleo: sem isso o ticket roteado por
   condição nascia sem número e sem `conversation_created` (nenhum gatilho rodava).
+  O despacho de update da camada (`staydesk_after_update`) também entra com
+  `prepend`: rodando antes, o realinhamento do status do ticket salvava a conversa
+  e o núcleo deixava de avisar `conversation.opened`/`resolved`.
+- **`conversation.status_changed` chega sem o status anterior.** O núcleo passa
+  `status_change`, que já está vazio depois do commit. Quem precisa saber de onde
+  a conversa veio (o SLA, na reabertura) deduz pelo próprio estado.
+- **Status e resposta no mesmo commit perdem o evento de status.** A primeira
+  resposta salva a conversa de novo (`first_reply_created_at`) dentro do commit e
+  apaga a mudança de status. Por isso `staydesk/conversations/:id/reply` aplica o
+  status num save próprio, depois de campos e resposta.
+- **Conversa sem grupo não é distribuída se existe fila para o canal.** A fila que
+  decide pelo assunto só define o grupo depois de gravar; a distribuição espera e
+  roda em seguida.
 - **`Message` tem `default_scope { order(created_at) }`.** Agrupamento por mensagem
   precisa de `reorder(nil)`, senão o Postgres recusa. Já derrubou os KPIs uma vez.
 - **Banco local.** O Postgres de desenvolvimento guarda os dados num volume
