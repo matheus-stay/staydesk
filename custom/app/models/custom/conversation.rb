@@ -4,13 +4,16 @@ module Custom::Conversation
     base.prepend(Staydesk::ConversationEventData)
     base.attr_accessor :staydesk_convidar
     base.validate :staydesk_required_ticket_fields
-    # Os after_commit rodam em ordem inversa: o convite guardado na criação sai
-    # depois de a conversa passar pela fila.
+    # Os after_commit rodam em ordem inversa. Os dois entram no começo da cadeia
+    # (`prepend`) para rodar DEPOIS dos do núcleo: a fila com condição salva a
+    # conversa de novo, e esse save fazia o Rails pular os after_create_commit
+    # que ainda faltavam (o número da conversa e o conversation_created, que os
+    # gatilhos escutam). Entre os dois, a fila roda antes do convite.
     base.before_create :staydesk_route_to_queue_inline
     base.before_create :staydesk_status_inicial
     base.before_save :staydesk_assunto_unico
-    base.after_create_commit :staydesk_lancar_convite!
-    base.after_create_commit :staydesk_route_to_queue
+    base.after_create_commit :staydesk_route_to_queue, prepend: true
+    base.after_create_commit :staydesk_lancar_convite!, prepend: true
     # Um despacho só: os after_commit rodam em ordem inversa e alguns deles
     # salvam a conversa de novo, o que zera `saved_changes` para os seguintes
     # (o convite de aceite deixava de ser criado). A foto das mudanças é tirada

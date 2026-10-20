@@ -147,6 +147,10 @@ nomes e e-mails da equipe. Formato e exemplos estão em [api-e-mcp.md](api-e-mcp
   erro. É o risco número 1 em [chatwoot-diferencas.md](chatwoot-diferencas.md).
 - **Ordem dos callbacks de `Conversation`.** Os `after_commit` rodam em ordem
   inversa, e há um despacho único (`staydesk_after_update`) por causa disso.
+  Salvar a conversa dentro de um `after_create_commit` faz o Rails pular os
+  `after_create_commit` que ainda não rodaram. Por isso os da camada entram com
+  `prepend: true` e rodam depois dos do núcleo: sem isso o ticket roteado por
+  condição nascia sem número e sem `conversation_created` (nenhum gatilho rodava).
 - **`Message` tem `default_scope { order(created_at) }`.** Agrupamento por mensagem
   precisa de `reorder(nil)`, senão o Postgres recusa. Já derrubou os KPIs uma vez.
 - **Banco local.** O Postgres de desenvolvimento guarda os dados num volume
