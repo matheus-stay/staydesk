@@ -76,6 +76,7 @@ Hoje o único roteiro existente é uma linha em `docs/staydesk/runbook-local.md`
    - `db/schema.rb`: aceitar o do upstream (`git checkout --theirs db/schema.rb`), depois `bundle exec rails db:migrate` num banco local com as migrations `custom/` aplicadas e commitar o `schema.rb` regenerado (conferir se as 17 tabelas `staydesk_*` e a coluna `custom_attribute_definitions.staydesk_required_to_resolve` continuam lá).
    - Arquivos `legado` da barra lateral, `ChatListHeader.vue`, `ReplyBox.vue`, `MessagesView.vue`, `ConversationView.vue`: partir da versão do upstream e reaplicar só o que for nosso (classe Tailwind / linha `staydesk:hook`). Oportunidade de rebaixar o arquivo de `legado` para `classe`/`gancho` e atualizar `core-touches.md`.
    - Arquivos `gancho`: o conflito costuma ser só a linha final `prepend_mod_with`; manter a do upstream + a nossa.
+   - `README.md` da raiz: é o do StayDesk. Em conflito, manter o nosso (`git checkout --ours README.md`).
    - Nunca resolver aceitando "o nosso" em bloco num arquivo do upstream que traz correção de segurança.
 6. **Portar à mão o que o merge não mostra**
    - Templates de e-mail sobrepostos: `git diff $BASE $ALVO -- app/views/mailers/conversation_reply_mailer app/views/layouts/mailer` → aplicar as mudanças equivalentes em `custom/app/views/conversation_reply_mailer/*`.

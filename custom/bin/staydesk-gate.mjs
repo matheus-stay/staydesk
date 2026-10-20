@@ -30,6 +30,9 @@ const OWN_PATHS = [
   // Gerado por `rails db:migrate`; as migrations de custom/ entram aqui para o
   // db:chatwoot_prepare de uma instalação nova carregá-las junto com o esquema.
   /^db\/schema\.rb$/,
+  // O README da raiz é do StayDesk, não o do Chatwoot. Num merge do upstream,
+  // fica o nosso (atualizar-do-chatwoot.md).
+  /^README\.md$/,
   /^\.github\/workflows\/staydesk[_-]/,
   /^theme\//,
   /^tailwind\.config\.js$/,
