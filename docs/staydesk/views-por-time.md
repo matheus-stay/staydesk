@@ -37,7 +37,7 @@ enxergam, colunas e ordenação; o agente vê as views dos seus times na barra l
 ## Frontend (`app/javascript/staydesk/`)
 
 - `api/teamViews.js`, `store/teamViews.js` (Pinia) e `composables/useTeamViews.js` (carga, contagens a
-  cada 60 s, `asFolder`).
+  cada 30 s e a cada mudança de conversa em tempo real, `asFolder`).
 - `composables/useStaydeskSidebar.js`: o grupo "Visualizações" na barra de conversas e a entrada em
   Central › Atendimento. `Sidebar.vue` os recebe por spread em dois ganchos de uma linha.
 - Rotas `staydesk_view_conversations` e `staydesk_view_conversation` (`/staydesk/views/:id`) reaproveitam a
