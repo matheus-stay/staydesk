@@ -106,24 +106,6 @@ module Custom::Conversation
     self.custom_attributes = (custom_attributes || {}).merge(Staydesk::TicketStatus::ATTRIBUTE_KEY => inicial.name)
   end
 
-  # Como no Zendesk, a conversa fica no grupo de quem pegou: entregue a alguém de
-  # outro grupo principal, ou de um secundário, ela passa para o grupo dele.
-  def staydesk_follow_assignee_team(mudancas)
-    return unless mudancas.key?('assignee_id') && assignee_id.present? && team_id.present?
-    return if TeamMember.exists?(team_id: team_id, user_id: assignee_id)
-
-    destino = staydesk_grupo_do_responsavel
-    update!(team_id: destino) if destino.present?
-  end
-
-  # Dos grupos da fila que responde por este grupo, o primeiro em que o responsável está.
-  def staydesk_grupo_do_responsavel
-    fila = Staydesk::Queue.da_equipe(account_id, team_id)
-    return if fila.blank?
-
-    (fila.team_ids + fila.fallback_team_ids).find { |id| TeamMember.exists?(team_id: id, user_id: assignee_id) }
-  end
-
   # Atribuiu a alguém: o caso entra em andamento sozinho, como na operação. Na
   # fila com aceite a atribuição só acontece no aceite, então é aí que muda.
   def staydesk_status_on_assign(mudancas)

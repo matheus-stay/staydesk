@@ -154,6 +154,30 @@ RSpec.describe Staydesk::QueueRouter do
       expect(conversation.reload.team).to eq(n3)
     end
 
+    # Transferência para outro nível: como no Zendesk, o caso vai para o grupo de
+    # quem recebeu, desde que a fila desse grupo atenda o canal.
+    it 'transferida para um agente de outra fila do canal, passa para o grupo dele' do
+      Staydesk::Queue.create!(account: account, name: 'Do N2', team: n2, position: 0)
+      Staydesk::Queue.create!(account: account, name: 'Do N3', team: n3, position: 1)
+      [[agente_n3, n3], [agente_n2, n2]].each { |usuario, time| create(:team_member, team: time, user: usuario) }
+      conversation = create(:conversation, account: account, inbox: chat, team: n2)
+
+      conversation.reload.update!(assignee: agente_n3)
+
+      expect(conversation.reload.team).to eq(n3)
+    end
+
+    it 'entregue a quem não tem fila para o canal, o grupo fica' do
+      Staydesk::Queue.create!(account: account, name: 'Do N2', team: n2, position: 0)
+      Staydesk::Queue.create!(account: account, name: 'Só e-mail do N3', team: n3, position: 1, channel_types: ['Channel::Email'])
+      create(:team_member, team: n3, user: agente_n3)
+      conversation = create(:conversation, account: account, inbox: chat, team: n2)
+
+      conversation.reload.update!(assignee: agente_n3)
+
+      expect(conversation.reload.team).to eq(n2)
+    end
+
     it 'aceita mais de um grupo de transbordo' do
       monta_transbordo
       Staydesk::Queue.find_by(name: 'Tickets do N3').update!(fallback_team_ids: [n2.id, n1.id])

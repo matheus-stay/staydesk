@@ -54,6 +54,17 @@ RSpec.describe 'StayDesk SLA lifecycle' do
     expect(Staydesk::AppliedSla.find_by(conversation: conversation).resolution_met_at).to be_nil
   end
 
+  it 'keeps a met SLA met when the resolved conversation is updated' do
+    conversation = new_conversation
+    Staydesk::Sla::Applier.new(conversation).perform
+    Staydesk::Sla::Tracker.new(conversation).status_changed('', 'resolved')
+
+    aplicado = Staydesk::Sla::Applier.new(conversation.reload).perform
+
+    expect(aplicado).to have_attributes(status: 'met')
+    expect(aplicado.resolution_met_at).to be_present
+  end
+
   it 'meets first response, restarts next response on contact messages and pauses on pending' do
     conversation = new_conversation
     Staydesk::Sla::Applier.new(conversation).perform

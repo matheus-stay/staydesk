@@ -14,7 +14,12 @@ class Staydesk::Sla::Applier
       return nil
     end
 
-    return reprazo(applied, policy) if applied && applied.sla_policy_id == policy.id && applied.status != 'met'
+    # Mesma política: o cumprido continua cumprido (a reabertura é o Tracker quem
+    # trata); os prazos em aberto seguem a prioridade atual. Recriar aqui fazia a
+    # conversa resolvida voltar a "running" a cada atualização dela.
+    if applied && applied.sla_policy_id == policy.id
+      return applied.status == 'met' ? applied : reprazo(applied, policy)
+    end
 
     applied ||= Staydesk::AppliedSla.new(account: @conversation.account, conversation: @conversation)
     applied.sla_policy = policy

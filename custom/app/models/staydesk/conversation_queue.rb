@@ -40,6 +40,30 @@ module Staydesk::ConversationQueue
     staydesk_redistribuir! if saiu_de_aberta || ficou_sem_responsavel
   end
 
+  # Como no Zendesk, a conversa fica no grupo de quem pegou: entregue a alguém de
+  # outro grupo principal, ou de um secundário, ela passa para o grupo dele.
+  def staydesk_follow_assignee_team(mudancas)
+    return unless mudancas.key?('assignee_id') && assignee_id.present? && team_id.present?
+    return if TeamMember.exists?(team_id: team_id, user_id: assignee_id)
+
+    destino = staydesk_grupo_do_responsavel
+    update!(team_id: destino) if destino.present?
+  end
+
+  # Dos grupos da fila que responde por este grupo, o primeiro em que o
+  # responsável está. Fora deles (transferência para outro nível, N2 para N3):
+  # o grupo dele cuja fila atende este canal. Sem nenhum, o grupo fica: um chat
+  # entregue a quem só atende ticket sairia da distribuição.
+  def staydesk_grupo_do_responsavel
+    dele = TeamMember.where(user_id: assignee_id).pluck(:team_id)
+    fila = Staydesk::Queue.da_equipe(account_id, team_id)
+    da_fila = fila && (fila.team_ids + fila.fallback_team_ids).find { |id| dele.include?(id) }
+    return da_fila if da_fila
+
+    filas_do_canal = Staydesk::Queue.active.where(account_id: account_id).select { |outra| outra.atende_canal?(inbox) }
+    filas_do_canal.flat_map(&:team_ids).find { |id| dele.include?(id) }
+  end
+
   def staydesk_redistribuir!
     Staydesk::Queues::SweepJob.perform_later(account_id)
   end
