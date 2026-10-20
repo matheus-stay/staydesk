@@ -112,33 +112,51 @@ class Staydesk::ConfigImportService
   end
 
   def importar_politica(dados, posicao)
-    caixas = caixas_da_regra(dados)
+    canal = canal_da_regra(dados)
     politica = Staydesk::SlaPolicy.find_or_initialize_by(account: @account, name: dados.fetch('nome'))
     politica.update!(
       description: dados['descricao'],
       calendar: dados['calendario'] ? Staydesk::Calendar.find_by(account: @account, name: dados['calendario']) : nil,
-      conditions: condicoes(dados, caixas),
+      conditions: condicoes(dados, canal.presence && condicao_de_canal(canal)),
       targets: dados.fetch('alvos'),
       pause_statuses: dados['pausa_em'] || %w[pending snoozed],
-      position: posicao, active: caixas != []
+      position: posicao, active: canal != []
     )
-    caixas == [] ? "#{politica.name} (nenhum canal desses existe na conta; desativada)" : politica.name
+    canal == [] ? "#{politica.name} (nenhuma dessas caixas existe na conta; desativada)" : politica.name
   end
 
   # Condições no formato do filtro avançado. Canal e caixa viram uma condição
-  # por caixa de entrada: é assim que a operação descreve a política ("o SLA do
-  # chat", "o SLA do ticket") e é o que o avaliador de condições entende. Sem
-  # isso, política sem condição casa com qualquer conversa e a primeira da
+  # só (`staydesk_channel`): é assim que a operação descreve a política ("o SLA
+  # do chat", "o SLA do ticket"). O tipo de canal fica guardado como tipo e é
+  # resolvido na hora de avaliar, então a caixa criada depois entra sozinha.
+  # Sem isso, política sem condição casa com qualquer conversa e a primeira da
   # ordem leva todas, inclusive as dos outros canais.
   # Várias condições se ligam por E, salvo quando a linha diz `query_operator: OR`;
   # a última não leva ligação, como o produto exige.
-  def condicoes(dados, caixas = nil)
-    condicoes = Array(dados['condicoes']).map(&:to_h)
-    condicoes += [{ 'attribute_key' => 'inbox_id', 'filter_operator' => 'equal_to', 'values' => caixas }] if caixas.present?
+  def condicoes(dados, extra = nil)
+    condicoes = Array(dados['condicoes']).map(&:to_h) + [extra].compact
     ultima = condicoes.size - 1
     condicoes.each_with_index.map do |condicao, indice|
       indice == ultima ? condicao.except('query_operator') : condicao.reverse_merge('query_operator' => 'AND')
     end
+  end
+
+  def condicao_de_canal(canal)
+    { 'attribute_key' => Staydesk::Sla::PolicyMatcher::CHANNEL_CONDITION, 'filter_operator' => 'equal_to', 'values' => canal }
+  end
+
+  # Os gatilhos são AutomationRule do Chatwoot e só entendem `inbox_id`.
+  def condicao_de_caixas(caixas)
+    { 'attribute_key' => 'inbox_id', 'filter_operator' => 'equal_to', 'values' => caixas }
+  end
+
+  # O que a política alcança: tipos de canal e ids das caixas citadas por nome.
+  # nil quando ela não fala de canal (vale para todos), lista vazia quando só
+  # cita caixas por nome e nenhuma existe ainda na conta.
+  def canal_da_regra(dados)
+    return nil if dados['canais'].blank? && dados['caixas'].blank?
+
+    (Array(dados['canais']).map(&:to_s) + caixas_por_nome(dados['caixas'])).uniq
   end
 
   # As caixas que a regra alcança: nil quando ela não fala de canal (vale para

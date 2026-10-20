@@ -16,7 +16,7 @@ module Staydesk::ConfigImport::Automacoes
     regra.update!(
       description: dados['descricao'],
       event_name: dados['evento'] || 'conversation_created',
-      conditions: condicoes(dados, caixas).presence || [condicao_de_status_aberto],
+      conditions: condicoes(dados, caixas.presence && condicao_de_caixas(caixas)).presence || [condicao_de_status_aberto],
       actions: acoes_da_automacao(dados),
       active: caixas != []
     )

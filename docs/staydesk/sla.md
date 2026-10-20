@@ -11,6 +11,10 @@ O SLA é configurado, calculado e vigiado dentro do StayDesk. O dashboard só l�
   (`first_response`, `next_response`, `resolution`; prioridade sem valor cai em `default`), calendário,
   status que pausam (`pending`, `snoozed`) e fração de aviso (`warning_ratio`, padrão 0,2). A ordem é a
   prioridade de escolha: a primeira ativa que bate com a conversa vale.
+  Além das condições do produto, a política aceita `staydesk_channel`, com tipos de canal
+  (`Channel::Email`, `Channel::Api`…) e ids de caixa nos valores. O tipo é resolvido na hora de avaliar,
+  então a caixa criada depois da política entra sozinha no SLA do canal dela. É o que a importação grava
+  a partir de `canais` e `caixas`.
 - **SLA aplicado** (`staydesk_applied_slas`): prazos e cumprimentos das três métricas, pausa e o que já venceu.
 
 ## Motor (`custom/app/services/staydesk/sla`, `listeners`, `jobs`)

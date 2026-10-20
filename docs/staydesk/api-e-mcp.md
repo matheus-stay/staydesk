@@ -246,8 +246,10 @@ automacoes:
           - "Olá! O seu ticket #{{conversation.display_id}} já foi recebido."
 ```
 
-`canais` e `caixas` viram condição por canal, como nas políticas de SLA; sem
-nenhum dos dois, o gatilho vale para toda conversa aberta. O texto aceita as
+`canais` e `caixas` viram condição por caixa (`inbox_id`); sem nenhum dos dois,
+o gatilho vale para toda conversa aberta. Diferente da política de SLA, que
+resolve o canal na hora, o gatilho guarda os ids das caixas que existiam na
+importação: caixa nova pede reimportar a seção `automacoes`. O texto aceita as
 variáveis do produto (`conversation.display_id`, `contact.name`, `agent.name`,
 `inbox.name`, `account.name`), resolvidas no envio. Mensagem de gatilho não
 conta como primeira resposta no SLA nem nos indicadores.
