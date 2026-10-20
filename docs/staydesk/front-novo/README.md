@@ -7,7 +7,9 @@ StayDesk sem retrabalho. **O que não é:** um guia de design. Layout, component
 cores e tipografia são decisão sua. Aqui está só o que o front precisa cumprir
 para funcionar com o nosso código.
 
-> Versão de 2026-10-19, escrita sobre o backend do ramo `staydesk-revisado`.
+> Versão de 2026-10-20, revisada depois da bateria de testes de distribuição, escrita
+> sobre o backend do ramo `staydesk-revisado`. O que mudou desde a de 2026-10-19 está
+> no fim, em "Mudanças desta versão".
 > As fontes da verdade, sempre mais atuais que este texto, são:
 > - **OpenAPI da API StayDesk:** `swagger/staydesk/openapi.json`, gerado da
 >   referência e conferido no CI. É dele que você gera o cliente tipado.
@@ -147,9 +149,15 @@ token é gerado no `/super_admin` atual (seção 8).
 | `staydesk.agent_status.changed` | atualizar o status mostrado (o servidor pode trocar sozinho, pelo tempo limite, aba fechada ou convites perdidos) |
 | `user:logout`, `page:reload`, `account.cache_invalidated` | sair, recarregar ou invalidar caches |
 
-Ainda sem evento próprio, e por isso com consulta periódica:
-- contadores das visualizações: `GET staydesk/team_views/counts`, a cada 60 s;
-- carga e diagnóstico na tela de números: a cada 15 s.
+**Contadores das visualizações:** o número ao lado de cada visualização tem de
+bater com a lista, em tempo real. Peça `GET staydesk/team_views/counts` de novo a
+cada evento de conversa (`conversation.created`, `conversation.updated`,
+`conversation.status_changed`, `assignee.changed`) e ao reconectar o WebSocket,
+agrupando rajadas (1 a 2 s). Como rede de segurança, peça também a cada 30 s. O
+servidor não guarda cache dessa contagem.
+
+Ainda sem evento próprio, e por isso com consulta periódica: carga e diagnóstico
+na tela de números, a cada 15 s.
 
 ## 6. Navegação e o que cada pessoa vê
 
@@ -197,8 +205,13 @@ relativos a `/api/v1/accounts/:account_id/`.
 - A barra lateral do Hub lista as visualizações (`GET staydesk/team_views`) com
   contagem.
 - Lista de uma visualização: `GET staydesk/team_views/:id/conversations?page=&sort_by=`.
-  O servidor resolve o filtro (inclusive "eu mesmo") e a ordem. Não use
-  `/conversations/filter` com filtro montado no front.
+  O servidor resolve o filtro (inclusive "eu mesmo" e o canal de trabalho) e a
+  ordem configurada na visualização (a fila de chat é por ordem de chegada). Não
+  use `/conversations/filter` com filtro montado no front. Se precisar do filtro
+  pronto, cada visualização traz `resolved_query`, já resolvido para quem chama;
+  `query` é a versão de edição, com marcadores que só o servidor entende.
+- O número da barra lateral e o total da lista vêm da mesma consulta: se divergirem,
+  é cache do front.
 - Colunas e abas (minhas, sem responsável, todas) vêm da área de trabalho
   (`list.columns`, `list.tabs`). As colunas possíveis são SLA, status do ticket,
   assunto, contato, canal, aguardando desde e responsável. O **assunto** e o
@@ -212,6 +225,13 @@ relativos a `/api/v1/accounts/:account_id/`.
 - `POST staydesk/offers/:id/accept`, que abre a conversa, e `POST staydesk/offers/:id/decline`.
 - Ao abrir o app, ou se o tempo real cair, `GET staydesk/offers` lista os
   pendentes de quem chama.
+- Convites chegam também fora da conversa nova, e o front não deve estranhar:
+  - quando um agente libera vaga (resolve, põe em espera, transfere), o próximo da
+    fila é oferecido em cerca de 2 s;
+  - **chat** resolvido que o cliente reabre **perde o responsável** e volta para a
+    fila como convite (configurável por canal de trabalho, `reopen_to_queue`). A
+    conversa some de "comigo" e chega como `assignee.changed`;
+  - **ticket** reaberto pelo cliente continua com quem atendia e volta a "em andamento".
 
 ### 7.5 Conversa aberta
 - Cabeçalho com contato, canal, número do ticket (`display_id`) e **seletor de
@@ -248,10 +268,12 @@ relativos a `/api/v1/accounts/:account_id/`.
   status escolhido; a seta escolhe outro status. **Com a caixa vazia**, o botão só
   muda o status (resolver sem escrever).
 - Use **uma chamada só**: `POST staydesk/conversations/:display_id/reply`
-  `{ content?, private?, ticket_status_id?, custom_attributes? }`. Ela grava tudo ou
-  nada. Se faltar campo obrigatório para resolver, volta 422 com
-  `missing_to_resolve`: abra a janela pedindo **esses** campos e reenvie com
-  `custom_attributes` preenchidos.
+  `{ content?, private?, ticket_status_id?, custom_attributes? }`. Se faltar campo
+  obrigatório para resolver, volta 422 com `missing_to_resolve` e **nada é
+  gravado** (nem a mensagem): abra a janela pedindo **esses** campos e reenvie com
+  `custom_attributes` preenchidos. No sucesso, o servidor grava campos e resposta
+  juntos e aplica o status logo em seguida, para que SLA, gatilhos e pesquisa de
+  satisfação recebam a mudança de status. Não separe em duas chamadas no front.
 - Depois de enviar, o que fazer vem de `composer.after_send`: ficar na conversa,
   abrir a próxima da visualização ou voltar para a lista.
 
@@ -292,7 +314,7 @@ do OpenAPI.
 | Números da operação | `kpis` (`since`, `until`, `compare`, `user_id`, `load_queue`, `team_id`), `agent_loads`, `distribution_checks`, `offer_stats` | CSAT, aceitação, fila, tempos (mediana e p90), volumes, FCR, SLA, série diária, **contagem por campo** (`por_campo`), tempo online por agente. Quadro "agora" atualizado a cada 15 s |
 | Diagnóstico da distribuição | `distribution_checks` e `distribution_checks?conversation_id=` | Por agente, as 6 condições (sim/não) e os canais que ele não atende. Por conversa, a etapa em que ela para (`para_em`) |
 | Filas de encaminhamento | `queues` (+`reorder`), `load_queues` | Grupos principais e secundários, canais, condições, prioridade, aceite (tempo, reoferecer) |
-| Canais de trabalho | `load_queues` | Agrupam canais em "chat", "ticket" e outros |
+| Canais de trabalho | `load_queues` | Agrupam canais em "chat", "ticket" e outros. `reopen_to_queue`: conversa reaberta pelo cliente volta para a fila (ligado no chat) |
 | Regras de capacidade | `capacity_rules` | Quantas conversas de cada canal de trabalho, por agente |
 | Status do agente | `agent_statuses` | Disponibilidade, canais de trabalho, cor, tempo limite e destino, conta como online |
 | Status do ticket | `ticket_statuses` (+`reorder`) | Catálogo por cima dos 4 status base; um assume ao atribuir |
@@ -344,6 +366,8 @@ Na primeira versão, o front leva um link para o `/super_admin` nesses casos.
 | Decidir quem atende um canal (aba de agentes) | Não existe: vem das filas, no servidor |
 | Resolver a área de trabalho (herança grupo/conta/papel) | `GET staydesk/workspace`, já resolvida |
 | Enviar mensagem e status em chamadas separadas | `POST staydesk/conversations/:id/reply` |
+| Contar as conversas de uma visualização pela lista carregada | `GET staydesk/team_views/counts`, pedido de novo a cada evento |
+| Decidir se a conversa reaberta volta para a fila ou fica com o agente | O servidor decide (`reopen_to_queue` do canal de trabalho) |
 
 ## 10. Pendências conhecidas do backend (para não estranhar)
 
@@ -424,8 +448,12 @@ O front está pronto para plugar quando:
   reflete `staydesk.agent_status.changed`.
 - [ ] Convite de atendimento chega em tempo real, com contagem regressiva, som e
   notificação. Aceitar abre a conversa, e recusar ou vencer tira o cartão.
-- [ ] Lista da visualização vem de `team_views/:id/conversations`, com colunas e
-  abas da área de trabalho.
+- [ ] Lista da visualização vem de `team_views/:id/conversations`, com colunas,
+  abas e a ordem da visualização (a fila de chat mostra o mais antigo primeiro).
+- [ ] O número ao lado de cada visualização bate com a lista e muda sozinho em até
+  2 a 3 s quando chega, é pega ou é resolvida uma conversa.
+- [ ] Chat reaberto pelo cliente some de "comigo" e volta como convite; ticket
+  reaberto continua com quem atendia.
 - [ ] Assunto, status do ticket e campos que faltam vêm do bloco `staydesk`.
 - [ ] "Enviar como" usa `staydesk/conversations/:id/reply`. Com campo obrigatório
   vazio, abre a janela pedindo os campos e resolve depois. Funciona com a caixa vazia.
@@ -458,3 +486,21 @@ O front está pronto para plugar quando:
 
 Dúvidas sobre comportamento: a referência da API (`GET staydesk/api_reference`)
 explica cada endpoint em português, com exemplos.
+
+## Mudanças desta versão (2026-10-20)
+
+Depois da bateria de testes de distribuição no staging:
+
+- **Contadores das visualizações** (seção 5 e 7.3): sem cache no servidor; o front
+  pede de novo a cada evento de conversa, e o polling caiu de 60 s para 30 s, só
+  como rede de segurança. O número tem de bater com a lista.
+- **`resolved_query`** em cada visualização (7.3): o filtro pronto para quem chama.
+- **Reabertura** (7.4 e 8.1): chat reaberto pelo cliente volta para a fila como
+  convite; ticket reaberto fica com quem atendia. Campo novo `reopen_to_queue` no
+  canal de trabalho.
+- **Vaga liberada** (7.4): convite do próximo da fila em cerca de 2 s.
+- **"Enviar como"** (7.6): o contrato da chamada não mudou; o servidor confere os
+  campos obrigatórios antes de gravar e aplica o status logo depois da resposta.
+- **Critérios de aceite** (13): três itens novos (ordem da visualização, contador
+  em tempo real, reabertura).
+
