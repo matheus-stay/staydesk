@@ -7,6 +7,7 @@ module Custom::AutoAssignment::AgentAssignmentService
   def find_assignee
     # Conversa com convite pendente já está com alguém decidindo.
     return nil if conversation.persisted? && Staydesk::Offer.pendentes.exists?(conversation_id: conversation.id)
+    return nil if staydesk_aguardando_fila?
 
     agente = super
     return agente if agente.blank? || !staydesk_fila_com_aceite?
@@ -24,6 +25,16 @@ module Custom::AutoAssignment::AgentAssignmentService
   end
 
   private
+
+  # Sem grupo ainda, mas com fila para este canal: é a fila que decide pelo
+  # assunto, depois de gravar (QueueRouter). Atribuir agora entregava o ticket
+  # direto, sem convite e fora da fila; a distribuição roda de novo assim que o
+  # grupo é definido.
+  def staydesk_aguardando_fila?
+    return false if conversation.team_id.present?
+
+    Staydesk::Queue.active.where(account_id: conversation.account_id).any? { |fila| fila.atende_canal?(conversation.inbox) }
+  end
 
   def staydesk_fila_com_aceite?
     Staydesk::Queue.da_conversa(conversation)&.accept_required || false

@@ -51,6 +51,7 @@ module Custom::Conversation
   def staydesk_after_update
     mudancas = saved_changes.to_h
     staydesk_reabrir_na_fila(mudancas)
+    staydesk_liberou_vaga(mudancas)
     staydesk_acesso_do_responsavel(mudancas)
     staydesk_follow_assignee_team(mudancas)
     staydesk_status_on_assign(mudancas)
@@ -103,12 +104,6 @@ module Custom::Conversation
     return if inicial.blank?
 
     self.custom_attributes = (custom_attributes || {}).merge(Staydesk::TicketStatus::ATTRIBUTE_KEY => inicial.name)
-  end
-
-  # A conversa nova passa pelas filas antes de a distribuição escolher o agente
-  # (SPEC-15). Roda no mesmo processo do commit, não em job, para chegar antes.
-  def staydesk_route_to_queue
-    Staydesk::QueueRouter.new(self).perform
   end
 
   # Como no Zendesk, a conversa fica no grupo de quem pegou: entregue a alguém de
