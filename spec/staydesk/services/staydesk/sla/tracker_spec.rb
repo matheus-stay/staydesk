@@ -40,6 +40,20 @@ RSpec.describe 'StayDesk SLA lifecycle' do
     expect(applied.resolution_due_at).to be_within(1.second).of(conversation.created_at + 480.minutes)
   end
 
+  # O evento conversation.status_changed do núcleo chega sem changed_attributes:
+  # a reabertura tem de ser percebida sem o status anterior.
+  it 'reopens the resolution clock even when the event does not carry the previous status' do
+    conversation = new_conversation
+    Staydesk::Sla::Applier.new(conversation).perform
+    tracker = Staydesk::Sla::Tracker.new(conversation)
+    tracker.status_changed('', 'resolved')
+    expect(tracker.applied.reload.resolution_met_at).to be_present
+
+    Staydesk::Sla::Tracker.new(conversation.reload).status_changed('', 'open')
+
+    expect(Staydesk::AppliedSla.find_by(conversation: conversation).resolution_met_at).to be_nil
+  end
+
   it 'meets first response, restarts next response on contact messages and pauses on pending' do
     conversation = new_conversation
     Staydesk::Sla::Applier.new(conversation).perform

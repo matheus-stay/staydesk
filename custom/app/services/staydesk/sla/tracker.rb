@@ -39,7 +39,7 @@ class Staydesk::Sla::Tracker
       applied.status = 'paused'
     elsif !pausing && applied.paused?
       resume(at)
-    elsif previous_status == 'resolved' && current_status == 'open'
+    elsif reaberta?(previous_status, current_status)
       reopen(at)
     end
     finish(at)
@@ -85,6 +85,14 @@ class Staydesk::Sla::Tracker
     end
     applied.paused_at = nil
     applied.status = applied.breached_metrics.any? ? 'breached' : 'running'
+  end
+
+  # O evento de status do núcleo chega sem o status anterior (changed_attributes
+  # vazio): a conversa que volta a aberta com a resolução já cumprida foi reaberta.
+  def reaberta?(previous_status, current_status)
+    return false unless current_status == 'open'
+
+    previous_status == 'resolved' || applied.resolution_met_at.present?
   end
 
   def reopen(at)
